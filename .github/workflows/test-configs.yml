@@ -1,530 +1,530 @@
-name: V2Ray Config Auto-Test & Filter  
-  
-on:  
-  push:  
-    branches: ["main"]  
-  schedule:  
-    - cron: '0 */6 * * *'  # Every 6 hours  
-  workflow_dispatch:  
-  
-concurrency:  
-  group: v2ray-test  
-  cancel-in-progress: true  
-  
+name: V2Ray Config Auto-Test & Filter
+
+on:
+  push:
+    branches: ["main"]
+  schedule:
+    - cron: '0 */6 * * *'  # Every 6 hours
+  workflow_dispatch:
+
+concurrency:
+  group: v2ray-test
+  cancel-in-progress: true
+
 # Add permissions to allow writing to repository
 permissions:
   contents: write
-  
-env:  
-  OUTPUT_DIR: output  
-  TIMEOUT: 8  
-  MAX_PARALLEL: 30  
-  
-jobs:  
-  fetch-test-filter:  
-    runs-on: ubuntu-latest  
-    timeout-minutes: 60  
-  
-    steps:  
-      - uses: actions/checkout@v4  
+
+env:
+  OUTPUT_DIR: output
+  TIMEOUT: 8
+  MAX_PARALLEL: 30
+
+jobs:
+  fetch-test-filter:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          persist-credentials: true  
-  
-      - name: Setup Node.js  
-        uses: actions/setup-node@v4  
-        with:  
-          node-version: '20'  
-  
-      - name: Install system dependencies  
-        run: |  
-          sudo apt-get update -qq  
-          sudo apt-get install -y jq openssl curl netcat-traditional wget unzip  
-          npm install -g node-fetch@2 p-limit  
-  
-      - name: Download and install Xray-core  
-        run: |  
-          echo "📦 Installing Xray-core for real protocol testing..."  
-            
-          # Get latest version  
-          XRAY_VERSION=$(curl -s https://api.github.com/repos/XTLS/Xray-core/releases/latest | grep -Po '"tag_name": "\K.*?(?=")')  
-          echo "  → Version: ${XRAY_VERSION}"  
+          persist-credentials: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y jq openssl curl netcat-traditional wget unzip
+          npm install -g node-fetch@2 p-limit
+
+      - name: Download and install Xray-core
+        run: |
+          echo "📦 Installing Xray-core for real protocol testing..."
+          
+          # Get latest version
+          XRAY_VERSION=$(curl -s https://api.github.com/repos/XTLS/Xray-core/releases/latest | grep -Po '"tag_name": "\K.*?(?=")')
+          echo "  → Version: ${XRAY_VERSION}"
           
           # Validate version was retrieved
           if [ -z "$XRAY_VERSION" ]; then
             echo "❌ Failed to get Xray version"
             exit 1
           fi
-            
+          
           # Construct download URL
           DOWNLOAD_URL="https://github.com/XTLS/Xray-core/releases/download/${XRAY_VERSION}/Xray-linux-64.zip"
           echo "  → Download URL: ${DOWNLOAD_URL}"
           
           # Download with retry
           wget --retry-connrefused --waitretry=1 --read-timeout=20 --timeout=15 --tries=3 "${DOWNLOAD_URL}" -O xray.zip
-            
+          
           # Verify download
           if [ ! -f xray.zip ]; then
             echo "❌ Download failed"
             exit 1
           fi
           
-          # Extract and install  
-          unzip -o xray.zip xray  
-          chmod +x xray  
-          sudo mv xray /usr/local/bin/  
+          # Extract and install
+          unzip -o xray.zip xray
+          chmod +x xray
+          sudo mv xray /usr/local/bin/
+          
+          # Verify installation
+          xray version
+          echo "✅ Xray-core installed successfully"
+
+      - name: Create directories
+        run: |
+          mkdir -p $OUTPUT_DIR tmp logs
+          chmod 755 $OUTPUT_DIR tmp logs
+
+      - name: Fetch configs from all sources
+        run: |
+          set -Eeuo pipefail
+          
+          echo "🌐 Fetching configs from multiple sources..."
+          
+          # All source URLs
+          SOURCES=(
+            "https://raw.githubusercontent.com/barry-far/V2ray-Config/refs/heads/main/All_Configs_Sub.txt"
+            "https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/85la/v2ray.txt"
+            "https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/cfmeme/v2ray.txt"
+            "https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/datiya/v2ray.txt"
+            "https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/jichangx/v2ray.txt"
+            "https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/nodefree/v2ray.txt"
+            "https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/oneclash/v2ray.txt"
+            "https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/yudou/v2ray.txt"
+            "https://raw.githubusercontent.com/roosterkid/openproxylist/refs/heads/main/V2RAY_RAW.txt"
+            "https://raw.githubusercontent.com/roosterkid/openproxylist/refs/heads/main/V2RAY_BASE64.txt"
+            "https://raw.githubusercontent.com/ebrasha/free-v2ray-public-list/refs/heads/main/all_extracted_configs.txt"
+            "https://raw.githubusercontent.com/miladtahanian/V2RayCFGDumper/refs/heads/main/config.txt"
+            "https://raw.githubusercontent.com/ShatakVPN/ConfigForge-V2Ray/refs/heads/main/configs/all.txt"
+            "https://raw.githubusercontent.com/Epodonios/v2ray-configs/refs/heads/main/All_Configs_Sub.txt"
+            "https://raw.githubusercontent.com/itsyebekhe/PSG/main/subscriptions/xray/base64/mix"
+            "https://openproxylist.com/v2ray/rawlist/text"
+            "https://openproxylist.com/v2ray/rawlist/subscribe"
+          )
+          
+          # Add Firmfox subscriptions (1-38)
+          for i in {1..38}; do
+            SOURCES+=("https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-${i}.txt")
+          done
+          
+          # Initialize output file
+          true > tmp/all_raw.txt
+          
+          fetch_source() {
+            local url="$1"
+            local idx="$2"
+            local out="tmp/source_${idx}.txt"
             
-          # Verify installation  
-          xray version  
-          echo "✅ Xray-core installed successfully"  
-  
-      - name: Create directories  
-        run: |  
-          mkdir -p $OUTPUT_DIR tmp logs  
-          chmod 755 $OUTPUT_DIR tmp logs  
-  
-      - name: Fetch configs from all sources  
-        run: |  
-          set -Eeuo pipefail  
+            echo "  → Fetching source ${idx}..."
             
-          echo "🌐 Fetching configs from multiple sources..."  
+            if curl -fsSL --retry 3 --connect-timeout 15 --max-time 30 --dns-servers 8.8.8.8,1.1.1.1 "$url" -o "$out" 2>/dev/null; then
+              echo "    ✅ Source ${idx} OK"
+            else
+              echo "    ⚠️  Source ${idx} failed (non-fatal)"
+              touch "$out"
+            fi
+          }
+          
+          # Parallel fetch
+          for i in "${!SOURCES[@]}"; do
+            fetch_source "${SOURCES[$i]}" "$i" &
             
-          # All source URLs  
-          SOURCES=(  
-            "https://raw.githubusercontent.com/barry-far/V2ray-Config/refs/heads/main/All_Configs_Sub.txt"  
-            "https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/85la/v2ray.txt"  
-            "https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/cfmeme/v2ray.txt"  
-            "https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/datiya/v2ray.txt"  
-            "https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/jichangx/v2ray.txt"  
-            "https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/nodefree/v2ray.txt"  
-            "https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/oneclash/v2ray.txt"  
-            "https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/yudou/v2ray.txt"  
-            "https://raw.githubusercontent.com/roosterkid/openproxylist/refs/heads/main/V2RAY_RAW.txt"  
-            "https://raw.githubusercontent.com/roosterkid/openproxylist/refs/heads/main/V2RAY_BASE64.txt"  
-            "https://raw.githubusercontent.com/ebrasha/free-v2ray-public-list/refs/heads/main/all_extracted_configs.txt"  
-            "https://raw.githubusercontent.com/miladtahanian/V2RayCFGDumper/refs/heads/main/config.txt"  
-            "https://raw.githubusercontent.com/ShatakVPN/ConfigForge-V2Ray/refs/heads/main/configs/all.txt"  
-            "https://raw.githubusercontent.com/Epodonios/v2ray-configs/refs/heads/main/All_Configs_Sub.txt"  
-            "https://raw.githubusercontent.com/itsyebekhe/PSG/main/subscriptions/xray/base64/mix"  
-            "https://openproxylist.com/v2ray/rawlist/text"  
-            "https://openproxylist.com/v2ray/rawlist/subscribe"  
-          )  
+            if (( (i + 1) % 20 == 0 )); then
+              wait
+            fi
+          done
+          wait
+          
+          # Combine all sources
+          cat tmp/source_*.txt 2>/dev/null | sed '/^$/d' > tmp/all_raw.txt || true
+          
+          echo "✅ Fetching complete"
+
+      - name: Parse and normalize configs
+        run: |
+          set -Eeuo pipefail
+          
+          echo "🔍 Parsing and normalizing configs..."
+          
+          # Initialize output file
+          true > tmp/configs_parsed.txt
+          
+          # Decode base64 if needed and extract configs
+          while IFS= read -r line || [[ -n "$line" ]]; do
+            # Skip empty lines
+            [[ -z "${line// }" ]] && continue
             
-          # Add Firmfox subscriptions (1-38)  
-          for i in {1..38}; do  
-            SOURCES+=("https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-${i}.txt")  
-          done  
+            # If line is base64 encoded
+            if echo "$line" | grep -qE '^[A-Za-z0-9+/=]{20,}$' && ! echo "$line" | grep -q '://'; then
+              decoded=$(echo "$line" | base64 -d 2>/dev/null || echo "")
+              if [[ -n "$decoded" ]]; then
+                echo "$decoded"
+              fi
+            else
+              echo "$line"
+            fi
+          done < tmp/all_raw.txt | grep -E '^(vmess|vless|trojan|ss|trojan-go|hysteria|hysteria2|tuic)://' | tr -d '\r' > tmp/configs_parsed.txt || true
+          
+          echo "✅ Parsed $(wc -l < tmp/configs_parsed.txt) total configs"
+
+      - name: Smart deduplication
+        run: |
+          set -Eeuo pipefail
+          
+          echo "🧹 Deduplicating configs..."
+          
+          declare -A SEEN
+          true > tmp/configs_unique.txt
+          
+          UNIQUE_COUNT=0
+          
+          while IFS= read -r line || [[ -n "$line" ]]; do
+            [[ -z "$line" ]] && continue
             
-          > tmp/all_raw.txt  
+            # Normalize for hashing
+            norm="$(echo "$line" | tr -d '\r\n[:space:]')"
+            hash="$(echo -n "$norm" | sha256sum | cut -d' ' -f1)"
             
-          fetch_source() {  
-            local url="$1"  
-            local idx="$2"  
-            local out="tmp/source_${idx}.txt"  
+            # Check if hash exists in array (compatible with set -u)
+            if [[ ! -v "SEEN[$hash]" ]]; then
+              SEEN[$hash]=1
+              echo "$line" >> tmp/configs_unique.txt
+              ((UNIQUE_COUNT++))
+            fi
+          done < tmp/configs_parsed.txt
+          
+          echo "✅ Unique configs: $UNIQUE_COUNT"
+
+      - name: Real connection test (Iran-optimized)
+        run: |
+          cat << 'EOTEST' > test.js
+          const net = require('net');
+          const tls = require('tls');
+          const fs = require('fs');
+          
+          const TIMEOUT = parseInt(process.env.TIMEOUT || '8') * 1000;
+          const MAX_PARALLEL = parseInt(process.env.MAX_PARALLEL || '30');
+          
+          const configs = fs.readFileSync('tmp/configs_unique.txt', 'utf8')
+            .trim().split('\n').filter(Boolean);
+          
+          const results = {
+            working: [],
+            failed: []
+          };
+          
+          function extractHost(configUrl) {
+            try {
+              const match = configUrl.match(/@([^:]+):(\d+)/);
+              if (match) return { host: match[1], port: parseInt(match[2]) };
               
-            echo "  → Fetching source ${idx}..."  
+              const url = new URL(configUrl.replace(/^[^:]+:\/\//, 'http://'));
+              return {
+                host: url.hostname,
+                port: parseInt(url.port) || 443
+              };
+            } catch {
+              return null;
+            }
+          }
+          
+          async function testConfig(config) {
+            const info = extractHost(config);
+            if (!info) return { config, success: false, error: 'parse_failed' };
+            
+            const { host, port } = info;
+            
+            // TCP connection test
+            const tcpOk = await new Promise((resolve) => {
+              const socket = net.connect(port, host);
+              const timer = setTimeout(() => {
+                socket.destroy();
+                resolve(false);
+              }, TIMEOUT);
               
-            if curl -fsSL --retry 3 --connect-timeout 15 --max-time 30 --dns-servers 8.8.8.8,1.1.1.1 "$url" -o "$out" 2>/dev/null; then  
-              echo "    ✅ Source ${idx} OK"  
-            else  
-              echo "    ⚠️  Source ${idx} failed (non-fatal)"  
-              touch "$out"  
-            fi  
-          }  
-            
-          # Parallel fetch  
-          for i in "${!SOURCES[@]}"; do  
-            fetch_source "${SOURCES[$i]}" "$i" &  
+              socket.on('connect', () => {
+                clearTimeout(timer);
+                socket.destroy();
+                resolve(true);
+              });
               
-            if (( (i + 1) % 20 == 0 )); then  
-              wait  
-            fi  
-          done  
-          wait  
+              socket.on('error', () => {
+                clearTimeout(timer);
+                resolve(false);
+              });
+            });
             
-          # Combine all sources  
-          cat tmp/source_*.txt 2>/dev/null | sed '/^$/d' > tmp/all_raw.txt || true  
+            if (!tcpOk) {
+              return { config, success: false, error: 'tcp_timeout' };
+            }
             
-          echo "✅ Fetching complete"  
-  
-      - name: Parse and normalize configs  
-        run: |  
-          set -Eeuo pipefail  
-            
-          echo "🔍 Parsing and normalizing configs..."  
-            
-          > tmp/configs_parsed.txt  
-            
-          # Decode base64 if needed and extract configs  
-          while IFS= read -r line || [[ -n "$line" ]]; do  
-            # Skip empty lines  
-            [[ -z "${line// }" ]] && continue  
+            // TLS handshake test
+            const tlsOk = await new Promise((resolve) => {
+              const socket = tls.connect({
+                host,
+                port,
+                servername: host,
+                rejectUnauthorized: false
+              });
               
-            # If line is base64 encoded  
-            if echo "$line" | grep -qE '^[A-Za-z0-9+/=]{20,}$' && ! echo "$line" | grep -q '://'; then  
-              decoded=$(echo "$line" | base64 -d 2>/dev/null || echo "")  
-              if [[ -n "$decoded" ]]; then  
-                echo "$decoded"  
-              fi  
-            else  
-              echo "$line"  
-            fi  
-          done < tmp/all_raw.txt | \  
-          grep -E '^(vmess|vless|trojan|ss|trojan-go|hysteria|hysteria2|tuic)://' | \  
-          tr -d '\r' > tmp/configs_parsed.txt || true  
-            
-          echo "✅ Parsed $(wc -l < tmp/configs_parsed.txt) total configs"  
-  
-      - name: Smart deduplication  
-        run: |  
-          set -Eeuo pipefail  
-            
-          echo "🧹 Deduplicating configs..."  
-            
-          declare -A SEEN  
-          > tmp/configs_unique.txt  
-            
-          UNIQUE_COUNT=0  
-            
-          while IFS= read -r line || [[ -n "$line" ]]; do  
-            [[ -z "$line" ]] && continue  
+              const timer = setTimeout(() => {
+                socket.destroy();
+                resolve(false);
+              }, TIMEOUT);
               
-            # Normalize for hashing  
-            norm="$(echo "$line" | tr -d '\r\n[:space:]')"  
-            hash="$(echo -n "$norm" | sha256sum | cut -d' ' -f1)"  
+              socket.on('secureConnect', () => {
+                clearTimeout(timer);
+                socket.destroy();
+                resolve(true);
+              });
               
-            # Check if hash exists in array (compatible with set -u)  
-            if [[ ! -v "SEEN[$hash]" ]]; then  
-              SEEN[$hash]=1  
-              echo "$line" >> tmp/configs_unique.txt  
-              ((UNIQUE_COUNT++))  
-            fi  
-          done < tmp/configs_parsed.txt  
+              socket.on('error', () => {
+                clearTimeout(timer);
+                resolve(false);
+              });
+            });
             
-          echo "✅ Unique configs: $UNIQUE_COUNT"  
-  
-      - name: Real connection test (Iran-optimized)  
-        run: |  
-          cat << 'EOTEST' > test.js  
-          const net = require('net');  
-          const tls = require('tls');  
-          const fs = require('fs');  
+            return {
+              config,
+              success: tcpOk && tlsOk,
+              error: tlsOk ? null : 'tls_failed',
+              host,
+              port
+            };
+          }
+          
+          async function runTests() {
+            console.log(`🧪 Stage 1: Network connectivity test (${configs.length} configs)...`);
             
-          const TIMEOUT = parseInt(process.env.TIMEOUT || '8') * 1000;  
-          const MAX_PARALLEL = parseInt(process.env.MAX_PARALLEL || '30');  
+            const chunks = [];
+            for (let i = 0; i < configs.length; i += MAX_PARALLEL) {
+              chunks.push(configs.slice(i, i + MAX_PARALLEL));
+            }
             
-          const configs = fs.readFileSync('tmp/configs_unique.txt', 'utf8')  
-            .trim().split('\n').filter(Boolean);  
+            for (const [idx, chunk] of chunks.entries()) {
+              console.log(`  → Batch ${idx + 1}/${chunks.length}`);
+              const results_batch = await Promise.all(
+                chunk.map(cfg => testConfig(cfg))
+              );
+              
+              for (const result of results_batch) {
+                if (result.success) {
+                  results.working.push(result.config);
+                } else {
+                  results.failed.push(result);
+                }
+              }
+            }
             
-          const results = {  
-            working: [],  
-            failed: []  
-          };  
+            fs.writeFileSync('tmp/network_passed.txt', results.working.join('\n'));
+            fs.writeFileSync('logs/network_failed.json', JSON.stringify(results.failed, null, 2));
             
-          function extractHost(configUrl) {  
-            try {  
-              const match = configUrl.match(/@([^:]+):(\d+)/);  
-              if (match) return { host: match[1], port: parseInt(match[2]) };  
+            console.log(`✅ Network test complete: ${results.working.length} passed`);
+            console.log(`❌ Network test failed: ${results.failed.length}`);
+          }
+          
+          runTests();
+          EOTEST
+          
+          node test.js
+
+      - name: Real protocol test with Xray-core
+        run: |
+          set -Eeuo pipefail
+          
+          echo "🚀 Stage 2: Real protocol testing with Xray-core..."
+          
+          PASSED_COUNT=0
+          FAILED_COUNT=0
+          
+          true > tmp/xray_passed.txt
+          true > logs/xray_failed.txt
+          
+          # Function to test single config with Xray
+          test_xray_config() {
+            local config="$1"
+            local temp_config="tmp/test_config_$$.json"
+            
+            # Create minimal Xray config for testing
+            cat > "$temp_config" << XEOF
+          {
+            "log": {
+              "loglevel": "error"
+            },
+            "outbounds": [
+              {
+                "protocol": "freedom",
+                "settings": {},
+                "tag": "direct"
+              }
+            ],
+            "remarks": "test"
+          }
+          XEOF
+            
+            # Try to connect with timeout
+            local result=1
+            timeout $TIMEOUT xray test -c "$temp_config" 2>/dev/null && result=0 || result=1
+            
+            rm -f "$temp_config"
+            return $result
+          }
+          
+          # Read network-passed configs
+          if [[ ! -f tmp/network_passed.txt ]]; then
+            echo "⚠️  No configs passed network test"
+            touch tmp/xray_passed.txt
+            exit 0
+          fi
+          
+          TOTAL=$(wc -l < tmp/network_passed.txt)
+          echo "  Testing $TOTAL configs with Xray-core..."
+          
+          COUNTER=0
+          while IFS= read -r config || [[ -n "$config" ]]; do
+            [[ -z "$config" ]] && continue
+            
+            ((COUNTER++))
+            
+            # Progress indicator
+            if (( COUNTER % 10 == 0 )); then
+              echo "  → Progress: $COUNTER/$TOTAL"
+            fi
+            
+            # Extract protocol type
+            protocol=$(echo "$config" | cut -d: -f1)
+            
+            # Test based on protocol
+            case "$protocol" in
+              vmess|vless|trojan|ss)
+                # Create temp config file for this specific protocol
+                temp_conf="tmp/xray_test_${COUNTER}.json"
                 
-              const url = new URL(configUrl.replace(/^[^:]+:\/\//, 'http://'));  
-              return {  
-                host: url.hostname,  
-                port: parseInt(url.port) || 443  
-              };  
-            } catch {  
-              return null;  
-            }  
-          }  
-            
-          async function testConfig(config) {  
-            const info = extractHost(config);  
-            if (!info) return { config, success: false, error: 'parse_failed' };  
-              
-            const { host, port } = info;  
-              
-            // TCP connection test  
-            const tcpOk = await new Promise((resolve) => {  
-              const socket = net.connect(port, host);  
-              const timer = setTimeout(() => {  
-                socket.destroy();  
-                resolve(false);  
-              }, TIMEOUT);  
+                # Generate Xray config from URL
+                # This is a simplified approach - in production you'd parse the URL properly
+                cat > "$temp_conf" << XEOF
+          {
+            "log": {"loglevel": "error"},
+            "inbounds": [{
+              "port": 10808,
+              "protocol": "socks",
+              "settings": {"udp": true}
+            }],
+            "outbounds": [{
+              "protocol": "$protocol",
+              "settings": {},
+              "streamSettings": {
+                "network": "tcp",
+                "security": "tls"
+              }
+            }]
+          }
+          XEOF
                 
-              socket.on('connect', () => {  
-                clearTimeout(timer);  
-                socket.destroy();  
-                resolve(true);  
-              });  
+                # Test config validity
+                if timeout 3 xray test -c "$temp_conf" >/dev/null 2>&1; then
+                  echo "$config" >> tmp/xray_passed.txt
+                  ((PASSED_COUNT++))
+                else
+                  echo "$config" >> logs/xray_failed.txt
+                  ((FAILED_COUNT++))
+                fi
                 
-              socket.on('error', () => {  
-                clearTimeout(timer);  
-                resolve(false);  
-              });  
-            });  
-              
-            if (!tcpOk) {  
-              return { config, success: false, error: 'tcp_timeout' };  
-            }  
-              
-            // TLS handshake test  
-            const tlsOk = await new Promise((resolve) => {  
-              const socket = tls.connect({  
-                host,  
-                port,  
-                servername: host,  
-                rejectUnauthorized: false  
-              });  
-                
-              const timer = setTimeout(() => {  
-                socket.destroy();  
-                resolve(false);  
-              }, TIMEOUT);  
-                
-              socket.on('secureConnect', () => {  
-                clearTimeout(timer);  
-                socket.destroy();  
-                resolve(true);  
-              });  
-                
-              socket.on('error', () => {  
-                clearTimeout(timer);  
-                resolve(false);  
-              });  
-            });  
-              
-            return {  
-              config,  
-              success: tcpOk && tlsOk,  
-              error: tlsOk ? null : 'tls_failed',  
-              host,  
-              port  
-            };  
-          }  
+                rm -f "$temp_conf"
+                ;;
+              *)
+                # For unknown protocols, pass them through
+                echo "$config" >> tmp/xray_passed.txt
+                ((PASSED_COUNT++))
+                ;;
+            esac
             
-          async function runTests() {  
-            console.log(`🧪 Stage 1: Network connectivity test (${configs.length} configs)...`);  
-              
-            const chunks = [];  
-            for (let i = 0; i < configs.length; i += MAX_PARALLEL) {  
-              chunks.push(configs.slice(i, i + MAX_PARALLEL));  
-            }  
-              
-            for (const [idx, chunk] of chunks.entries()) {  
-              console.log(`  → Batch ${idx + 1}/${chunks.length}`);  
-              const results_batch = await Promise.all(  
-                chunk.map(cfg => testConfig(cfg))  
-              );  
-                
-              for (const result of results_batch) {  
-                if (result.success) {  
-                  results.working.push(result.config);  
-                } else {  
-                  results.failed.push(result);  
-                }  
-              }  
-            }  
-              
-            fs.writeFileSync('tmp/network_passed.txt', results.working.join('\n'));  
-            fs.writeFileSync('logs/network_failed.json', JSON.stringify(results.failed, null, 2));  
-              
-            console.log(`✅ Network test complete: ${results.working.length} passed`);  
-            console.log(`❌ Network test failed: ${results.failed.length}`);  
-          }  
-            
-          runTests();  
-          EOTEST  
-            
-          node test.js  
-  
-      - name: Real protocol test with Xray-core  
-        run: |  
-          set -Eeuo pipefail  
-            
-          echo "🚀 Stage 2: Real protocol testing with Xray-core..."  
-            
-          PASSED_COUNT=0  
-          FAILED_COUNT=0  
-            
-          > tmp/xray_passed.txt  
-          > logs/xray_failed.txt  
-            
-          # Function to test single config with Xray  
-          test_xray_config() {  
-            local config="$1"  
-            local temp_config="tmp/test_config_$$.json"  
-              
-            # Create minimal Xray config for testing  
-            cat > "$temp_config" << XEOF  
-          {  
-            "log": {  
-              "loglevel": "error"  
-            },  
-            "outbounds": [  
-              {  
-                "protocol": "freedom",  
-                "settings": {},  
-                "tag": "direct"  
-              }  
-            ],  
-            "remarks": "test"  
-          }  
-          XEOF  
-              
-            # Try to connect with timeout  
-            local result=1  
-            timeout $TIMEOUT xray test -c "$temp_config" 2>/dev/null && result=0 || result=1  
-              
-            rm -f "$temp_config"  
-            return $result  
-          }  
-            
-          # Read network-passed configs  
-          if [[ ! -f tmp/network_passed.txt ]]; then  
-            echo "⚠️  No configs passed network test"  
-            touch tmp/xray_passed.txt  
-            exit 0  
-          fi  
-            
-          TOTAL=$(wc -l < tmp/network_passed.txt)  
-          echo "  Testing $TOTAL configs with Xray-core..."  
-            
-          COUNTER=0  
-          while IFS= read -r config || [[ -n "$config" ]]; do  
-            [[ -z "$config" ]] && continue  
-              
-            ((COUNTER++))  
-              
-            # Progress indicator  
-            if (( COUNTER % 10 == 0 )); then  
-              echo "  → Progress: $COUNTER/$TOTAL"  
-            fi  
-              
-            # Extract protocol type  
-            protocol=$(echo "$config" | cut -d: -f1)  
-              
-            # Test based on protocol  
-            case "$protocol" in  
-              vmess|vless|trojan|ss)  
-                # Create temp config file for this specific protocol  
-                temp_conf="tmp/xray_test_${COUNTER}.json"  
-                  
-                # Generate Xray config from URL  
-                # This is a simplified approach - in production you'd parse the URL properly  
-                cat > "$temp_conf" << XEOF  
-          {  
-            "log": {"loglevel": "error"},  
-            "inbounds": [{  
-              "port": 10808,  
-              "protocol": "socks",  
-              "settings": {"udp": true}  
-            }],  
-            "outbounds": [{  
-              "protocol": "$protocol",  
-              "settings": {},  
-              "streamSettings": {  
-                "network": "tcp",  
-                "security": "tls"  
-              }  
-            }]  
-          }  
-          XEOF  
-                  
-                # Test config validity  
-                if timeout 3 xray test -c "$temp_conf" >/dev/null 2>&1; then  
-                  echo "$config" >> tmp/xray_passed.txt  
-                  ((PASSED_COUNT++))  
-                else  
-                  echo "$config" >> logs/xray_failed.txt  
-                  ((FAILED_COUNT++))  
-                fi  
-                  
-                rm -f "$temp_conf"  
-                ;;  
-              *)  
-                # For unknown protocols, pass them through  
-                echo "$config" >> tmp/xray_passed.txt  
-                ((PASSED_COUNT++))  
-                ;;  
-            esac  
-              
-          done < tmp/network_passed.txt  
-            
-          echo "✅ Xray test complete: $PASSED_COUNT passed, $FAILED_COUNT failed"  
-            
-          # Use Xray-validated configs as final output  
-          if [[ -s tmp/xray_passed.txt ]]; then  
-            cp tmp/xray_passed.txt tmp/working_configs.txt  
-          else  
-            # Fallback to network-passed if Xray testing had issues  
-            echo "⚠️  Falling back to network-tested configs"  
-            cp tmp/network_passed.txt tmp/working_configs.txt  
-          fi  
-  
-      - name: Generate output files  
-        run: |  
-          set -Eeuo pipefail  
-            
-          echo "📝 Generating final output files..."  
-            
-          # configs.txt (raw)  
-          cp tmp/working_configs.txt "$OUTPUT_DIR/configs.txt"  
-            
-          # configs_base64.txt (base64 encoded, each config on separate line)  
-          > "$OUTPUT_DIR/configs_base64.txt"  
-          while IFS= read -r line || [[ -n "$line" ]]; do  
-            [[ -z "$line" ]] && continue  
-            echo "$line" | base64 -w0 >> "$OUTPUT_DIR/configs_base64.txt"  
-            echo >> "$OUTPUT_DIR/configs_base64.txt"  
-          done < "$OUTPUT_DIR/configs.txt"  
-            
-          # Stats with two-stage testing info  
-          TOTAL=$(wc -l < tmp/configs_unique.txt)  
-          NETWORK_PASSED=$(wc -l < tmp/network_passed.txt 2>/dev/null || echo 0)  
-          FINAL_WORKING=$(wc -l < "$OUTPUT_DIR/configs.txt")  
-          NETWORK_FAILED=$((TOTAL - NETWORK_PASSED))  
-          XRAY_FAILED=$((NETWORK_PASSED - FINAL_WORKING))  
-            
-          cat > "$OUTPUT_DIR/stats.json" << EOF  
-          {  
-            "total_fetched": $TOTAL,  
-            "stage1_network_test": {  
-              "passed": $NETWORK_PASSED,  
-              "failed": $NETWORK_FAILED,  
-              "success_rate": "$(awk "BEGIN {printf \"%.2f\", ($NETWORK_PASSED/$TOTAL)*100}")%"  
-            },  
-            "stage2_xray_test": {  
-              "passed": $FINAL_WORKING,  
-              "failed": $XRAY_FAILED,  
-              "success_rate": "$(awk "BEGIN {if($NETWORK_PASSED>0) printf \"%.2f\", ($FINAL_WORKING/$NETWORK_PASSED)*100; else print \"0.00\"}")%"  
-            },  
-            "final_working": $FINAL_WORKING,  
-            "overall_success_rate": "$(awk "BEGIN {printf \"%.2f\", ($FINAL_WORKING/$TOTAL)*100}")%",  
-            "updated_at": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",  
-            "testing_method": "two-stage (network + xray-core)"  
-          }  
-          EOF  
-            
-          echo "✅ Generated configs.txt (${FINAL_WORKING} configs)"  
-          echo "✅ Generated configs_base64.txt"  
-          echo "✅ Generated stats.json"  
-          echo ""  
-          echo "📊 Summary:"  
-          echo "  Total fetched: $TOTAL"  
-          echo "  Network test passed: $NETWORK_PASSED"  
-          echo "  Xray test passed: $FINAL_WORKING"  
-          echo "  Overall success: $(awk "BEGIN {printf \"%.2f\", ($FINAL_WORKING/$TOTAL)*100}")%"  
-  
-      - name: Commit and push results  
-        run: |  
-          git config user.name "github-actions[bot]"  
-          git config user.email "github-actions[bot]@users.noreply.github.com"  
-            
-          git add output/  
-            
-          if git diff --staged --quiet; then  
-            echo "ℹ️  No changes to commit"  
-          else  
-            git commit -m "Auto-update: $(wc -l < output/configs.txt) working configs [$(date -u +"%Y-%m-%d %H:%M UTC")]"  
+          done < tmp/network_passed.txt
+          
+          echo "✅ Xray test complete: $PASSED_COUNT passed, $FAILED_COUNT failed"
+          
+          # Use Xray-validated configs as final output
+          if [[ -s tmp/xray_passed.txt ]]; then
+            cp tmp/xray_passed.txt tmp/working_configs.txt
+          else
+            # Fallback to network-passed if Xray testing had issues
+            echo "⚠️  Falling back to network-tested configs"
+            cp tmp/network_passed.txt tmp/working_configs.txt
+          fi
+
+      - name: Generate output files
+        run: |
+          set -Eeuo pipefail
+          
+          echo "📝 Generating final output files..."
+          
+          # configs.txt (raw)
+          cp tmp/working_configs.txt "$OUTPUT_DIR/configs.txt"
+          
+          # configs_base64.txt (base64 encoded, each config on separate line)
+          true > "$OUTPUT_DIR/configs_base64.txt"
+          while IFS= read -r line || [[ -n "$line" ]]; do
+            [[ -z "$line" ]] && continue
+            echo "$line" | base64 -w0 >> "$OUTPUT_DIR/configs_base64.txt"
+            echo >> "$OUTPUT_DIR/configs_base64.txt"
+          done < "$OUTPUT_DIR/configs.txt"
+          
+          # Stats with two-stage testing info
+          TOTAL=$(wc -l < tmp/configs_unique.txt)
+          NETWORK_PASSED=$(wc -l < tmp/network_passed.txt 2>/dev/null || echo 0)
+          FINAL_WORKING=$(wc -l < "$OUTPUT_DIR/configs.txt")
+          NETWORK_FAILED=$((TOTAL - NETWORK_PASSED))
+          XRAY_FAILED=$((NETWORK_PASSED - FINAL_WORKING))
+          
+          cat > "$OUTPUT_DIR/stats.json" << EOF
+          {
+            "total_fetched": $TOTAL,
+            "stage1_network_test": {
+              "passed": $NETWORK_PASSED,
+              "failed": $NETWORK_FAILED,
+              "success_rate": "$(awk "BEGIN {printf \"%.2f\", ($NETWORK_PASSED/$TOTAL)*100}")%"
+            },
+            "stage2_xray_test": {
+              "passed": $FINAL_WORKING,
+              "failed": $XRAY_FAILED,
+              "success_rate": "$(awk "BEGIN {if($NETWORK_PASSED>0) printf \"%.2f\", ($FINAL_WORKING/$NETWORK_PASSED)*100; else print \"0.00\"}")%"
+            },
+            "final_working": $FINAL_WORKING,
+            "overall_success_rate": "$(awk "BEGIN {printf \"%.2f\", ($FINAL_WORKING/$TOTAL)*100}")%",
+            "updated_at": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+            "testing_method": "two-stage (network + xray-core)"
+          }
+          EOF
+          
+          echo "✅ Generated configs.txt (${FINAL_WORKING} configs)"
+          echo "✅ Generated configs_base64.txt"
+          echo "✅ Generated stats.json"
+          echo ""
+          echo "📊 Summary:"
+          echo "  Total fetched: $TOTAL"
+          echo "  Network test passed: $NETWORK_PASSED"
+          echo "  Xray test passed: $FINAL_WORKING"
+          echo "  Overall success: $(awk "BEGIN {printf \"%.2f\", ($FINAL_WORKING/$TOTAL)*100}")%"
+
+      - name: Commit and push results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          git add output/
+          
+          if git diff --staged --quiet; then
+            echo "ℹ️  No changes to commit"
+          else
+            git commit -m "Auto-update: $(wc -l < output/configs.txt) working configs [$(date -u +"%Y-%m-%d %H:%M UTC")]"
             
             # Push with retry logic
             max_retries=3
@@ -545,13 +545,13 @@ jobs:
                 fi
               fi
             done
-          fi  
-  
-      - name: Upload artifacts  
-        uses: actions/upload-artifact@v4  
-        with:  
-          name: v2ray-configs-${{ github.run_number }}  
-          path: |  
-            output/  
-            logs/  
+          fi
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: v2ray-configs-${{ github.run_number }}
+          path: |
+            output/
+            logs/
           retention-days: 30
