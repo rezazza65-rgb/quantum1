@@ -17,8 +17,8 @@ env:
   MAX_PARALLEL: 30
   MIN_SCORE: 400
   STABILITY_ATTEMPTS: 5
-  ENABLE_ML: "true"
-  ENABLE_HONEYPOT_DETECTION: "true"
+  ENABLE_ML: true
+  ENABLE_HONEYPOT_DETECTION: true
 
 jobs:
   quantum-pipeline:
@@ -36,166 +36,120 @@ jobs:
         with:
           node-version: '20'
 
-      - name: 📦 Install Dependencies
+      - name: 📦 Install All Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y jq curl netcat-openbsd openssl dnsutils file
+          sudo apt-get install -y jq curl netcat-openbsd openssl dnsutils whois
           npm init -y
           npm install p-limit node-fetch@2 geoip-lite
 
-      - name: 📁 Create Directories
+      - name: 📁 Create Directory Structure
         run: |
-          mkdir -p output tmp logs cache history
-          touch tmp/raw_all.txt logs/fetch.log
-          echo "✅ Ready"
+          mkdir -p "$OUTPUT_DIR" tmp logs cache history
+          
+          # Load previous results for ML
+          if [[ -f output/history.json ]]; then
+            cp output/history.json cache/history.json
+          fi
+          
+          echo "✅ Directories created"
 
-      - name: 🌐 Fetch All Configs
+      - name: 🌐 Fetch Configs from All Sources
         run: |
+          set -uo pipefail
+          
           echo "════════════════════════════════════════════════════════════"
-          echo "🌐 QuantumRoute V5 - Fetching Configs"
+          echo "🌐 QuantumRoute V5 - Ultimate Intelligence Fetcher"
           echo "════════════════════════════════════════════════════════════"
           
-          # لیست URL ها
-          cat > tmp/urls.txt << 'URLS'
-          https://ghproxy.net/https://raw.githubusercontent.com/barry-far/V2ray-Configs/refs/heads/main/All_Configs_Sub.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/85la/v2ray.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/cfmeme/v2ray.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/datiya/v2ray.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/jichangx/v2ray.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/nodefree/v2ray.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/oneclash/v2ray.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/yudou/v2ray.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/roosterkid/openproxylist/refs/heads/main/V2RAY_RAW.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/roosterkid/openproxylist/refs/heads/main/V2RAY_BASE64.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/ebrasha/free-v2ray-public-list/refs/heads/main/all_extracted_configs.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/miladtahanian/V2RayCFGDumper/refs/heads/main/config.txt
-          https://openproxylist.com/v2ray/rawlist/text
-          https://openproxylist.com/v2ray/rawlist/subscribe
-          https://ghproxy.net/https://raw.githubusercontent.com/ShatakVPN/ConfigForge-V2Ray/refs/heads/main/configs/all.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/Epodonios/v2ray-configs/refs/heads/main/All_Configs_Sub.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/itsyebekhe/PSG/main/subscriptions/xray/base64/mix
-          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-6.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-7.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-8.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-9.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-10.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-11.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-12.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-13.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-14.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-15.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-16.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-17.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-18.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-19.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-20.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-21.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-22.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-23.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-24.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-25.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-26.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-27.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-28.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-29.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-30.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-31.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-32.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-33.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-34.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-35.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-36.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-37.txt
-          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-38.txt
-          URLS
+          SOURCES=(
+            "https://ghproxy.net/https://raw.githubusercontent.com/barry-far/V2ray-Configs/refs/heads/main/All_Configs_Sub.txt"
+            "https://ghproxy.net/https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/85la/v2ray.txt"
+            "https://ghproxy.net/https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/cfmeme/v2ray.txt"
+            "https://ghproxy.net/https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/datiya/v2ray.txt"
+            "https://ghproxy.net/https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/jichangx/v2ray.txt"
+            "https://ghproxy.net/https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/nodefree/v2ray.txt"
+            "https://ghproxy.net/https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/oneclash/v2ray.txt"
+            "https://ghproxy.net/https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/yudou/v2ray.txt"
+            "https://ghproxy.net/https://raw.githubusercontent.com/roosterkid/openproxylist/refs/heads/main/V2RAY_RAW.txt"
+            "https://ghproxy.net/https://raw.githubusercontent.com/roosterkid/openproxylist/refs/heads/main/V2RAY_BASE64.txt"
+            "https://ghproxy.net/https://raw.githubusercontent.com/ebrasha/free-v2ray-public-list/refs/heads/main/all_extracted_configs.txt"
+            "https://ghproxy.net/https://raw.githubusercontent.com/miladtahanian/V2RayCFGDumper/refs/heads/main/config.txt"
+            "https://openproxylist.com/v2ray/rawlist/text"
+            "https://openproxylist.com/v2ray/rawlist/subscribe"
+            "https://ghproxy.net/https://raw.githubusercontent.com/ShatakVPN/ConfigForge-V2Ray/refs/heads/main/configs/all.txt"
+            "https://ghproxy.net/https://raw.githubusercontent.com/Epodonios/v2ray-configs/refs/heads/main/All_Configs_Sub.txt"
+            "https://ghproxy.net/https://raw.githubusercontent.com/itsyebekhe/PSG/main/subscriptions/xray/base64/mix"
+          )
           
-          echo "📋 Sources: $(wc -l < tmp/urls.txt)"
-          echo ""
+          for i in $(seq 6 38); do
+            SOURCES+=("https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-${i}.txt")
+          done
           
-          # Fetch یکی یکی (مطمئن‌تر)
-          idx=0
-          success=0
-          failed=0
+          : > tmp/raw_all.txt
+          : > logs/fetch.log
           
-          while IFS= read -r url || [[ -n "$url" ]]; do
-            [[ -z "$url" ]] && continue
+          fetch_source() {
+            local url="$1"
+            local idx="$2"
+            local outfile="tmp/src_${idx}.txt"
             
-            outfile="tmp/src_${idx}.txt"
-            
-            if curl -fsSL --retry 2 --connect-timeout 15 --max-time 45 \
-              -H "User-Agent: Mozilla/5.0" \
+            if curl -fsSL --retry 3 --retry-delay 2 --connect-timeout 20 --max-time 60 \
+              -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" \
               "$url" -o "$outfile" 2>/dev/null; then
               
-              # بررسی Base64
-              if [[ -s "$outfile" ]]; then
-                firstline=$(head -c 100 "$outfile" 2>/dev/null | tr -d '\n\r')
-                if [[ "$firstline" =~ ^[A-Za-z0-9+/=]{20,}$ ]]; then
-                  base64 -d "$outfile" > "${outfile}.dec" 2>/dev/null && mv "${outfile}.dec" "$outfile" 2>/dev/null
-                fi
+              if file "$outfile" | grep -q "ASCII" && head -1 "$outfile" | grep -qE '^[A-Za-z0-9+/=]{20,}$'; then
+                base64 -d "$outfile" 2>/dev/null > "${outfile}.dec" && mv "${outfile}.dec" "$outfile"
               fi
               
-              if [[ -s "$outfile" ]]; then
-                lines=$(wc -l < "$outfile" 2>/dev/null || echo 0)
-                cat "$outfile" >> tmp/raw_all.txt 2>/dev/null
-                echo "✅ [$idx] $lines lines" >> logs/fetch.log
-                ((success++))
-              fi
+              local count=$(wc -l < "$outfile" 2>/dev/null || echo 0)
+              echo "✅ [$idx] $count lines" >> logs/fetch.log
+              cat "$outfile" >> tmp/raw_all.txt
             else
-              echo "❌ [$idx] failed" >> logs/fetch.log
-              ((failed++))
+              echo "❌ [$idx] FAILED" >> logs/fetch.log
             fi
-            
-            ((idx++))
-            
-            # نمایش پیشرفت هر 10 تا
-            if (( idx % 10 == 0 )); then
-              echo "   Progress: $idx sources processed..."
-            fi
-            
-          done < tmp/urls.txt
+          }
           
-          echo ""
-          echo "════════════════════════════════════════════════════════════"
-          echo "📊 Fetch Complete: ✅ $success success | ❌ $failed failed"
-          echo "📄 Total lines: $(wc -l < tmp/raw_all.txt 2>/dev/null || echo 0)"
-          echo "════════════════════════════════════════════════════════════"
+          idx=0
+          pids=()
+          for url in "${SOURCES[@]}"; do
+            fetch_source "$url" "$idx" &
+            pids+=($!)
+            ((idx++))
+            if (( ${#pids[@]} >= 15 )); then
+              wait "${pids[0]}" 2>/dev/null || true
+              pids=("${pids[@]:1}")
+            fi
+          done
+          for pid in "${pids[@]}"; do wait "$pid" 2>/dev/null || true; done
+          
+          echo "📊 Total lines: $(wc -l < tmp/raw_all.txt)"
 
       - name: 🔍 Parse & Deduplicate
         run: |
-          echo "🔍 Parsing configs..."
+          set -uo pipefail
           
-          # بررسی ورودی
-          if [[ ! -s tmp/raw_all.txt ]]; then
-            echo "⚠️ No raw data, creating empty output"
-            touch tmp/unique.txt
-            exit 0
-          fi
-          
-          # استخراج کانفیگ‌ها
           grep -oE '(vmess|vless|trojan|ss|ssr|hysteria|hysteria2|tuic)://[^[:space:]"<>'"'"']+' tmp/raw_all.txt 2>/dev/null | \
-            sed 's/[[:space:]]*$//' | \
-            sort -u > tmp/all_configs.txt || touch tmp/all_configs.txt
+            sed 's/[[:space:]]*$//' | sort -u > tmp/all_configs.txt || true
           
-          echo "📄 Extracted: $(wc -l < tmp/all_configs.txt) configs"
+          declare -A SEEN
+          : > tmp/unique.txt
           
-          # Deduplication
-          awk '!seen[$0]++' tmp/all_configs.txt > tmp/unique.txt 2>/dev/null || cp tmp/all_configs.txt tmp/unique.txt
+          while IFS= read -r line || [[ -n "$line" ]]; do
+            [[ -z "$line" || ${#line} -lt 10 ]] && continue
+            clean=$(echo "$line" | tr -d '\r\n' | sed 's/[[:space:]]//g')
+            hash=$(echo -n "$clean" | sha256sum | cut -d' ' -f1)
+            if [[ -z "${SEEN[$hash]:-}" ]]; then
+              SEEN[$hash]=1
+              echo "$clean" >> tmp/unique.txt
+            fi
+          done < tmp/all_configs.txt
           
-          echo "🔷 Unique: $(wc -l < tmp/unique.txt) configs"
+          echo "📊 Unique: ${#SEEN[@]} configs"
 
-      - name: 🧪 V5 Tester
+      - name: 🧪 V5 Ultimate Intelligence Tester
         run: |
-          if [[ ! -s tmp/unique.txt ]]; then
-            echo "⚠️ No configs to test"
-            mkdir -p output
-            echo "" > output/configs.txt
-            echo "" > output/configs_base64.txt
-            echo '{"summary":{"total":0,"working":0,"failed":0},"grades":{"S":0,"A":0,"B":0,"C":0},"quality":{"avg_score":0,"avg_latency":0,"avg_confidence":0},"security":{"honeypots_detected":0,"cloudflare":0},"top_30":[]}' > output/results.json
-            echo '{"total":0,"working":0,"grade_s":0,"grade_a":0}' > output/stats.json
-            exit 0
-          fi
-          
-          node << 'NODEJS'
+          cat << 'TESTER_V5' > tester.js
           const net = require('net');
           const tls = require('tls');
           const https = require('https');
@@ -203,74 +157,174 @@ jobs:
           const fs = require('fs');
           const dns = require('dns');
           const crypto = require('crypto');
+          const pLimit = require('p-limit');
           
-          // تنظیمات
-          const TIMEOUT = 6000;
-          const PARALLEL = 30;
-          const MIN_SCORE = 400;
-          const STABILITY_ATTEMPTS = 4;
+          // ═══════════════════════════════════════════════════════════════════════
+          // تنظیمات V5
+          // ═══════════════════════════════════════════════════════════════════════
+          const TIMEOUT = parseInt(process.env.TIMEOUT_MS) || 6000;
+          const PARALLEL = parseInt(process.env.MAX_PARALLEL) || 30;
+          const MIN_SCORE = parseInt(process.env.MIN_SCORE) || 400;
+          const STABILITY_ATTEMPTS = parseInt(process.env.STABILITY_ATTEMPTS) || 5;
+          const ENABLE_ML = process.env.ENABLE_ML === 'true';
+          const ENABLE_HONEYPOT = process.env.ENABLE_HONEYPOT_DETECTION === 'true';
           
-          // CDN
+          const limit = pLimit(PARALLEL);
+          
+          // ═══════════════════════════════════════════════════════════════════════
+          // CDN Ranges
+          // ═══════════════════════════════════════════════════════════════════════
           const CDN_RANGES = {
-            cloudflare: ['103.21.244.', '103.22.200.', '103.31.4.', '104.16.', '104.17.', '104.18.', '104.19.', '104.20.', '104.21.', '104.22.', '104.23.', '104.24.', '104.25.', '104.26.', '104.27.', '108.162.', '131.0.72.', '141.101.', '162.158.', '172.64.', '172.65.', '172.66.', '172.67.', '173.245.', '188.114.', '190.93.', '197.234.', '198.41.'],
+            cloudflare: ['103.21.244.', '103.22.200.', '103.31.4.', '104.16.', '104.17.',
+              '104.18.', '104.19.', '104.20.', '104.21.', '104.22.', '104.23.', '104.24.',
+              '104.25.', '104.26.', '104.27.', '108.162.', '131.0.72.', '141.101.', '162.158.',
+              '172.64.', '172.65.', '172.66.', '172.67.', '173.245.', '188.114.', '190.93.',
+              '197.234.', '198.41.'],
             fastly: ['151.101.', '199.232.'],
-            gcore: ['92.223.', '199.34.']
+            akamai: ['23.', '104.64.', '104.65.', '104.66.', '104.67.'],
+            gcore: ['92.223.', '199.34.'],
+            amazon: ['13.', '52.', '54.', '99.']
           };
           
-          // Scoring
-          const TRANSPORT_SCORES = { ws: 150, grpc: 130, h2: 120, tcp: 40 };
-          const PROTOCOL_SCORES = { vless: 120, trojan: 110, hysteria2: 100, vmess: 70, ss: 50 };
-          const SECURITY_SCORES = { reality: 200, tls: 120, none: -80 };
+          // ═══════════════════════════════════════════════════════════════════════
+          // Honeypot Signatures
+          // ═══════════════════════════════════════════════════════════════════════
+          const HONEYPOT_SIGNATURES = {
+            // سرورهایی که همیشه OK برمی‌گردونن (مشکوک)
+            suspiciousPatterns: [
+              /^10\.\d+\.\d+\.\d+$/,        // Private IP
+              /^192\.168\.\d+\.\d+$/,       // Private IP
+              /^172\.(1[6-9]|2\d|3[01])\./,  // Private IP
+              /localhost/i,
+              /\.local$/i,
+              /\.internal$/i
+            ],
+            
+            // پورت‌های مشکوک
+            suspiciousPorts: [22, 23, 25, 53, 110, 143, 3389],
+            
+            // Response patterns که نشون‌دهنده honeypot هستن
+            honeypotResponses: [
+              'honeypot',
+              'tarpit',
+              'trap',
+              'blocked',
+              'forbidden',
+              'access denied'
+            ]
+          };
           
-          // ML History
-          let mlHistory = { hosts: {} };
+          // ═══════════════════════════════════════════════════════════════════════
+          // Known Bad Patterns (DPI Triggers for Iran)
+          // ═══════════════════════════════════════════════════════════════════════
+          const DPI_RISK_PATTERNS = {
+            // High risk SNIs
+            highRiskSNI: [
+              /google\./i,
+              /youtube\./i,
+              /facebook\./i,
+              /twitter\./i,
+              /instagram\./i,
+              /telegram\./i
+            ],
+            
+            // Safe SNIs for Iran
+            safeSNI: [
+              /cloudflare/i,
+              /fastly/i,
+              /akamai/i,
+              /azure/i,
+              /amazonaws/i
+            ]
+          };
+          
+          // ═══════════════════════════════════════════════════════════════════════
+          // Scoring Weights
+          // ═══════════════════════════════════════════════════════════════════════
+          const TRANSPORT_SCORES = {
+            'ws': 150, 'grpc': 130, 'h2': 120, 'httpupgrade': 100,
+            'splithttp': 90, 'tcp': 40, 'kcp': 30, 'quic': 80
+          };
+          
+          const PROTOCOL_SCORES = {
+            'vless': 120, 'trojan': 110, 'hysteria2': 100, 'hysteria': 90,
+            'tuic': 85, 'vmess': 70, 'ss': 50, 'ssr': 40
+          };
+          
+          const SECURITY_SCORES = {
+            'reality': 200, 'tls': 120, 'none': -80
+          };
+          
+          // ═══════════════════════════════════════════════════════════════════════
+          // ML History (ساده‌شده)
+          // ═══════════════════════════════════════════════════════════════════════
+          let mlHistory = { hosts: {}, patterns: {} };
+          
           try {
             if (fs.existsSync('cache/history.json')) {
               mlHistory = JSON.parse(fs.readFileSync('cache/history.json', 'utf8'));
+              console.log(`📚 Loaded ML history: ${Object.keys(mlHistory.hosts).length} hosts`);
             }
-          } catch (e) {}
-          
-          // خواندن کانفیگ‌ها
-          let configs = [];
-          try {
-            configs = fs.readFileSync('tmp/unique.txt', 'utf8').trim().split('\n').filter(Boolean);
           } catch (e) {
-            console.log('No configs');
-            process.exit(0);
+            console.log('📝 Starting fresh ML history');
           }
           
-          console.log(`\n${'═'.repeat(60)}`);
-          console.log(`🚀 QuantumRoute V5 - Testing ${configs.length} configs`);
-          console.log(`${'═'.repeat(60)}\n`);
+          // ═══════════════════════════════════════════════════════════════════════
+          // خواندن کانفیگ‌ها
+          // ═══════════════════════════════════════════════════════════════════════
+          const configs = fs.readFileSync('tmp/unique.txt', 'utf8')
+            .trim().split('\n').filter(Boolean);
           
-          // توابع
+          console.log(`\n${'═'.repeat(70)}`);
+          console.log(`🚀 QuantumRoute V5 - Ultimate Intelligence Engine`);
+          console.log(`${'═'.repeat(70)}`);
+          console.log(`📄 Configs: ${configs.length}`);
+          console.log(`🧠 ML Enabled: ${ENABLE_ML}`);
+          console.log(`🏴‍☠️ Honeypot Detection: ${ENABLE_HONEYPOT}`);
+          console.log(`${'═'.repeat(70)}\n`);
+          
+          // ═══════════════════════════════════════════════════════════════════════
+          // توابع کمکی
+          // ═══════════════════════════════════════════════════════════════════════
+          
           function extractHostPort(config) {
             try {
               const protocol = config.split('://')[0];
               
               if (protocol === 'vmess') {
-                const b64 = config.slice(8).split('#')[0];
-                const json = JSON.parse(Buffer.from(b64, 'base64').toString('utf8'));
-                return {
-                  protocol: 'vmess',
-                  host: json.add || json.host,
-                  port: parseInt(json.port) || 443,
-                  security: json.tls === 'tls' ? 'tls' : 'none',
-                  network: json.net || 'tcp',
-                  sni: json.sni || json.host || ''
-                };
+                try {
+                  const b64 = config.slice(8).split('#')[0];
+                  const decoded = Buffer.from(b64, 'base64').toString('utf8');
+                  const json = JSON.parse(decoded);
+                  return {
+                    protocol: 'vmess',
+                    host: json.add || json.host || json.address,
+                    port: parseInt(json.port) || 443,
+                    security: json.tls === 'tls' ? 'tls' : 'none',
+                    network: json.net || json.network || 'tcp',
+                    sni: json.sni || json.host || '',
+                    path: json.path || '',
+                    alpn: json.alpn || ''
+                  };
+                } catch { return null; }
               }
               
               const match = config.match(/@([^:/?#]+):(\d+)/);
               if (match) {
-                const params = Object.fromEntries(new URLSearchParams(config.split('?')[1]?.split('#')[0] || ''));
+                const urlPart = config.split('?')[1]?.split('#')[0] || '';
+                const params = Object.fromEntries(new URLSearchParams(urlPart));
+                
                 return {
                   protocol,
                   host: match[1],
                   port: parseInt(match[2]),
                   security: params.security || (parseInt(match[2]) === 443 ? 'tls' : 'none'),
-                  network: params.type || 'tcp',
-                  sni: params.sni || match[1]
+                  network: params.type || params.net || 'tcp',
+                  sni: params.sni || params.host || match[1],
+                  path: params.path || '',
+                  alpn: params.alpn || '',
+                  flow: params.flow || '',
+                  fp: params.fp || ''
                 };
               }
               
@@ -278,235 +332,878 @@ jobs:
                 const parts = config.slice(5).split('@');
                 if (parts.length >= 2) {
                   const hp = parts[parts.length - 1].split('#')[0].split('?')[0].split(':');
-                  return { protocol: 'ss', host: hp[0], port: parseInt(hp[1]) || 443, security: 'none', network: 'tcp', sni: '' };
+                  return {
+                    protocol: 'ss', host: hp[0], port: parseInt(hp[1]) || 443,
+                    security: 'none', network: 'tcp', sni: ''
+                  };
                 }
               }
               return null;
-            } catch (e) { return null; }
+            } catch { return null; }
           }
           
           function detectCDN(ip) {
             if (!ip) return null;
             for (const [cdn, ranges] of Object.entries(CDN_RANGES)) {
-              if (ranges.some(r => ip.startsWith(r))) return cdn;
+              if (ranges.some(range => ip.startsWith(range))) return cdn;
             }
             return null;
           }
           
           function resolveHost(host) {
-            return new Promise(resolve => {
-              if (/^\d+\.\d+\.\d+\.\d+$/.test(host)) return resolve({ ip: host, time: 0 });
+            return new Promise((resolve) => {
+              if (/^\d+\.\d+\.\d+\.\d+$/.test(host)) {
+                resolve({ ip: host, dns_time: 0 });
+                return;
+              }
               const start = Date.now();
-              dns.resolve4(host, (err, addr) => resolve({ ip: addr?.[0], time: Date.now() - start, error: err?.code }));
+              dns.resolve4(host, (err, addresses) => {
+                resolve({
+                  ip: addresses?.[0] || null,
+                  dns_time: Date.now() - start,
+                  error: err?.code
+                });
+              });
             });
           }
           
-          function testTCP(host, port) {
-            return new Promise(resolve => {
+          function generateConfigHash(config) {
+            return crypto.createHash('md5').update(config).digest('hex').slice(0, 12);
+          }
+          
+          // ═══════════════════════════════════════════════════════════════════════
+          // Honeypot Detection
+          // ═══════════════════════════════════════════════════════════════════════
+          function detectHoneypot(info, ip) {
+            const flags = [];
+            let score = 0;
+            
+            // Private IP check
+            if (HONEYPOT_SIGNATURES.suspiciousPatterns.some(p => p.test(info.host))) {
+              flags.push('private_ip');
+              score += 100;
+            }
+            
+            // Suspicious port
+            if (HONEYPOT_SIGNATURES.suspiciousPorts.includes(info.port)) {
+              flags.push('suspicious_port');
+              score += 50;
+            }
+            
+            // Same IP as host (no CDN/proxy)
+            if (ip === info.host && !detectCDN(ip)) {
+              flags.push('direct_ip');
+              score += 20;
+            }
+            
+            // High risk SNI
+            if (DPI_RISK_PATTERNS.highRiskSNI.some(p => p.test(info.sni || info.host))) {
+              flags.push('high_risk_sni');
+              score += 80;
+            }
+            
+            return {
+              isHoneypot: score >= 100,
+              isPossibleHoneypot: score >= 50,
+              score,
+              flags
+            };
+          }
+          
+          // ═══════════════════════════════════════════════════════════════════════
+          // DPI Fingerprint Simulation
+          // ═══════════════════════════════════════════════════════════════════════
+          function analyzeDPIRisk(info, tlsResult) {
+            let risk = 0;
+            const factors = [];
+            
+            // SNI Analysis
+            if (!info.sni || info.sni === info.host) {
+              risk += 10;
+              factors.push('no_sni_masking');
+            }
+            
+            // TLS Version
+            if (tlsResult?.version === 'TLSv1.2') {
+              risk += 5;
+              factors.push('old_tls');
+            }
+            
+            // No ALPN
+            if (!tlsResult?.alpn) {
+              risk += 15;
+              factors.push('no_alpn');
+            }
+            
+            // High risk SNI patterns
+            if (DPI_RISK_PATTERNS.highRiskSNI.some(p => p.test(info.sni || ''))) {
+              risk += 40;
+              factors.push('blocked_sni');
+            }
+            
+            // Safe CDN SNI bonus
+            if (DPI_RISK_PATTERNS.safeSNI.some(p => p.test(info.sni || ''))) {
+              risk -= 20;
+              factors.push('safe_sni');
+            }
+            
+            // Reality check
+            if (info.security === 'reality') {
+              risk -= 30;
+              factors.push('reality_protected');
+            }
+            
+            // WebSocket with path
+            if (info.network === 'ws' && info.path) {
+              risk -= 10;
+              factors.push('ws_with_path');
+            }
+            
+            return {
+              risk: Math.max(0, risk),
+              level: risk > 50 ? 'high' : risk > 25 ? 'medium' : 'low',
+              factors
+            };
+          }
+          
+          // ═══════════════════════════════════════════════════════════════════════
+          // TCP Test
+          // ═══════════════════════════════════════════════════════════════════════
+          function testTCP(host, port, timeout = TIMEOUT) {
+            return new Promise((resolve) => {
               const start = Date.now();
               const socket = net.createConnection({ host, port });
-              socket.setTimeout(TIMEOUT);
-              socket.on('connect', () => { socket.destroy(); resolve({ ok: true, latency: Date.now() - start }); });
-              socket.on('error', e => { socket.destroy(); resolve({ ok: false, latency: 9999, error: e.code }); });
-              socket.on('timeout', () => { socket.destroy(); resolve({ ok: false, latency: 9999, error: 'TIMEOUT' }); });
+              socket.setTimeout(timeout);
+              
+              socket.on('connect', () => {
+                const latency = Date.now() - start;
+                socket.destroy();
+                resolve({ ok: true, latency });
+              });
+              
+              socket.on('error', (err) => {
+                socket.destroy();
+                resolve({ ok: false, latency: 9999, error: err.code });
+              });
+              
+              socket.on('timeout', () => {
+                socket.destroy();
+                resolve({ ok: false, latency: 9999, error: 'TIMEOUT' });
+              });
             });
           }
           
-          function testTLS(host, port, sni) {
-            return new Promise(resolve => {
+          // ═══════════════════════════════════════════════════════════════════════
+          // TLS Test با Fingerprint کامل
+          // ═══════════════════════════════════════════════════════════════════════
+          function testTLSAdvanced(host, port, sni, timeout = TIMEOUT) {
+            return new Promise((resolve) => {
               const start = Date.now();
+              
               try {
                 const socket = tls.connect({
-                  host, port, servername: sni || host,
-                  rejectUnauthorized: false, timeout: TIMEOUT,
+                  host, port,
+                  servername: sni || host,
+                  rejectUnauthorized: false,
+                  timeout,
+                  minVersion: 'TLSv1.2',
+                  maxVersion: 'TLSv1.3',
+                  // ALPN negotiation
                   ALPNProtocols: ['h2', 'http/1.1']
                 });
-                socket.setTimeout(TIMEOUT);
+                
+                socket.setTimeout(timeout);
+                
                 socket.on('secureConnect', () => {
+                  const latency = Date.now() - start;
                   const cert = socket.getPeerCertificate();
-                  const version = socket.getProtocol();
+                  const tlsVersion = socket.getProtocol();
+                  const cipher = socket.getCipher();
                   const alpn = socket.alpnProtocol;
+                  
+                  // JA3-like fingerprint (simplified)
+                  const fingerprint = {
+                    version: tlsVersion,
+                    cipher: cipher?.name,
+                    alpn,
+                    extensions: []
+                  };
+                  
+                  let certInfo = null;
+                  if (cert && Object.keys(cert).length > 0) {
+                    certInfo = {
+                      issuer: cert.issuer?.O || cert.issuer?.CN,
+                      subject: cert.subject?.CN,
+                      valid: cert.valid_to ? new Date(cert.valid_to) > new Date() : false,
+                      selfSigned: cert.issuer?.CN === cert.subject?.CN,
+                      fingerprint: cert.fingerprint256?.slice(0, 20)
+                    };
+                  }
+                  
                   socket.destroy();
+                  
                   resolve({
-                    ok: true, latency: Date.now() - start, version, alpn,
-                    cert: cert ? { valid: cert.valid_to ? new Date(cert.valid_to) > new Date() : false } : null,
-                    isModernTLS: version === 'TLSv1.3', hasH2: alpn === 'h2'
+                    ok: true,
+                    latency,
+                    version: tlsVersion,
+                    cipher: cipher?.name,
+                    alpn,
+                    cert: certInfo,
+                    fingerprint,
+                    isModernTLS: tlsVersion === 'TLSv1.3',
+                    hasALPN: !!alpn,
+                    hasH2: alpn === 'h2'
                   });
                 });
-                socket.on('error', e => { socket.destroy(); resolve({ ok: false, error: e.code }); });
-                socket.on('timeout', () => { socket.destroy(); resolve({ ok: false, error: 'TIMEOUT' }); });
-              } catch (e) { resolve({ ok: false, error: e.message }); }
+                
+                socket.on('error', (err) => {
+                  socket.destroy();
+                  resolve({ ok: false, error: err.code, latency: Date.now() - start });
+                });
+                
+                socket.on('timeout', () => {
+                  socket.destroy();
+                  resolve({ ok: false, error: 'TLS_TIMEOUT', latency: Date.now() - start });
+                });
+              } catch (e) {
+                resolve({ ok: false, error: e.message });
+              }
             });
           }
           
-          function testHTTP(host, port, useTLS) {
-            return new Promise(resolve => {
+          // ═══════════════════════════════════════════════════════════════════════
+          // HTTP GET با Payload Integrity Check
+          // ═══════════════════════════════════════════════════════════════════════
+          function testHTTPPayload(host, port, useTLS, path = '/', timeout = TIMEOUT) {
+            return new Promise((resolve) => {
               const start = Date.now();
-              const proto = useTLS ? https : http;
+              let dataReceived = 0;
+              let firstByteTime = null;
+              let chunks = [];
+              
+              const options = {
+                hostname: host, port, path,
+                method: 'GET',
+                timeout,
+                headers: {
+                  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0',
+                  'Accept': 'text/html,*/*',
+                  'Accept-Encoding': 'identity',
+                  'Connection': 'close'
+                },
+                rejectUnauthorized: false
+              };
+              
+              const protocol = useTLS ? https : http;
+              
               try {
-                const req = proto.request({
-                  hostname: host, port, path: '/', method: 'HEAD', timeout: TIMEOUT,
-                  headers: { 'User-Agent': 'Mozilla/5.0', Connection: 'close' },
-                  rejectUnauthorized: false
-                }, res => {
-                  resolve({
-                    ok: true, latency: Date.now() - start, status: res.statusCode,
-                    isCloudflare: !!res.headers['cf-ray']
+                const req = protocol.request(options, (res) => {
+                  res.on('data', (chunk) => {
+                    if (!firstByteTime) firstByteTime = Date.now() - start;
+                    dataReceived += chunk.length;
+                    if (chunks.length < 5) chunks.push(chunk);
+                  });
+                  
+                  res.on('end', () => {
+                    const totalTime = Date.now() - start;
+                    const body = Buffer.concat(chunks).toString().slice(0, 500);
+                    
+                    // Honeypot response detection
+                    const isHoneypotResponse = HONEYPOT_SIGNATURES.honeypotResponses
+                      .some(p => body.toLowerCase().includes(p));
+                    
+                    // Integrity checks
+                    const contentLength = parseInt(res.headers['content-length']) || 0;
+                    const integrityOK = contentLength === 0 || Math.abs(dataReceived - contentLength) < 100;
+                    
+                    resolve({
+                      ok: true,
+                      latency: totalTime,
+                      ttfb: firstByteTime,  // Time to First Byte
+                      status: res.statusCode,
+                      bodySize: dataReceived,
+                      contentLength,
+                      integrityOK,
+                      headers: {
+                        server: res.headers['server'],
+                        cfRay: res.headers['cf-ray'],
+                        via: res.headers['via'],
+                        xCache: res.headers['x-cache']
+                      },
+                      isCloudflare: !!res.headers['cf-ray'],
+                      isHoneypotResponse,
+                      bodyPreview: body.slice(0, 100)
+                    });
                   });
                 });
-                req.on('error', () => resolve({ ok: false }));
-                req.on('timeout', () => { req.destroy(); resolve({ ok: false }); });
+                
+                req.on('error', (err) => {
+                  resolve({ ok: false, error: err.code, latency: Date.now() - start });
+                });
+                
+                req.on('timeout', () => {
+                  req.destroy();
+                  resolve({ ok: false, error: 'HTTP_TIMEOUT', latency: Date.now() - start });
+                });
+                
                 req.end();
-              } catch (e) { resolve({ ok: false }); }
+              } catch (e) {
+                resolve({ ok: false, error: e.message });
+              }
             });
           }
           
-          async function testStability(host, port) {
+          // ═══════════════════════════════════════════════════════════════════════
+          // Early Reset Detection
+          // ═══════════════════════════════════════════════════════════════════════
+          function testEarlyReset(host, port, timeout = TIMEOUT) {
+            return new Promise((resolve) => {
+              const start = Date.now();
+              let connected = false;
+              let dataReceived = false;
+              let resetTime = null;
+              
+              const socket = net.createConnection({ host, port });
+              socket.setTimeout(timeout);
+              
+              socket.on('connect', () => {
+                connected = true;
+                // ارسال HTTP request ساده
+                socket.write('GET / HTTP/1.1\r\nHost: ' + host + '\r\n\r\n');
+              });
+              
+              socket.on('data', () => {
+                dataReceived = true;
+              });
+              
+              socket.on('close', (hadError) => {
+                resetTime = Date.now() - start;
+                socket.destroy();
+                
+                // اگر بعد از connect سریع close شد = مشکوک
+                const earlyReset = connected && !dataReceived && resetTime < 1000;
+                
+                resolve({
+                  connected,
+                  dataReceived,
+                  resetTime,
+                  earlyReset,
+                  hadError
+                });
+              });
+              
+              socket.on('error', () => {
+                socket.destroy();
+                resolve({ connected, dataReceived, earlyReset: false, error: true });
+              });
+              
+              socket.on('timeout', () => {
+                socket.destroy();
+                resolve({ connected, dataReceived, earlyReset: false, timeout: true });
+              });
+            });
+          }
+          
+          // ═══════════════════════════════════════════════════════════════════════
+          // Multi-Attempt Stability با Retry Analysis
+          // ═══════════════════════════════════════════════════════════════════════
+          async function testStabilityAdvanced(host, port, attempts = STABILITY_ATTEMPTS) {
+            const results = [];
             const latencies = [];
-            for (let i = 0; i < STABILITY_ATTEMPTS; i++) {
-              const r = await testTCP(host, port);
-              if (r.ok && r.latency < 9999) latencies.push(r.latency);
+            let consecutiveFailures = 0;
+            let maxConsecutiveFailures = 0;
+            
+            for (let i = 0; i < attempts; i++) {
+              const tcp = await testTCP(host, port, TIMEOUT / 2);
+              
+              results.push({
+                attempt: i + 1,
+                ok: tcp.ok,
+                latency: tcp.latency,
+                error: tcp.error
+              });
+              
+              if (tcp.ok && tcp.latency < 9999) {
+                latencies.push(tcp.latency);
+                consecutiveFailures = 0;
+              } else {
+                consecutiveFailures++;
+                maxConsecutiveFailures = Math.max(maxConsecutiveFailures, consecutiveFailures);
+              }
+              
+              await new Promise(r => setTimeout(r, 400));
+            }
+            
+            const successCount = results.filter(r => r.ok).length;
+            const successRate = successCount / attempts;
+            
+            // Retry Pattern Analysis
+            let getsWorseWithRetry = false;
+            if (latencies.length >= 3) {
+              const firstHalf = latencies.slice(0, Math.floor(latencies.length / 2));
+              const secondHalf = latencies.slice(Math.floor(latencies.length / 2));
+              const firstAvg = firstHalf.reduce((a, b) => a + b, 0) / firstHalf.length;
+              const secondAvg = secondHalf.reduce((a, b) => a + b, 0) / secondHalf.length;
+              getsWorseWithRetry = secondAvg > firstAvg * 1.5;
+            }
+            
+            // Jitter calculation
+            let jitter = 0, avgLatency = 0, minLatency = 9999, maxLatency = 0;
+            if (latencies.length > 0) {
+              avgLatency = latencies.reduce((a, b) => a + b, 0) / latencies.length;
+              minLatency = Math.min(...latencies);
+              maxLatency = Math.max(...latencies);
+              const variance = latencies.reduce((a, b) => a + Math.pow(b - avgLatency, 2), 0) / latencies.length;
+              jitter = Math.sqrt(variance);
+            }
+            
+            return {
+              attempts,
+              successCount,
+              successRate,
+              avgLatency: Math.round(avgLatency),
+              minLatency,
+              maxLatency,
+              jitter: Math.round(jitter),
+              maxConsecutiveFailures,
+              getsWorseWithRetry,
+              stable: successRate >= 0.8 && jitter < 150 && !getsWorseWithRetry,
+              veryStable: successRate >= 0.95 && jitter < 80,
+              unreliable: successRate < 0.5 || maxConsecutiveFailures >= 3,
+              results
+            };
+          }
+          
+          // ═══════════════════════════════════════════════════════════════════════
+          // Fake SNI / Fallback Domain Test
+          // ═══════════════════════════════════════════════════════════════════════
+          async function testSNIBehavior(host, port, originalSNI) {
+            const testSNIs = [
+              originalSNI || host,           // Original
+              'www.google.com',              // Known blocked
+              'cloudflare.com',              // Safe
+              'microsoft.com',               // Safe
+              ''                             // Empty SNI
+            ];
+            
+            const results = {};
+            
+            for (const sni of testSNIs) {
+              if (!sni && sni !== '') continue;
+              
+              const tls = await testTLSAdvanced(host, port, sni, 3000);
+              results[sni || 'empty'] = {
+                ok: tls.ok,
+                latency: tls.latency,
+                error: tls.error
+              };
+              
               await new Promise(r => setTimeout(r, 200));
             }
-            if (latencies.length === 0) return { stable: false, veryStable: false, jitter: 9999 };
-            const avg = latencies.reduce((a, b) => a + b, 0) / latencies.length;
-            const jitter = Math.sqrt(latencies.reduce((a, b) => a + Math.pow(b - avg, 2), 0) / latencies.length);
-            const rate = latencies.length / STABILITY_ATTEMPTS;
-            return { stable: rate >= 0.75 && jitter < 150, veryStable: rate >= 0.9 && jitter < 80, jitter: Math.round(jitter), avgLatency: Math.round(avg) };
+            
+            // Analysis
+            const originalWorks = results[originalSNI || host]?.ok;
+            const googleBlocked = !results['www.google.com']?.ok;
+            const cloudflareWorks = results['cloudflare.com']?.ok;
+            
+            return {
+              results,
+              sniFiltering: googleBlocked && cloudflareWorks,
+              originalWorks,
+              recommendation: googleBlocked && cloudflareWorks ? 'use_safe_sni' : 'any_sni'
+            };
           }
           
-          function detectHoneypot(info) {
-            if (/^(10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)/.test(info.host)) return { isHoneypot: true };
-            if ([22, 23, 25].includes(info.port)) return { isHoneypot: true };
-            return { isHoneypot: false };
-          }
-          
-          function calcDPIRisk(info, tls) {
-            let risk = 0;
-            if (!info.sni) risk += 10;
-            if (!tls?.alpn) risk += 15;
-            if (info.security === 'reality') risk -= 30;
-            if (info.network === 'ws') risk -= 10;
-            return { risk: Math.max(0, risk), level: risk > 40 ? 'high' : risk > 20 ? 'medium' : 'low' };
-          }
-          
-          function calcScore(r) {
-            let score = 500;
-            const bonuses = [], penalties = [];
+          // ═══════════════════════════════════════════════════════════════════════
+          // Fake Congestion Detection
+          // ═══════════════════════════════════════════════════════════════════════
+          async function detectCongestion(host, port) {
+            const samples = [];
             
-            if (!r.tcp.ok) return { score: 0, grade: 'F', bonuses, penalties };
-            
-            if (r.tcp.latency < 100) { score += 180; bonuses.push('ultra_fast'); }
-            else if (r.tcp.latency < 200) { score += 120; bonuses.push('fast'); }
-            else if (r.tcp.latency < 400) score += 60;
-            else if (r.tcp.latency > 800) { score -= 100; penalties.push('slow'); }
-            
-            if (r.tls?.ok) {
-              score += 100; bonuses.push('tls_ok');
-              if (r.tls.isModernTLS) { score += 50; bonuses.push('tls13'); }
-              if (r.tls.hasH2) { score += 60; bonuses.push('h2'); }
-              if (r.tls.cert?.valid) score += 30;
-            } else if (r.needsTLS) { score -= 150; penalties.push('tls_fail'); }
-            
-            if (r.http?.ok) { score += 80; if (r.http.isCloudflare) { score += 50; bonuses.push('cf'); } }
-            
-            const cdnScores = { cloudflare: 180, gcore: 140, fastly: 120 };
-            if (r.cdn) { score += cdnScores[r.cdn] || 40; bonuses.push('cdn'); }
-            
-            if (r.stability?.veryStable) { score += 150; bonuses.push('very_stable'); }
-            else if (r.stability?.stable) { score += 80; bonuses.push('stable'); }
-            else if (r.stability?.jitter > 200) { score -= 80; penalties.push('jitter'); }
-            
-            if (r.honeypot?.isHoneypot) { score -= 300; penalties.push('honeypot'); }
-            if (r.dpiRisk?.level === 'high') { score -= 100; penalties.push('dpi_risk'); }
-            
-            score += PROTOCOL_SCORES[r.protocol] || 0;
-            score += TRANSPORT_SCORES[r.network] || 0;
-            score += SECURITY_SCORES[r.security] || 0;
-            
-            if (r.security === 'reality' && r.protocol === 'vless') { score += 120; bonuses.push('reality_vless'); }
-            if (r.network === 'ws' && r.cdn === 'cloudflare') { score += 100; bonuses.push('ws_cf'); }
-            
-            const finalScore = Math.max(0, Math.round(score));
-            const grade = finalScore >= 1000 ? 'S' : finalScore >= 800 ? 'A' : finalScore >= 600 ? 'B' : finalScore >= 400 ? 'C' : 'D';
-            return { score: finalScore, grade, bonuses, penalties };
-          }
-          
-          async function testConfig(config, idx) {
-            const info = extractHostPort(config);
-            if (!info) return { config, ok: false, reason: 'PARSE_ERROR' };
-            
-            const { host, port, protocol, security, network, sni } = info;
-            const needsTLS = security === 'tls' || security === 'reality' || port === 443;
-            
-            const honeypot = detectHoneypot(info);
-            if (honeypot.isHoneypot) return { config, host, port, protocol, ok: false, reason: 'HONEYPOT', honeypot };
-            
-            const dns = await resolveHost(host);
-            if (!dns.ip) return { config, host, port, protocol, ok: false, reason: 'DNS_FAIL' };
-            
-            const cdn = detectCDN(dns.ip);
-            const tcp = await testTCP(host, port);
-            if (!tcp.ok) {
-              mlHistory.hosts[host] = mlHistory.hosts[host] || { total: 0, fails: 0 };
-              mlHistory.hosts[host].total++;
-              mlHistory.hosts[host].fails++;
-              return { config, host, port, protocol, cdn, ok: false, reason: tcp.error, tcp };
+            for (let i = 0; i < 4; i++) {
+              const start = Date.now();
+              const tcp = await testTCP(host, port, 2000);
+              samples.push({
+                latency: tcp.latency,
+                ok: tcp.ok
+              });
+              await new Promise(r => setTimeout(r, 500));
             }
             
+            const validSamples = samples.filter(s => s.ok).map(s => s.latency);
+            if (validSamples.length < 2) return { congested: false, insufficient: true };
+            
+            const avg = validSamples.reduce((a, b) => a + b, 0) / validSamples.length;
+            const increasing = validSamples.every((v, i) => i === 0 || v >= validSamples[i - 1] * 0.9);
+            const highVariance = Math.max(...validSamples) > Math.min(...validSamples) * 2;
+            
+            return {
+              congested: increasing && highVariance,
+              throttled: avg > 500 && increasing,
+              samples: validSamples,
+              avgLatency: Math.round(avg)
+            };
+          }
+          
+          // ═══════════════════════════════════════════════════════════════════════
+          // Cross-Protocol Sanity Check
+          // ═══════════════════════════════════════════════════════════════════════
+          function validateProtocolConfig(info, httpResult) {
+            const issues = [];
+            
+            // WebSocket باید path داشته باشه
+            if (info.network === 'ws' && !info.path) {
+              issues.push('ws_no_path');
+            }
+            
+            // gRPC معمولاً باید TLS داشته باشه
+            if (info.network === 'grpc' && info.security === 'none') {
+              issues.push('grpc_no_tls');
+            }
+            
+            // Reality باید VLESS باشه
+            if (info.security === 'reality' && info.protocol !== 'vless') {
+              issues.push('reality_wrong_protocol');
+            }
+            
+            // Port 80 با TLS?
+            if (info.port === 80 && info.security === 'tls') {
+              issues.push('tls_on_80');
+            }
+            
+            // HTTP response بررسی
+            if (httpResult?.ok) {
+              // اگر HTTP 4xx/5xx برگردونه ولی ادعای proxy داره
+              if (httpResult.status >= 400 && httpResult.status !== 400) {
+                issues.push('http_error_response');
+              }
+            }
+            
+            return {
+              valid: issues.length === 0,
+              issues,
+              severity: issues.length > 2 ? 'high' : issues.length > 0 ? 'medium' : 'none'
+            };
+          }
+          
+          // ═══════════════════════════════════════════════════════════════════════
+          // ML-Based Confidence Score
+          // ═══════════════════════════════════════════════════════════════════════
+          function calculateMLConfidence(result, hostHistory) {
+            let confidence = 50;  // Base confidence
+            
+            // اگر host قبلاً تست شده
+            if (hostHistory) {
+              const historicalSuccessRate = hostHistory.successes / (hostHistory.total || 1);
+              confidence += (historicalSuccessRate - 0.5) * 40;
+              
+              // اگر بارها fail شده
+              if (hostHistory.consecutiveFails >= 3) {
+                confidence -= 30;
+              }
+            }
+            
+            // Current test results
+            if (result.stability?.veryStable) confidence += 20;
+            else if (result.stability?.stable) confidence += 10;
+            else if (result.stability?.unreliable) confidence -= 25;
+            
+            if (result.cdn === 'cloudflare') confidence += 15;
+            if (result.tls?.isModernTLS) confidence += 10;
+            if (result.tls?.hasH2) confidence += 10;
+            
+            if (result.honeypot?.isHoneypot) confidence -= 50;
+            if (result.dpiRisk?.level === 'high') confidence -= 20;
+            
+            if (result.earlyReset?.earlyReset) confidence -= 30;
+            if (result.congestion?.throttled) confidence -= 15;
+            
+            if (result.http?.integrityOK === false) confidence -= 20;
+            
+            return Math.max(0, Math.min(100, Math.round(confidence)));
+          }
+          
+          // ═══════════════════════════════════════════════════════════════════════
+          // Advanced Scoring Engine
+          // ═══════════════════════════════════════════════════════════════════════
+          function calculateV5Score(result) {
+            let score = 500;
+            const bonuses = [];
+            const penalties = [];
+            
+            // ═══ TCP ═══
+            if (!result.tcp.ok) return { score: 0, reason: 'TCP_FAIL' };
+            
+            if (result.tcp.latency < 100) { score += 180; bonuses.push('ultra_low_latency'); }
+            else if (result.tcp.latency < 200) { score += 120; bonuses.push('low_latency'); }
+            else if (result.tcp.latency < 400) { score += 60; }
+            else if (result.tcp.latency < 800) { score -= 30; }
+            else { score -= 100; penalties.push('high_latency'); }
+            
+            // ═══ TLS ═══
+            if (result.tls) {
+              if (result.tls.ok) {
+                score += 100;
+                bonuses.push('tls_ok');
+                
+                if (result.tls.isModernTLS) { score += 50; bonuses.push('tls13'); }
+                if (result.tls.hasH2) { score += 60; bonuses.push('h2'); }
+                if (result.tls.cert?.valid) { score += 30; bonuses.push('valid_cert'); }
+                if (result.tls.cert?.selfSigned) { score -= 40; penalties.push('self_signed'); }
+                
+                if (result.tls.latency > 2000) { score -= 80; penalties.push('slow_tls'); }
+              } else {
+                score -= 150;
+                penalties.push('tls_fail');
+              }
+            }
+            
+            // ═══ HTTP ═══
+            if (result.http) {
+              if (result.http.ok) {
+                score += 80;
+                bonuses.push('http_ok');
+                
+                if (result.http.status === 200 || result.http.status === 204) { score += 30; }
+                if (result.http.isCloudflare) { score += 50; bonuses.push('cf_verified'); }
+                if (result.http.integrityOK) { score += 20; bonuses.push('integrity_ok'); }
+                if (result.http.ttfb < 500) { score += 30; bonuses.push('fast_ttfb'); }
+                if (result.http.isHoneypotResponse) { score -= 200; penalties.push('honeypot_response'); }
+              } else {
+                score -= 60;
+                penalties.push('http_fail');
+              }
+            }
+            
+            // ═══ CDN ═══
+            const cdnScores = { cloudflare: 180, gcore: 140, fastly: 120, akamai: 100, amazon: 60 };
+            if (result.cdn) {
+              score += cdnScores[result.cdn] || 40;
+              bonuses.push(`cdn_${result.cdn}`);
+            }
+            
+            // ═══ Stability ═══
+            if (result.stability) {
+              if (result.stability.veryStable) { score += 150; bonuses.push('very_stable'); }
+              else if (result.stability.stable) { score += 80; bonuses.push('stable'); }
+              else if (result.stability.unreliable) { score -= 120; penalties.push('unreliable'); }
+              
+              if (result.stability.jitter > 200) { score -= 80; penalties.push('high_jitter'); }
+              if (result.stability.getsWorseWithRetry) { score -= 60; penalties.push('degrades_on_retry'); }
+            }
+            
+            // ═══ Early Reset ═══
+            if (result.earlyReset?.earlyReset) {
+              score -= 150;
+              penalties.push('early_reset');
+            }
+            
+            // ═══ Honeypot ═══
+            if (result.honeypot?.isHoneypot) {
+              score -= 300;
+              penalties.push('honeypot');
+            } else if (result.honeypot?.isPossibleHoneypot) {
+              score -= 100;
+              penalties.push('possible_honeypot');
+            }
+            
+            // ═══ DPI Risk ═══
+            if (result.dpiRisk) {
+              if (result.dpiRisk.level === 'high') { score -= 100; penalties.push('high_dpi_risk'); }
+              else if (result.dpiRisk.level === 'medium') { score -= 40; }
+              else if (result.dpiRisk.level === 'low') { score += 30; bonuses.push('low_dpi_risk'); }
+            }
+            
+            // ═══ Congestion ═══
+            if (result.congestion?.throttled) {
+              score -= 80;
+              penalties.push('throttled');
+            }
+            
+            // ═══ Protocol Validation ═══
+            if (result.protocolValidation?.severity === 'high') {
+              score -= 100;
+              penalties.push('invalid_config');
+            }
+            
+            // ═══ Protocol & Transport ═══
+            score += PROTOCOL_SCORES[result.protocol] || 0;
+            score += TRANSPORT_SCORES[result.network] || 0;
+            score += SECURITY_SCORES[result.security] || 0;
+            
+            // ═══ Special Combos ═══
+            if (result.security === 'reality' && result.protocol === 'vless') {
+              score += 120;
+              bonuses.push('reality_vless');
+            }
+            if (result.network === 'ws' && result.cdn === 'cloudflare') {
+              score += 100;
+              bonuses.push('ws_cf');
+            }
+            if (result.network === 'grpc' && result.tls?.isModernTLS) {
+              score += 80;
+              bonuses.push('grpc_tls13');
+            }
+            
+            // ═══ ML Confidence ═══
+            if (result.confidence) {
+              score += (result.confidence - 50) * 2;
+            }
+            
+            return {
+              score: Math.max(0, Math.round(score)),
+              bonuses,
+              penalties,
+              grade: score >= 1000 ? 'S' : score >= 800 ? 'A' : score >= 600 ? 'B' : score >= 400 ? 'C' : 'D'
+            };
+          }
+          
+          // ═══════════════════════════════════════════════════════════════════════
+          // Main Test Function
+          // ═══════════════════════════════════════════════════════════════════════
+          async function testConfigV5(config, idx) {
+            const info = extractHostPort(config);
+            if (!info || !info.host || !info.port) {
+              return { config, ok: false, reason: 'PARSE_ERROR' };
+            }
+            
+            const { host, port, protocol, security, network, sni, path, flow, fp } = info;
+            const needsTLS = security === 'tls' || security === 'reality' || port === 443;
+            const configHash = generateConfigHash(config);
+            
+            // Get ML history for this host
+            const hostHistory = mlHistory.hosts[host];
+            
+            // ═══ DNS ═══
+            const dnsResult = await resolveHost(host);
+            if (!dnsResult.ip) {
+              return { config, host, port, protocol, ok: false, reason: 'DNS_FAIL' };
+            }
+            
+            const ip = dnsResult.ip;
+            const cdn = detectCDN(ip);
+            
+            // ═══ Honeypot Check ═══
+            const honeypot = ENABLE_HONEYPOT ? detectHoneypot(info, ip) : null;
+            if (honeypot?.isHoneypot) {
+              return {
+                config, host, port, protocol, ip, cdn,
+                ok: false, reason: 'HONEYPOT',
+                honeypot
+              };
+            }
+            
+            // ═══ TCP Test ═══
+            const tcp = await testTCP(host, port);
+            if (!tcp.ok) {
+              // Update ML history
+              if (ENABLE_ML) {
+                mlHistory.hosts[host] = mlHistory.hosts[host] || { total: 0, successes: 0, consecutiveFails: 0 };
+                mlHistory.hosts[host].total++;
+                mlHistory.hosts[host].consecutiveFails++;
+              }
+              return { config, host, port, protocol, ip, cdn, ok: false, reason: tcp.error, tcp };
+            }
+            
+            // ═══ Early Reset Detection ═══
+            const earlyReset = await testEarlyReset(host, port);
+            
+            // ═══ TLS Test ═══
             let tlsResult = null;
-            if (needsTLS) tlsResult = await testTLS(host, port, sni);
+            if (needsTLS) {
+              tlsResult = await testTLSAdvanced(host, port, sni);
+            }
             
+            // ═══ HTTP Payload Test ═══
             let httpResult = null;
-            if (tlsResult?.ok || !needsTLS) httpResult = await testHTTP(host, port, needsTLS);
+            if ((tlsResult?.ok || !needsTLS) && ![22, 3389].includes(port)) {
+              httpResult = await testHTTPPayload(host, port, needsTLS, path || '/');
+            }
             
+            // ═══ Stability Test ═══
             let stability = null;
-            if (tcp.latency < 1500) stability = await testStability(host, port);
+            if (tcp.ok && tcp.latency < 1500) {
+              stability = await testStabilityAdvanced(host, port);
+            }
             
-            const dpiRisk = calcDPIRisk(info, tlsResult);
+            // ═══ DPI Risk Analysis ═══
+            const dpiRisk = analyzeDPIRisk(info, tlsResult);
             
+            // ═══ Congestion Detection ═══
+            let congestion = null;
+            if (stability?.stable) {
+              congestion = await detectCongestion(host, port);
+            }
+            
+            // ═══ Protocol Validation ═══
+            const protocolValidation = validateProtocolConfig(info, httpResult);
+            
+            // ═══ Build Result ═══
             const result = {
-              config, host, port, ip: dns.ip, protocol, network, security, sni, cdn, needsTLS,
-              tcp, tls: tlsResult, http: httpResult, stability, honeypot, dpiRisk
+              config, configHash,
+              host, port, ip,
+              protocol, network, security,
+              sni, path, flow, fp,
+              cdn,
+              tcp,
+              tls: tlsResult,
+              http: httpResult,
+              stability,
+              earlyReset,
+              honeypot,
+              dpiRisk,
+              congestion,
+              protocolValidation,
+              dnsTime: dnsResult.dns_time
             };
             
-            const scoreResult = calcScore(result);
-            Object.assign(result, scoreResult);
+            // ═══ ML Confidence ═══
+            result.confidence = ENABLE_ML ? calculateMLConfidence(result, hostHistory) : null;
+            
+            // ═══ Score ═══
+            const scoreResult = calculateV5Score(result);
+            result.score = scoreResult.score;
+            result.grade = scoreResult.grade;
+            result.bonuses = scoreResult.bonuses;
+            result.penalties = scoreResult.penalties;
             result.ok = result.score >= MIN_SCORE;
             
-            mlHistory.hosts[host] = mlHistory.hosts[host] || { total: 0, fails: 0 };
-            mlHistory.hosts[host].total++;
-            if (!result.ok) mlHistory.hosts[host].fails++;
+            // ═══ Update ML History ═══
+            if (ENABLE_ML) {
+              mlHistory.hosts[host] = mlHistory.hosts[host] || { total: 0, successes: 0, consecutiveFails: 0 };
+              mlHistory.hosts[host].total++;
+              if (result.ok) {
+                mlHistory.hosts[host].successes++;
+                mlHistory.hosts[host].consecutiveFails = 0;
+              } else {
+                mlHistory.hosts[host].consecutiveFails++;
+              }
+            }
             
-            if (idx % 100 === 0) process.stdout.write(`\r   Progress: ${idx}/${configs.length}`);
+            // ═══ Progress ═══
+            if (idx % 80 === 0) {
+              process.stdout.write(`\r   📊 Progress: ${idx}/${configs.length} (${Math.round(idx/configs.length*100)}%)`);
+            }
             
             return result;
           }
           
-          // Simple parallel limiter
-          async function runWithLimit(items, limit, fn) {
-            const results = [];
-            let idx = 0;
-            
-            async function worker() {
-              while (idx < items.length) {
-                const i = idx++;
-                results[i] = await fn(items[i], i);
-              }
-            }
-            
-            await Promise.all(Array(Math.min(limit, items.length)).fill(null).map(worker));
-            return results;
-          }
-          
+          // ═══════════════════════════════════════════════════════════════════════
+          // Main Execution
+          // ═══════════════════════════════════════════════════════════════════════
           async function main() {
             const startTime = Date.now();
             
-            const results = await runWithLimit(configs, PARALLEL, testConfig);
+            console.log('🔬 Starting V5 Ultimate Intelligence Tests...\n');
+            
+            const results = await Promise.all(
+              configs.map((c, i) => limit(() => testConfigV5(c, i)))
+            );
             
             console.log('\n\n');
             
-            const working = results.filter(r => r.ok).sort((a, b) => b.score - a.score);
+            // ═══ Categorize Results ═══
+            const working = results.filter(r => r.ok && r.score >= MIN_SCORE).sort((a, b) => b.score - a.score);
             const failed = results.filter(r => !r.ok);
             
             const gradeS = working.filter(r => r.grade === 'S');
@@ -514,197 +1211,598 @@ jobs:
             const gradeB = working.filter(r => r.grade === 'B');
             const gradeC = working.filter(r => r.grade === 'C');
             
-            // Save files
+            const honeypots = results.filter(r => r.honeypot?.isHoneypot);
+            const highDPIRisk = results.filter(r => r.dpiRisk?.level === 'high');
+            
+            // ═══ Save Files ═══
             fs.writeFileSync('output/configs.txt', working.map(r => r.config).join('\n'));
-            fs.writeFileSync('output/configs_base64.txt', working.map(r => Buffer.from(r.config).toString('base64')).join('\n'));
+            fs.writeFileSync('output/configs_base64.txt', 
+              working.map(r => Buffer.from(r.config).toString('base64')).join('\n'));
             fs.writeFileSync('output/working.txt', working.map(r => r.config).join('\n'));
             fs.writeFileSync('output/best.txt', working.slice(0, 200).map(r => r.config).join('\n'));
             fs.writeFileSync('output/premium.txt', [...gradeS, ...gradeA].map(r => r.config).join('\n'));
             fs.writeFileSync('output/grade_s.txt', gradeS.map(r => r.config).join('\n'));
             fs.writeFileSync('output/top50.txt', working.slice(0, 50).map(r => r.config).join('\n'));
             
+            // ═══ Stats ═══
             const duration = Math.round((Date.now() - startTime) / 1000);
-            
-            const protocols = {}, networks = {};
-            working.forEach(r => {
-              protocols[r.protocol] = (protocols[r.protocol] || 0) + 1;
-              networks[r.network] = (networks[r.network] || 0) + 1;
-            });
             
             const stats = {
               version: 'v5',
               timestamp: new Date().toISOString(),
               duration_sec: duration,
+              
               summary: {
                 total: configs.length,
                 working: working.length,
                 failed: failed.length,
                 success_rate: ((working.length / configs.length) * 100).toFixed(2) + '%'
               },
-              grades: { S: gradeS.length, A: gradeA.length, B: gradeB.length, C: gradeC.length },
+              
+              grades: {
+                S: gradeS.length,
+                A: gradeA.length,
+                B: gradeB.length,
+                C: gradeC.length
+              },
+              
               quality: {
                 avg_score: working.length ? Math.round(working.reduce((a, b) => a + b.score, 0) / working.length) : 0,
                 max_score: working.length ? Math.max(...working.map(r => r.score)) : 0,
                 avg_latency: working.length ? Math.round(working.reduce((a, b) => a + b.tcp.latency, 0) / working.length) : 0,
-                avg_confidence: 50
+                avg_confidence: working.filter(r => r.confidence).length ?
+                  Math.round(working.filter(r => r.confidence).reduce((a, b) => a + b.confidence, 0) / working.filter(r => r.confidence).length) : 0
               },
+              
               security: {
-                honeypots_detected: results.filter(r => r.honeypot?.isHoneypot).length,
-                high_dpi_risk: results.filter(r => r.dpiRisk?.level === 'high').length,
+                honeypots_detected: honeypots.length,
+                high_dpi_risk: highDPIRisk.length,
                 cloudflare: working.filter(r => r.cdn === 'cloudflare').length,
                 reality: working.filter(r => r.security === 'reality').length
               },
+              
               stability: {
                 very_stable: working.filter(r => r.stability?.veryStable).length,
-                stable: working.filter(r => r.stability?.stable).length
+                stable: working.filter(r => r.stability?.stable).length,
+                unstable: working.filter(r => r.stability?.unreliable).length
               },
-              protocols,
-              networks,
+              
+              protocols: {},
+              networks: {},
+              
               top_30: working.slice(0, 30).map(r => ({
-                host: r.host, port: r.port, protocol: r.protocol, network: r.network,
-                security: r.security, latency: r.tcp.latency, score: r.score, grade: r.grade,
-                confidence: 50, cdn: r.cdn, tls_version: r.tls?.version,
-                stable: r.stability?.stable, dpi_risk: r.dpiRisk?.level,
-                bonuses: r.bonuses?.slice(0, 5), penalties: r.penalties?.slice(0, 3)
+                host: r.host,
+                port: r.port,
+                protocol: r.protocol,
+                network: r.network,
+                security: r.security,
+                latency: r.tcp.latency,
+                score: r.score,
+                grade: r.grade,
+                confidence: r.confidence,
+                cdn: r.cdn,
+                tls_version: r.tls?.version,
+                stable: r.stability?.stable,
+                dpi_risk: r.dpiRisk?.level,
+                bonuses: r.bonuses?.slice(0, 5),
+                penalties: r.penalties?.slice(0, 3)
               }))
             };
             
+            // Protocol/Network distribution
+            working.forEach(r => {
+              stats.protocols[r.protocol] = (stats.protocols[r.protocol] || 0) + 1;
+              stats.networks[r.network] = (stats.networks[r.network] || 0) + 1;
+            });
+            
             fs.writeFileSync('output/results.json', JSON.stringify(stats, null, 2));
             fs.writeFileSync('output/stats.json', JSON.stringify({
-              total: configs.length, working: working.length, failed: failed.length,
-              grade_s: gradeS.length, grade_a: gradeA.length,
-              avg_score: stats.quality.avg_score, avg_latency: stats.quality.avg_latency,
-              cloudflare: stats.security.cloudflare, updated: new Date().toISOString()
+              total: configs.length,
+              working: working.length,
+              failed: failed.length,
+              grade_s: gradeS.length,
+              grade_a: gradeA.length,
+              avg_score: stats.quality.avg_score,
+              avg_latency: stats.quality.avg_latency,
+              avg_confidence: stats.quality.avg_confidence,
+              cloudflare: stats.security.cloudflare,
+              honeypots: honeypots.length,
+              updated: new Date().toISOString()
             }, null, 2));
             
-            fs.writeFileSync('output/history.json', JSON.stringify(mlHistory, null, 2));
+            // ═══ ML History ═══
+            if (ENABLE_ML) {
+              // Keep only hosts seen in last 7 days (simulate)
+              const recentHosts = {};
+              Object.entries(mlHistory.hosts).forEach(([host, data]) => {
+                if (data.total > 0) recentHosts[host] = data;
+              });
+              mlHistory.hosts = recentHosts;
+              
+              fs.writeFileSync('output/history.json', JSON.stringify(mlHistory, null, 2));
+            }
             
+            // ═══ Prometheus Metrics ═══
             const metrics = [
-              'quantum_version 5',
+              `quantum_version 5`,
               `quantum_total ${configs.length}`,
               `quantum_working ${working.length}`,
               `quantum_grade_s ${gradeS.length}`,
               `quantum_grade_a ${gradeA.length}`,
               `quantum_avg_score ${stats.quality.avg_score}`,
-              ...working.slice(0, 50).map(r => `quantum_score{host="${r.host}",protocol="${r.protocol}"} ${r.score}`)
+              `quantum_avg_confidence ${stats.quality.avg_confidence}`,
+              `quantum_honeypots ${honeypots.length}`,
+              `quantum_cloudflare ${stats.security.cloudflare}`,
+              ...working.slice(0, 100).map(r =>
+                `quantum_score{host="${r.host}",protocol="${r.protocol}",grade="${r.grade}"} ${r.score}`
+              )
             ].join('\n');
+            
             fs.writeFileSync('output/metrics.prom', metrics);
             
-            console.log('═'.repeat(60));
-            console.log('📊 QUANTUMROUTE V5 RESULTS');
-            console.log('═'.repeat(60));
-            console.log(`   ⏱️  Duration:    ${duration}s`);
-            console.log(`   📄 Total:       ${configs.length}`);
-            console.log(`   ✅ Working:     ${working.length} (${((working.length/configs.length)*100).toFixed(1)}%)`);
-            console.log(`   🏆 S: ${gradeS.length} | A: ${gradeA.length} | B: ${gradeB.length} | C: ${gradeC.length}`);
-            console.log(`   ⚡ Avg Latency: ${stats.quality.avg_latency}ms`);
-            console.log(`   ☁️  Cloudflare: ${stats.security.cloudflare}`);
-            console.log('═'.repeat(60));
+            // ═══ Final Report ═══
+            console.log('═'.repeat(70));
+            console.log('📊 QUANTUMROUTE V5 - FINAL RESULTS');
+            console.log('═'.repeat(70));
+            console.log(`   ⏱️  Duration:        ${duration}s`);
+            console.log(`   📄 Total:           ${configs.length}`);
+            console.log(`   ✅ Working:         ${working.length} (${((working.length/configs.length)*100).toFixed(1)}%)`);
+            console.log('');
+            console.log('   📊 Grade Distribution:');
+            console.log(`      🏆 S (1000+):    ${gradeS.length}`);
+            console.log(`      🥇 A (800-999):  ${gradeA.length}`);
+            console.log(`      🥈 B (600-799):  ${gradeB.length}`);
+            console.log(`      🥉 C (400-599):  ${gradeC.length}`);
+            console.log('');
+            console.log('   🔒 Security:');
+            console.log(`      🏴‍☠️ Honeypots:    ${honeypots.length}`);
+            console.log(`      ⚠️  High DPI Risk: ${highDPIRisk.length}`);
+            console.log(`      ☁️  Cloudflare:   ${stats.security.cloudflare}`);
+            console.log(`      🔐 Reality:      ${stats.security.reality}`);
+            console.log('');
+            console.log(`   ⚡ Avg Latency:     ${stats.quality.avg_latency}ms`);
+            console.log(`   🏆 Avg Score:       ${stats.quality.avg_score}`);
+            console.log(`   🧠 Avg Confidence:  ${stats.quality.avg_confidence}%`);
+            console.log('═'.repeat(70));
           }
           
-          main().catch(e => {
-            console.error('Error:', e.message);
-            fs.writeFileSync('output/configs.txt', '');
-            fs.writeFileSync('output/results.json', JSON.stringify({summary:{total:0,working:0}}));
-            fs.writeFileSync('output/stats.json', JSON.stringify({total:0,working:0}));
+          main().catch(err => {
+            console.error('❌ Fatal:', err);
+            process.exit(1);
           });
-          NODEJS
+          TESTER_V5
+          
+          node tester.js
 
-      - name: 📊 Generate Dashboard
+      - name: 📊 Generate V5 Dashboard
         run: |
-          cat << 'EOF' > output/index.html
+          cat << 'DASHBOARD_V5' > output/index.html
           <!DOCTYPE html>
           <html lang="fa" dir="rtl">
           <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>QuantumRoute V5</title>
+            <title>QuantumRoute V5 - Ultimate Intelligence</title>
             <style>
-              :root{--bg:#0a0e14;--card:#161d27;--border:#2a3544;--text:#e7edf4;--gold:#ffd700;--blue:#3b82f6;--green:#10b981;--red:#ef4444;--purple:#8b5cf6}
-              *{box-sizing:border-box;margin:0;padding:0}body{font-family:system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:20px}
-              .container{max-width:1400px;margin:0 auto}h1{text-align:center;font-size:2.5rem;background:linear-gradient(135deg,var(--gold),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:30px}
-              .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:25px}
-              .stat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center}
-              .stat-value{font-size:1.8rem;font-weight:700}.stat-label{color:#8899aa;font-size:0.8rem;margin-top:4px}
-              .grades{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:25px}
-              .grade{background:var(--card);border-radius:10px;padding:16px;text-align:center;border:2px solid transparent}
-              .grade.s{border-color:var(--gold)}.grade.a{border-color:var(--green)}.grade.b{border-color:var(--blue)}.grade.c{border-color:var(--purple)}
-              .grade-letter{font-size:2rem;font-weight:900}.grade-count{font-size:1.3rem;font-weight:700;margin-top:8px}
-              .actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:25px}
-              .btn{padding:10px 20px;border-radius:8px;font-weight:600;text-decoration:none;font-size:0.9rem}
-              .btn-gold{background:linear-gradient(135deg,var(--gold),#f97316);color:#000}.btn-green{background:var(--green);color:#fff}.btn-sec{background:var(--card);color:var(--text);border:1px solid var(--border)}
-              table{width:100%;border-collapse:collapse;background:var(--card);border-radius:10px;overflow:hidden}
-              th,td{padding:10px;text-align:right;border-bottom:1px solid var(--border);font-size:0.85rem}th{background:#0f1419;color:var(--blue)}tr:hover{background:#1e2836}
-              .badge{display:inline-block;padding:3px 8px;border-radius:5px;font-size:0.75rem;font-weight:600}
-              .badge-s{background:rgba(255,215,0,0.2);color:var(--gold)}.badge-a{background:rgba(16,185,129,0.2);color:var(--green)}.badge-b{background:rgba(59,130,246,0.2);color:var(--blue)}.badge-c{background:rgba(139,92,246,0.2);color:var(--purple)}
-              footer{text-align:center;padding:20px;color:#8899aa;margin-top:30px;font-size:0.85rem}
-              @media(max-width:600px){.grades{grid-template-columns:repeat(2,1fr)}.stats{grid-template-columns:repeat(2,1fr)}}
+              :root {
+                --bg-primary: #080b10;
+                --bg-secondary: #0f1419;
+                --bg-card: #161d27;
+                --bg-hover: #1e2836;
+                --border: #2a3544;
+                --text-primary: #e7edf4;
+                --text-secondary: #8899aa;
+                --accent-gold: #ffd700;
+                --accent-blue: #3b82f6;
+                --accent-green: #10b981;
+                --accent-red: #ef4444;
+                --accent-purple: #8b5cf6;
+                --accent-cyan: #06b6d4;
+                --accent-orange: #f97316;
+              }
+              * { box-sizing: border-box; margin: 0; padding: 0; }
+              body {
+                font-family: 'Segoe UI', system-ui, sans-serif;
+                background: var(--bg-primary);
+                color: var(--text-primary);
+                min-height: 100vh;
+              }
+              .container { max-width: 1800px; margin: 0 auto; padding: 20px; }
+              
+              header {
+                text-align: center;
+                padding: 60px 20px;
+                background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+                border-bottom: 1px solid var(--border);
+              }
+              .logo {
+                font-size: 3.5rem;
+                font-weight: 900;
+                background: linear-gradient(135deg, var(--accent-gold), var(--accent-orange), var(--accent-red));
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+              }
+              .version {
+                display: inline-block;
+                background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+                padding: 6px 16px;
+                border-radius: 20px;
+                font-size: 0.9rem;
+                font-weight: 600;
+                margin: 15px 0;
+              }
+              .tagline { color: var(--text-secondary); font-size: 1.2rem; }
+              
+              .stats-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 15px;
+                margin: 30px 0;
+              }
+              .stat {
+                background: var(--bg-card);
+                border: 1px solid var(--border);
+                border-radius: 16px;
+                padding: 20px;
+                text-align: center;
+                transition: all 0.3s;
+              }
+              .stat:hover { transform: translateY(-5px); border-color: var(--accent-blue); }
+              .stat-icon { font-size: 2rem; margin-bottom: 8px; }
+              .stat-value { font-size: 2rem; font-weight: 800; }
+              .stat-label { color: var(--text-secondary); font-size: 0.85rem; margin-top: 5px; }
+              
+              .grade-section {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 15px;
+                margin: 30px 0;
+              }
+              .grade-card {
+                background: var(--bg-card);
+                border-radius: 16px;
+                padding: 25px;
+                text-align: center;
+                border: 2px solid transparent;
+                transition: all 0.3s;
+              }
+              .grade-card:hover { transform: scale(1.02); }
+              .grade-card.s { border-color: var(--accent-gold); }
+              .grade-card.a { border-color: var(--accent-green); }
+              .grade-card.b { border-color: var(--accent-blue); }
+              .grade-card.c { border-color: var(--accent-purple); }
+              .grade-letter { font-size: 3rem; font-weight: 900; }
+              .grade-count { font-size: 2rem; font-weight: 700; margin-top: 10px; }
+              .grade-label { color: var(--text-secondary); }
+              
+              .security-alerts {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 15px;
+                margin: 30px 0;
+              }
+              .alert {
+                background: var(--bg-card);
+                border-radius: 12px;
+                padding: 20px;
+                display: flex;
+                align-items: center;
+                gap: 15px;
+              }
+              .alert-icon { font-size: 2rem; }
+              .alert-info { flex: 1; }
+              .alert-value { font-size: 1.5rem; font-weight: 700; }
+              .alert-label { color: var(--text-secondary); font-size: 0.85rem; }
+              
+              .actions {
+                display: flex;
+                gap: 12px;
+                justify-content: center;
+                flex-wrap: wrap;
+                margin: 30px 0;
+              }
+              .btn {
+                padding: 14px 28px;
+                border-radius: 12px;
+                font-weight: 600;
+                text-decoration: none;
+                transition: all 0.3s;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+              }
+              .btn-gold { background: linear-gradient(135deg, var(--accent-gold), var(--accent-orange)); color: #000; }
+              .btn-primary { background: var(--accent-green); color: #fff; }
+              .btn-secondary { background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border); }
+              .btn:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+              
+              .section-title {
+                font-size: 1.5rem;
+                margin: 40px 0 20px;
+                padding-bottom: 15px;
+                border-bottom: 2px solid var(--border);
+                display: flex;
+                align-items: center;
+                gap: 12px;
+              }
+              
+              .table-container {
+                background: var(--bg-card);
+                border-radius: 16px;
+                overflow: hidden;
+                border: 1px solid var(--border);
+              }
+              table { width: 100%; border-collapse: collapse; }
+              th, td { padding: 14px 12px; text-align: right; border-bottom: 1px solid var(--border); }
+              th { background: var(--bg-secondary); font-weight: 600; color: var(--accent-blue); position: sticky; top: 0; }
+              tr:hover { background: var(--bg-hover); }
+              
+              .grade-badge {
+                display: inline-block;
+                padding: 4px 12px;
+                border-radius: 8px;
+                font-weight: 700;
+                font-size: 0.9rem;
+              }
+              .grade-badge.s { background: rgba(255,215,0,0.2); color: var(--accent-gold); }
+              .grade-badge.a { background: rgba(16,185,129,0.2); color: var(--accent-green); }
+              .grade-badge.b { background: rgba(59,130,246,0.2); color: var(--accent-blue); }
+              .grade-badge.c { background: rgba(139,92,246,0.2); color: var(--accent-purple); }
+              
+              .protocol-tag {
+                padding: 4px 10px;
+                border-radius: 6px;
+                font-size: 0.75rem;
+                font-weight: 700;
+                text-transform: uppercase;
+              }
+              .protocol-vless { background: #8b5cf6; color: #fff; }
+              .protocol-vmess { background: #3b82f6; color: #fff; }
+              .protocol-trojan { background: #ef4444; color: #fff; }
+              .protocol-ss { background: #22c55e; color: #fff; }
+              
+              .confidence-bar {
+                width: 60px;
+                height: 8px;
+                background: var(--bg-secondary);
+                border-radius: 4px;
+                overflow: hidden;
+                display: inline-block;
+                vertical-align: middle;
+              }
+              .confidence-fill {
+                height: 100%;
+                border-radius: 4px;
+              }
+              
+              .risk-badge {
+                padding: 3px 8px;
+                border-radius: 4px;
+                font-size: 0.7rem;
+                font-weight: 600;
+              }
+              .risk-low { background: rgba(16,185,129,0.2); color: var(--accent-green); }
+              .risk-medium { background: rgba(251,191,36,0.2); color: var(--accent-orange); }
+              .risk-high { background: rgba(239,68,68,0.2); color: var(--accent-red); }
+              
+              footer {
+                text-align: center;
+                padding: 40px;
+                color: var(--text-secondary);
+                border-top: 1px solid var(--border);
+                margin-top: 50px;
+              }
+              
+              @media (max-width: 768px) {
+                .logo { font-size: 2.5rem; }
+                .grade-section { grid-template-columns: repeat(2, 1fr); }
+                th, td { padding: 10px 6px; font-size: 0.8rem; }
+              }
             </style>
           </head>
           <body>
+            <header>
+              <div class="logo">🚀 QuantumRoute</div>
+              <span class="version">V5 Ultimate Intelligence</span>
+              <p class="tagline">هوشمندترین سیستم تست کانفیگ V2Ray برای ایران</p>
+            </header>
+            
             <div class="container">
-              <h1>🚀 QuantumRoute V5</h1>
-              <div class="stats" id="stats"></div>
-              <div class="grades">
-                <div class="grade s"><div class="grade-letter" style="color:var(--gold)">S</div><div class="grade-count" id="gs">-</div></div>
-                <div class="grade a"><div class="grade-letter" style="color:var(--green)">A</div><div class="grade-count" id="ga">-</div></div>
-                <div class="grade b"><div class="grade-letter" style="color:var(--blue)">B</div><div class="grade-count" id="gb">-</div></div>
-                <div class="grade c"><div class="grade-letter" style="color:var(--purple)">C</div><div class="grade-count" id="gc">-</div></div>
+              <div class="stats-grid" id="stats"></div>
+              
+              <div class="grade-section">
+                <div class="grade-card s">
+                  <div class="grade-letter" style="color: var(--accent-gold)">S</div>
+                  <div class="grade-count" id="grade-s">-</div>
+                  <div class="grade-label">Premium (1000+)</div>
+                </div>
+                <div class="grade-card a">
+                  <div class="grade-letter" style="color: var(--accent-green)">A</div>
+                  <div class="grade-count" id="grade-a">-</div>
+                  <div class="grade-label">Excellent (800-999)</div>
+                </div>
+                <div class="grade-card b">
+                  <div class="grade-letter" style="color: var(--accent-blue)">B</div>
+                  <div class="grade-count" id="grade-b">-</div>
+                  <div class="grade-label">Good (600-799)</div>
+                </div>
+                <div class="grade-card c">
+                  <div class="grade-letter" style="color: var(--accent-purple)">C</div>
+                  <div class="grade-count" id="grade-c">-</div>
+                  <div class="grade-label">Acceptable (400-599)</div>
+                </div>
               </div>
+              
+              <div class="security-alerts" id="security"></div>
+              
               <div class="actions">
-                <a href="grade_s.txt" class="btn btn-gold">🏆 S</a>
-                <a href="premium.txt" class="btn btn-green">⭐ Premium</a>
-                <a href="configs.txt" class="btn btn-sec">📥 All</a>
-                <a href="configs_base64.txt" class="btn btn-sec">🔐 B64</a>
-                <a href="results.json" class="btn btn-sec">📊 JSON</a>
+                <a href="grade_s.txt" class="btn btn-gold">🏆 Grade S Configs</a>
+                <a href="premium.txt" class="btn btn-primary">⭐ Premium (S+A)</a>
+                <a href="best.txt" class="btn btn-secondary">📥 Top 200</a>
+                <a href="configs.txt" class="btn btn-secondary">📄 All Working</a>
+                <a href="configs_base64.txt" class="btn btn-secondary">🔐 Base64</a>
+                <a href="results.json" class="btn btn-secondary">📊 JSON</a>
               </div>
-              <table><thead><tr><th>#</th><th>Grade</th><th>Protocol</th><th>Host</th><th>Latency</th><th>Score</th><th>CDN</th></tr></thead><tbody id="tb"></tbody></table>
+              
+              <h2 class="section-title">🏆 Top 30 Configs</h2>
+              <div class="table-container">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Grade</th>
+                      <th>Protocol</th>
+                      <th>Host</th>
+                      <th>Latency</th>
+                      <th>Score</th>
+                      <th>Confidence</th>
+                      <th>DPI Risk</th>
+                      <th>CDN</th>
+                    </tr>
+                  </thead>
+                  <tbody id="results"></tbody>
+                </table>
+              </div>
             </div>
-            <footer>آخرین بروزرسانی: <span id="ts">-</span></footer>
+            
+            <footer>
+              <p>آخرین بروزرسانی: <span id="timestamp">-</span></p>
+              <p>QuantumRoute V5 - Ultimate Intelligence Engine</p>
+            </footer>
+            
             <script>
-              fetch('results.json').then(r=>r.json()).then(d=>{
-                document.getElementById('stats').innerHTML=`
-                  <div class="stat"><div class="stat-value" style="color:var(--blue)">${d.summary.total}</div><div class="stat-label">کل</div></div>
-                  <div class="stat"><div class="stat-value" style="color:var(--green)">${d.summary.working}</div><div class="stat-label">سالم</div></div>
-                  <div class="stat"><div class="stat-value" style="color:var(--gold)">${d.quality.avg_score}</div><div class="stat-label">امتیاز</div></div>
-                  <div class="stat"><div class="stat-value">${d.quality.avg_latency}ms</div><div class="stat-label">تاخیر</div></div>
-                  <div class="stat"><div class="stat-value" style="color:var(--blue)">${d.security.cloudflare}</div><div class="stat-label">CF</div></div>
+              async function load() {
+                const data = await fetch('results.json').then(r => r.json());
+                
+                // Stats
+                const statsHtml = `
+                  <div class="stat">
+                    <div class="stat-icon">📄</div>
+                    <div class="stat-value" style="color: var(--accent-blue)">${data.summary.total}</div>
+                    <div class="stat-label">کل تست شده</div>
+                  </div>
+                  <div class="stat">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-value" style="color: var(--accent-green)">${data.summary.working}</div>
+                    <div class="stat-label">سالم</div>
+                  </div>
+                  <div class="stat">
+                    <div class="stat-icon">⚡</div>
+                    <div class="stat-value" style="color: var(--accent-orange)">${data.quality.avg_latency}ms</div>
+                    <div class="stat-label">میانگین تاخیر</div>
+                  </div>
+                  <div class="stat">
+                    <div class="stat-icon">🏆</div>
+                    <div class="stat-value" style="color: var(--accent-gold)">${data.quality.avg_score}</div>
+                    <div class="stat-label">میانگین امتیاز</div>
+                  </div>
+                  <div class="stat">
+                    <div class="stat-icon">🧠</div>
+                    <div class="stat-value" style="color: var(--accent-cyan)">${data.quality.avg_confidence}%</div>
+                    <div class="stat-label">اطمینان ML</div>
+                  </div>
+                  <div class="stat">
+                    <div class="stat-icon">☁️</div>
+                    <div class="stat-value" style="color: var(--accent-blue)">${data.security.cloudflare}</div>
+                    <div class="stat-label">Cloudflare</div>
+                  </div>
                 `;
-                document.getElementById('gs').textContent=d.grades.S;
-                document.getElementById('ga').textContent=d.grades.A;
-                document.getElementById('gb').textContent=d.grades.B;
-                document.getElementById('gc').textContent=d.grades.C;
-                document.getElementById('ts').textContent=new Date(d.timestamp).toLocaleString('fa-IR');
-                const tb=document.getElementById('tb');
-                d.top_30.forEach((r,i)=>{
-                  tb.innerHTML+=`<tr><td>${i+1}</td><td><span class="badge badge-${r.grade.toLowerCase()}">${r.grade}</span></td><td>${r.protocol}</td><td>${r.host}</td><td>${r.latency}ms</td><td>${r.score}</td><td>${r.cdn||'-'}</td></tr>`;
+                document.getElementById('stats').innerHTML = statsHtml;
+                
+                // Grades
+                document.getElementById('grade-s').textContent = data.grades.S;
+                document.getElementById('grade-a').textContent = data.grades.A;
+                document.getElementById('grade-b').textContent = data.grades.B;
+                document.getElementById('grade-c').textContent = data.grades.C;
+                
+                // Security
+                const securityHtml = `
+                  <div class="alert">
+                    <div class="alert-icon">🏴‍☠️</div>
+                    <div class="alert-info">
+                      <div class="alert-value" style="color: var(--accent-red)">${data.security.honeypots_detected}</div>
+                      <div class="alert-label">Honeypots Detected</div>
+                    </div>
+                  </div>
+                  <div class="alert">
+                    <div class="alert-icon">⚠️</div>
+                    <div class="alert-info">
+                      <div class="alert-value" style="color: var(--accent-orange)">${data.security.high_dpi_risk}</div>
+                      <div class="alert-label">High DPI Risk</div>
+                    </div>
+                  </div>
+                  <div class="alert">
+                    <div class="alert-icon">🔐</div>
+                    <div class="alert-info">
+                      <div class="alert-value" style="color: var(--accent-green)">${data.security.reality}</div>
+                      <div class="alert-label">Reality Protected</div>
+                    </div>
+                  </div>
+                  <div class="alert">
+                    <div class="alert-icon">🔒</div>
+                    <div class="alert-info">
+                      <div class="alert-value" style="color: var(--accent-blue)">${data.stability.very_stable}</div>
+                      <div class="alert-label">Very Stable</div>
+                    </div>
+                  </div>
+                `;
+                document.getElementById('security').innerHTML = securityHtml;
+                
+                // Table
+                const tbody = document.getElementById('results');
+                data.top_30.forEach((r, i) => {
+                  const gradeClass = r.grade.toLowerCase();
+                  const riskClass = r.dpi_risk === 'high' ? 'high' : r.dpi_risk === 'medium' ? 'medium' : 'low';
+                  const confColor = r.confidence >= 70 ? 'var(--accent-green)' : r.confidence >= 50 ? 'var(--accent-orange)' : 'var(--accent-red)';
+                  
+                  tbody.innerHTML += `
+                    <tr>
+                      <td>${i + 1}</td>
+                      <td><span class="grade-badge ${gradeClass}">${r.grade}</span></td>
+                      <td><span class="protocol-tag protocol-${r.protocol}">${r.protocol}</span></td>
+                      <td>${r.host}</td>
+                      <td>${r.latency}ms</td>
+                      <td><strong>${r.score}</strong></td>
+                      <td>
+                        <span class="confidence-bar">
+                          <span class="confidence-fill" style="width: ${r.confidence}%; background: ${confColor}"></span>
+                        </span>
+                        ${r.confidence}%
+                      </td>
+                      <td><span class="risk-badge risk-${riskClass}">${r.dpi_risk || 'low'}</span></td>
+                      <td>${r.cdn || '-'}</td>
+                    </tr>
+                  `;
                 });
-              }).catch(()=>{});
+                
+                document.getElementById('timestamp').textContent = new Date(data.timestamp).toLocaleString('fa-IR');
+              }
+              load();
             </script>
           </body>
           </html>
-          EOF
+          DASHBOARD_V5
 
       - name: 💾 Commit & Push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add output/ || true
+          git add output/
           
           if [[ -f output/stats.json ]]; then
-            W=$(jq -r '.working // 0' output/stats.json 2>/dev/null || echo 0)
-            S=$(jq -r '.grade_s // 0' output/stats.json 2>/dev/null || echo 0)
-            A=$(jq -r '.grade_a // 0' output/stats.json 2>/dev/null || echo 0)
-            git commit -m "🚀 V5: ${W} working | S:${S} A:${A}" || true
+            W=$(jq -r '.working' output/stats.json)
+            S=$(jq -r '.grade_s' output/stats.json)
+            A=$(jq -r '.grade_a' output/stats.json)
+            SCORE=$(jq -r '.avg_score' output/stats.json)
+            git commit -m "🚀 V5: ${W} working | S:${S} A:${A} | avg:${SCORE}" || true
           else
             git commit -m "🚀 V5 Update" || true
           fi
-          
           git push || true
 
       - name: 📦 Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: quantum-v5
+          name: quantum-v5-output
           path: output/
           retention-days: 14
