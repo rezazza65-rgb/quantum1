@@ -5,13 +5,12 @@
     "failed": 0,
     "success_rate": "%"
   },
-  "stage2_xray_test": {
+  "stage2_validation": {
     "passed": 0,
-    "failed": 0,
-    "success_rate": "%"
+    "method": "network_connectivity"
   },
   "final_working": 0,
   "overall_success_rate": "%",
-  "updated_at": "2026-01-28T14:49:14Z",
-  "testing_method": "two-stage (network + xray-core)"
+  "updated_at": "2026-01-28T15:22:18Z",
+  "testing_method": "tcp_tls_connectivity"
 }
