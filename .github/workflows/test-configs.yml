@@ -1,4 +1,4 @@
-name: QuantumRoute V6 - Supreme Intelligence (Iran Optimized) - FIXED V2
+name: QuantumRoute V6 - Supreme Intelligence (Iran Optimized) - FIXED V3
 
 on:
   schedule:
@@ -53,7 +53,8 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y jq curl netcat-openbsd openssl dnsutils whois traceroute mtr-tiny
           npm init -y
-          npm install p-limit node-fetch@2 geoip-lite axios cheerio
+          # ⚠️ FIX: Use p-limit@3 (CommonJS compatible) instead of latest (ESM only)
+          npm install p-limit@3 node-fetch@2 geoip-lite axios cheerio
           echo "✅ Dependencies installed successfully"
 
       - name: 📁 Create Directory Structure
@@ -72,30 +73,26 @@ jobs:
           
           echo "✅ Directories created"
 
-      - name: 🌐 Fetch Configs from All Sources (FIXED)
+      - name: 🌐 Fetch Configs from All Sources
         run: |
           echo "════════════════════════════════════════════════════════════"
           echo "🌐 QuantumRoute V6 - Supreme Intelligence Fetcher"
           echo "════════════════════════════════════════════════════════════"
           
-          # Initialize files
           > tmp/raw_all.txt
           > logs/fetch.log
           
-          # Function to fetch with multiple methods
           fetch_url() {
             local url="$1"
             local output="$2"
             local name="$3"
             
-            # Try direct fetch first
             if curl -fsSL --connect-timeout 30 --max-time 90 \
               -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" \
               -H "Accept: text/plain,*/*" \
               "$url" -o "$output" 2>/dev/null; then
               
               if [[ -s "$output" ]]; then
-                # Try to decode base64 if needed
                 if head -c 100 "$output" 2>/dev/null | grep -qE '^[A-Za-z0-9+/=]+$'; then
                   if base64 -d "$output" > "${output}.dec" 2>/dev/null; then
                     if [[ -s "${output}.dec" ]]; then
@@ -116,169 +113,67 @@ jobs:
           
           echo "📥 Starting parallel downloads..."
           
-          # ═══════════════════════════════════════════════════════════════
-          # PRIMARY SOURCES (Direct GitHub Raw URLs)
-          # ═══════════════════════════════════════════════════════════════
+          # PRIMARY SOURCES
+          fetch_url "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/All_Configs_Sub.txt" "tmp/barry.txt" "barry-far" &
+          fetch_url "https://raw.githubusercontent.com/Epodonios/v2ray-configs/main/All_Configs_Sub.txt" "tmp/epodonios.txt" "epodonios" &
+          fetch_url "https://raw.githubusercontent.com/roosterkid/openproxylist/main/V2RAY_RAW.txt" "tmp/rooster_raw.txt" "roosterkid-raw" &
+          fetch_url "https://raw.githubusercontent.com/roosterkid/openproxylist/main/V2RAY_BASE64.txt" "tmp/rooster_b64.txt" "roosterkid-b64" &
+          fetch_url "https://raw.githubusercontent.com/itsyebekhe/PSG/main/subscriptions/xray/base64/mix" "tmp/yebekhe.txt" "yebekhe" &
+          fetch_url "https://raw.githubusercontent.com/miladtahanian/V2RayCFGDumper/main/config.txt" "tmp/milad.txt" "milad" &
+          fetch_url "https://raw.githubusercontent.com/ebrasha/free-v2ray-public-list/main/all_extracted_configs.txt" "tmp/ebrasha.txt" "ebrasha" &
+          fetch_url "https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/sub_merge_base64.txt" "tmp/mahdi.txt" "mahdibland" &
+          fetch_url "https://raw.githubusercontent.com/freefq/free/master/v2" "tmp/freefq.txt" "freefq" &
+          fetch_url "https://raw.githubusercontent.com/Pawdroid/Free-servers/main/sub" "tmp/pawdroid.txt" "pawdroid" &
+          fetch_url "https://raw.githubusercontent.com/aiboboxx/v2rayfree/main/v2" "tmp/aiboboxx.txt" "aiboboxx" &
+          fetch_url "https://raw.githubusercontent.com/mfuu/v2ray/master/v2ray" "tmp/mfuu.txt" "mfuu" &
+          fetch_url "https://raw.githubusercontent.com/peasoft/NoMoreWalls/master/list_raw.txt" "tmp/peasoft.txt" "peasoft" &
+          fetch_url "https://raw.githubusercontent.com/ermaozi/get_subscribe/main/subscribe/v2ray.txt" "tmp/ermaozi.txt" "ermaozi" &
           
-          # Barry-far V2ray Configs
-          fetch_url "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/All_Configs_Sub.txt" \
-            "tmp/barry.txt" "barry-far" &
-          
-          # Epodonios
-          fetch_url "https://raw.githubusercontent.com/Epodonios/v2ray-configs/main/All_Configs_Sub.txt" \
-            "tmp/epodonios.txt" "epodonios" &
-          
-          # Roosterkid Raw
-          fetch_url "https://raw.githubusercontent.com/roosterkid/openproxylist/main/V2RAY_RAW.txt" \
-            "tmp/rooster_raw.txt" "roosterkid-raw" &
-          
-          # Roosterkid Base64
-          fetch_url "https://raw.githubusercontent.com/roosterkid/openproxylist/main/V2RAY_BASE64.txt" \
-            "tmp/rooster_b64.txt" "roosterkid-b64" &
-          
-          # Yebekhe PSG
-          fetch_url "https://raw.githubusercontent.com/itsyebekhe/PSG/main/subscriptions/xray/base64/mix" \
-            "tmp/yebekhe.txt" "yebekhe" &
-          
-          # MiladTahanian
-          fetch_url "https://raw.githubusercontent.com/miladtahanian/V2RayCFGDumper/main/config.txt" \
-            "tmp/milad.txt" "milad" &
-          
-          # Ebrasha
-          fetch_url "https://raw.githubusercontent.com/ebrasha/free-v2ray-public-list/main/all_extracted_configs.txt" \
-            "tmp/ebrasha.txt" "ebrasha" &
-          
-          # MhdiTaheri
-          fetch_url "https://raw.githubusercontent.com/MhdiTahworri/V2rayCollector/main/sub/mix_base64.txt" \
-            "tmp/mhdi.txt" "mhdi" &
-          
-          # Mahdibland
-          fetch_url "https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/sub_merge_base64.txt" \
-            "tmp/mahdi.txt" "mahdibland" &
-          
-          # Freefq
-          fetch_url "https://raw.githubusercontent.com/freefq/free/master/v2" \
-            "tmp/freefq.txt" "freefq" &
-          
-          # Pawdroid
-          fetch_url "https://raw.githubusercontent.com/Pawdroid/Free-servers/main/sub" \
-            "tmp/pawdroid.txt" "pawdroid" &
-          
-          # Aiboboxx
-          fetch_url "https://raw.githubusercontent.com/aiboboxx/v2rayfree/main/v2" \
-            "tmp/aiboboxx.txt" "aiboboxx" &
-          
-          # Mfuu
-          fetch_url "https://raw.githubusercontent.com/mfuu/v2ray/master/v2ray" \
-            "tmp/mfuu.txt" "mfuu" &
-          
-          # Peasoft
-          fetch_url "https://raw.githubusercontent.com/peasoft/NoMoreWalls/master/list_raw.txt" \
-            "tmp/peasoft.txt" "peasoft" &
-          
-          # Ermaozi
-          fetch_url "https://raw.githubusercontent.com/ermaozi/get_subscribe/main/subscribe/v2ray.txt" \
-            "tmp/ermaozi.txt" "ermaozi" &
-          
-          # Wait for first batch
           wait
           echo "✅ First batch completed"
           
-          # ═══════════════════════════════════════════════════════════════
           # SECONDARY SOURCES
-          # ═══════════════════════════════════════════════════════════════
+          fetch_url "https://raw.githubusercontent.com/ShatakVPN/ConfigForge-V2Ray/main/configs/all.txt" "tmp/shatak.txt" "shatak" &
+          fetch_url "https://raw.githubusercontent.com/ts-abc/v2ray-free-node/main/mergesub/merge_base64.txt" "tmp/tsabc.txt" "ts-abc" &
+          fetch_url "https://raw.githubusercontent.com/Leon406/SubCrawler/master/sub/share/vless" "tmp/leon_vless.txt" "leon-vless" &
+          fetch_url "https://raw.githubusercontent.com/Leon406/SubCrawler/master/sub/share/all3" "tmp/leon_all.txt" "leon-all" &
+          fetch_url "https://raw.githubusercontent.com/tbbatbb/Proxy/master/dist/v2ray.config.txt" "tmp/tbbatbb.txt" "tbbatbb" &
+          fetch_url "https://raw.githubusercontent.com/learnhard-cn/free_proxy_ss/main/v2ray/v2raysub" "tmp/learnhard.txt" "learnhard" &
           
-          # OpenProxyList
-          fetch_url "https://openproxylist.com/v2ray/rawlist/text" \
-            "tmp/openproxy1.txt" "openproxy-text" &
-          
-          fetch_url "https://openproxylist.com/v2ray/rawlist/subscribe" \
-            "tmp/openproxy2.txt" "openproxy-sub" &
-          
-          # ShatakVPN
-          fetch_url "https://raw.githubusercontent.com/ShatakVPN/ConfigForge-V2Ray/main/configs/all.txt" \
-            "tmp/shatak.txt" "shatak" &
-          
-          # Vveg26
-          fetch_url "https://raw.githubusercontent.com/vveg26/get_proxy/main/sub" \
-            "tmp/vveg.txt" "vveg" &
-          
-          # Ts-Abc
-          fetch_url "https://raw.githubusercontent.com/ts-abc/v2ray-free-node/main/mergesub/merge_base64.txt" \
-            "tmp/tsabc.txt" "ts-abc" &
-          
-          # Leon406
-          fetch_url "https://raw.githubusercontent.com/Leon406/SubCrawler/master/sub/share/vless" \
-            "tmp/leon_vless.txt" "leon-vless" &
-          
-          fetch_url "https://raw.githubusercontent.com/Leon406/SubCrawler/master/sub/share/all3" \
-            "tmp/leon_all.txt" "leon-all" &
-          
-          # Tbbatbb
-          fetch_url "https://raw.githubusercontent.com/tbbatbb/Proxy/master/dist/v2ray.config.txt" \
-            "tmp/tbbatbb.txt" "tbbatbb" &
-          
-          # Learnhard-cn
-          fetch_url "https://raw.githubusercontent.com/learnhard-cn/free_proxy_ss/main/v2ray/v2raysub" \
-            "tmp/learnhard.txt" "learnhard" &
-          
-          # Abshare
-          fetch_url "https://raw.githubusercontent.com/abshare/abshare.github.io/main/README.md" \
-            "tmp/abshare.txt" "abshare" &
-          
-          # Wait for second batch
           wait
           echo "✅ Second batch completed"
           
-          # ═══════════════════════════════════════════════════════════════
-          # COOK369 SOURCES (Multiple files)
-          # ═══════════════════════════════════════════════════════════════
-          
+          # COOK369 SOURCES
           for src in 85la cfmeme datiya jichangx nodefree oneclash yudou; do
-            fetch_url "https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/${src}/v2ray.txt" \
-              "tmp/cook_${src}.txt" "cook-${src}" &
+            fetch_url "https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/${src}/v2ray.txt" "tmp/cook_${src}.txt" "cook-${src}" &
           done
           
           wait
           echo "✅ Cook369 sources completed"
           
-          # ═══════════════════════════════════════════════════════════════
-          # FIRMFOX SOURCES (subscription-1 to subscription-38)
-          # ═══════════════════════════════════════════════════════════════
-          
+          # FIRMFOX SOURCES
           for i in $(seq 1 10); do
-            fetch_url "https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-${i}.txt" \
-              "tmp/firmfox_${i}.txt" "firmfox-${i}" &
+            fetch_url "https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-${i}.txt" "tmp/firmfox_${i}.txt" "firmfox-${i}" &
           done
-          
           wait
           
           for i in $(seq 11 20); do
-            fetch_url "https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-${i}.txt" \
-              "tmp/firmfox_${i}.txt" "firmfox-${i}" &
+            fetch_url "https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-${i}.txt" "tmp/firmfox_${i}.txt" "firmfox-${i}" &
           done
-          
           wait
           
           for i in $(seq 21 30); do
-            fetch_url "https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-${i}.txt" \
-              "tmp/firmfox_${i}.txt" "firmfox-${i}" &
+            fetch_url "https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-${i}.txt" "tmp/firmfox_${i}.txt" "firmfox-${i}" &
           done
-          
           wait
           
           for i in $(seq 31 38); do
-            fetch_url "https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-${i}.txt" \
-              "tmp/firmfox_${i}.txt" "firmfox-${i}" &
+            fetch_url "https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-${i}.txt" "tmp/firmfox_${i}.txt" "firmfox-${i}" &
           done
-          
           wait
           echo "✅ Firmfox sources completed"
           
-          # ═══════════════════════════════════════════════════════════════
           # MERGE ALL FILES
-          # ═══════════════════════════════════════════════════════════════
-          
           echo "📊 Merging all downloaded files..."
           
           for f in tmp/*.txt; do
@@ -287,14 +182,12 @@ jobs:
             fi
           done
           
-          # Count total lines
           TOTAL_LINES=$(wc -l < tmp/raw_all.txt 2>/dev/null || echo 0)
           echo ""
           echo "════════════════════════════════════════════════════════════"
           echo "📊 Total lines fetched: $TOTAL_LINES"
           echo "════════════════════════════════════════════════════════════"
           
-          # Show fetch log
           echo ""
           echo "📋 Fetch Summary:"
           cat logs/fetch.log | head -50
@@ -304,29 +197,12 @@ jobs:
             echo "⚠️ WARNING: Low config count ($TOTAL_LINES lines)"
             echo "📝 Attempting emergency fallback sources..."
             
-            # Emergency fallback
-            curl -fsSL --max-time 120 \
-              "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/Sub1.txt" \
-              >> tmp/raw_all.txt 2>/dev/null || true
-            
-            curl -fsSL --max-time 120 \
-              "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/Sub2.txt" \
-              >> tmp/raw_all.txt 2>/dev/null || true
-            
-            curl -fsSL --max-time 120 \
-              "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/Sub3.txt" \
-              >> tmp/raw_all.txt 2>/dev/null || true
+            curl -fsSL --max-time 120 "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/Sub1.txt" >> tmp/raw_all.txt 2>/dev/null || true
+            curl -fsSL --max-time 120 "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/Sub2.txt" >> tmp/raw_all.txt 2>/dev/null || true
+            curl -fsSL --max-time 120 "https://raw.githubusercontent.com/barry-far/V2ray-Configs/main/Sub3.txt" >> tmp/raw_all.txt 2>/dev/null || true
             
             TOTAL_LINES=$(wc -l < tmp/raw_all.txt 2>/dev/null || echo 0)
             echo "📊 After fallback: $TOTAL_LINES lines"
-          fi
-          
-          if [[ $TOTAL_LINES -lt 20 ]]; then
-            echo "❌ CRITICAL: Still insufficient configs"
-            echo "📋 Creating minimal test file..."
-            # Create a minimal file to prevent complete failure
-            echo "# Waiting for sources to be available" > tmp/raw_all.txt
-            # Don't exit with error - let the process continue
           fi
           
           echo "✅ Fetch phase completed"
@@ -335,28 +211,23 @@ jobs:
         run: |
           echo "🔍 Parsing and deduplicating configs..."
           
-          # Extract all proxy URLs with multiple patterns
           grep -oE '(vmess|vless|trojan|ss|ssr|hysteria|hysteria2|hy2|tuic)://[^[:space:]"<>'"'"'\r\n]+' tmp/raw_all.txt 2>/dev/null | \
             sed 's/[[:space:]]*$//' | \
             sed 's/\r//g' | \
             sort -u > tmp/all_configs.txt || true
           
-          # Count extracted
           EXTRACTED=$(wc -l < tmp/all_configs.txt 2>/dev/null || echo 0)
           echo "📊 Extracted proxy URLs: $EXTRACTED"
           
-          # Advanced deduplication
           > tmp/unique.txt
           declare -A SEEN
           
           while IFS= read -r line || [[ -n "$line" ]]; do
             [[ -z "$line" || ${#line} -lt 15 ]] && continue
             
-            # Clean line
             clean=$(echo "$line" | tr -d '\r\n\t ' | sed 's/[[:space:]]//g')
             [[ -z "$clean" ]] && continue
             
-            # Create hash
             hash=$(echo -n "$clean" | md5sum | cut -d' ' -f1)
             
             if [[ -z "${SEEN[$hash]:-}" ]]; then
@@ -370,7 +241,6 @@ jobs:
           
           if [[ $UNIQUE_COUNT -lt 10 ]]; then
             echo "⚠️ WARNING: Very few unique configs ($UNIQUE_COUNT)"
-            echo "📝 Will proceed with available configs..."
           fi
           
           echo "✅ Deduplication complete"
@@ -379,12 +249,8 @@ jobs:
         run: |
           cat << 'TESTER_EOF' > tester.js
           const net = require('net');
-          const tls = require('tls');
-          const https = require('https');
-          const http = require('http');
           const fs = require('fs');
           const dns = require('dns');
-          const crypto = require('crypto');
           const pLimit = require('p-limit');
           
           // Configuration
@@ -397,13 +263,11 @@ jobs:
           const ENABLE_IRAN_OPT = process.env.ENABLE_IRAN_OPTIMIZATION === 'true';
           const ENABLE_DPI_EVASION = process.env.ENABLE_ADVANCED_DPI_EVASION === 'true';
           const ENABLE_AUTO_RETRY = process.env.ENABLE_AUTO_RETRY === 'true';
-          const ENABLE_FALLBACK_DNS = process.env.ENABLE_FALLBACK_DNS === 'true';
           
           const limit = pLimit(PARALLEL);
           
           // Iran DPI Signatures
           const IRAN_DPI_SIGNATURES = {
-            resetPatterns: ['ECONNRESET', 'ETIMEDOUT', 'ECONNREFUSED', 'EHOSTUNREACH'],
             blockedPorts: [22, 1080, 3128, 8080, 8888, 9050, 10808],
             safePorts: [443, 2053, 2083, 2087, 2096, 8443, 80]
           };
@@ -444,7 +308,7 @@ jobs:
           try {
             if (fs.existsSync('cache/history.json')) {
               mlHistory = JSON.parse(fs.readFileSync('cache/history.json', 'utf8'));
-              console.log(`🧠 ML history loaded: ${mlHistory.length} records`);
+              console.log('🧠 ML history loaded:', mlHistory.length, 'records');
               mlHistory.forEach(r => {
                 if (r.success) successfulHosts.set(r.host, (successfulHosts.get(r.host) || 0) + 1);
                 else failedHosts.set(r.host, (failedHosts.get(r.host) || 0) + 1);
@@ -466,23 +330,21 @@ jobs:
             return { cloudflare: 90, fastly: 75, amazon: 65, google: 80 }[cdn] || 0;
           }
           
-          function calculateDPIRisk(config, testResults) {
+          function calculateDPIRisk(config) {
             let riskScore = 0;
             const risks = [];
             
             if (IRAN_DPI_SIGNATURES.blockedPorts.includes(config.port)) {
-              riskScore += 50;
-              risks.push('HIGH_RISK_PORT');
+              riskScore += 50; risks.push('HIGH_RISK_PORT');
             } else if (IRAN_DPI_SIGNATURES.safePorts.includes(config.port)) {
-              riskScore -= 30;
-              risks.push('SAFE_PORT');
+              riskScore -= 30; risks.push('SAFE_PORT');
             }
             
             if (config.reality) { riskScore -= 60; risks.push('REALITY_PROTECTED'); }
             else if (['hysteria2', 'hy2'].includes(config.protocol)) { riskScore -= 40; risks.push('HYSTERIA2_PROTECTED'); }
             else if (config.protocol === 'vmess' && !config.tls && !config.ws) { riskScore += 45; risks.push('NO_ENCRYPTION'); }
             
-            if (config.cdn) { riskScore -= getCDNScore(config.cdn) * 0.5; risks.push(`CDN_${config.cdn.toUpperCase()}`); }
+            if (config.cdn) { riskScore -= getCDNScore(config.cdn) * 0.5; risks.push('CDN_' + config.cdn.toUpperCase()); }
             if (config.ws || config.grpc || config.h2) { riskScore -= 20; risks.push('TRANSPORT_OBFS'); }
             
             let risk = 'low';
@@ -501,7 +363,7 @@ jobs:
             const patterns = ['test', 'monitor', 'honeypot', 'trap', 'fake'];
             if (config.host) {
               patterns.forEach(p => {
-                if (config.host.toLowerCase().includes(p)) { suspicious.push(`PATTERN_${p.toUpperCase()}`); score += 40; }
+                if (config.host.toLowerCase().includes(p)) { suspicious.push('PATTERN_' + p.toUpperCase()); score += 40; }
               });
             }
             
@@ -538,20 +400,22 @@ jobs:
                   config.ws = json.net === 'ws';
                   config.grpc = json.net === 'grpc';
                   config.h2 = json.net === 'h2';
-                  config.sni = json.sni || json.host;
                 } catch (e) { return null; }
               } else if (protocol === 'vless' || protocol === 'trojan') {
-                const [auth, rest] = data.split('@');
-                if (!rest) return null;
-                const [hostPort, params] = rest.split('?');
-                const [host, port] = hostPort.split(':');
+                const atIndex = data.indexOf('@');
+                if (atIndex === -1) return null;
+                const rest = data.substring(atIndex + 1);
+                const qIndex = rest.indexOf('?');
+                const hostPort = qIndex > -1 ? rest.substring(0, qIndex) : rest.split('#')[0];
+                const colonIndex = hostPort.lastIndexOf(':');
+                if (colonIndex === -1) return null;
                 
-                config.host = host.split('#')[0];
-                config.port = parseInt(port.split('#')[0]);
-                config.id = auth;
+                config.host = hostPort.substring(0, colonIndex);
+                config.port = parseInt(hostPort.substring(colonIndex + 1).split('#')[0]);
                 
-                if (params) {
-                  const urlParams = new URLSearchParams(params.split('#')[0]);
+                if (qIndex > -1) {
+                  const params = rest.substring(qIndex + 1).split('#')[0];
+                  const urlParams = new URLSearchParams(params);
                   config.security = urlParams.get('security');
                   config.tls = ['tls', 'reality'].includes(config.security);
                   config.reality = config.security === 'reality';
@@ -561,36 +425,48 @@ jobs:
                   config.h2 = config.type === 'h2';
                 }
               } else if (['hysteria', 'hysteria2', 'hy2'].includes(protocol)) {
-                const [auth, rest] = data.split('@');
-                if (!rest) return null;
-                const [hostPort] = rest.split('?');
-                const [host, port] = hostPort.split(':');
-                config.host = host.split('#')[0];
-                config.port = parseInt(port.split('#')[0]);
+                const atIndex = data.indexOf('@');
+                if (atIndex === -1) return null;
+                const rest = data.substring(atIndex + 1);
+                const qIndex = rest.indexOf('?');
+                const hostPort = qIndex > -1 ? rest.substring(0, qIndex) : rest.split('#')[0];
+                const colonIndex = hostPort.lastIndexOf(':');
+                if (colonIndex === -1) return null;
+                config.host = hostPort.substring(0, colonIndex);
+                config.port = parseInt(hostPort.substring(colonIndex + 1).split('#')[0]);
               } else if (['ss', 'shadowsocks'].includes(protocol)) {
                 try {
-                  const decoded = Buffer.from(data.split('#')[0], 'base64').toString();
-                  const [, hostPort] = decoded.split('@');
-                  if (hostPort) {
-                    const [host, port] = hostPort.split(':');
-                    config.host = host;
-                    config.port = parseInt(port);
+                  const atIndex = data.indexOf('@');
+                  if (atIndex > -1) {
+                    const hostPort = data.substring(atIndex + 1).split('#')[0].split('?')[0];
+                    const colonIndex = hostPort.lastIndexOf(':');
+                    if (colonIndex > -1) {
+                      config.host = hostPort.substring(0, colonIndex);
+                      config.port = parseInt(hostPort.substring(colonIndex + 1));
+                    }
+                  } else {
+                    const decoded = Buffer.from(data.split('#')[0], 'base64').toString();
+                    const dAtIndex = decoded.indexOf('@');
+                    if (dAtIndex > -1) {
+                      const hostPort = decoded.substring(dAtIndex + 1);
+                      const colonIndex = hostPort.lastIndexOf(':');
+                      if (colonIndex > -1) {
+                        config.host = hostPort.substring(0, colonIndex);
+                        config.port = parseInt(hostPort.substring(colonIndex + 1));
+                      }
+                    }
                   }
-                } catch (e) {
-                  const [auth, hostPort] = data.split('@');
-                  if (hostPort) {
-                    const [host, port] = hostPort.split(':');
-                    config.host = host.split('#')[0];
-                    config.port = parseInt(port.split('#')[0]);
-                  }
-                }
+                } catch (e) { return null; }
               } else if (protocol === 'tuic') {
-                const [auth, rest] = data.split('@');
-                if (!rest) return null;
-                const [hostPort] = rest.split('?');
-                const [host, port] = hostPort.split(':');
-                config.host = host.split('#')[0];
-                config.port = parseInt(port.split('#')[0]);
+                const atIndex = data.indexOf('@');
+                if (atIndex === -1) return null;
+                const rest = data.substring(atIndex + 1);
+                const qIndex = rest.indexOf('?');
+                const hostPort = qIndex > -1 ? rest.substring(0, qIndex) : rest.split('#')[0];
+                const colonIndex = hostPort.lastIndexOf(':');
+                if (colonIndex === -1) return null;
+                config.host = hostPort.substring(0, colonIndex);
+                config.port = parseInt(hostPort.substring(colonIndex + 1).split('#')[0]);
               }
               
               if (!config.host || !config.port || isNaN(config.port)) return null;
@@ -600,27 +476,32 @@ jobs:
             } catch (e) { return null; }
           }
           
-          function testConnection(host, port, timeout = TIMEOUT, retries = 0) {
-            return new Promise((resolve) => {
+          function testConnection(host, port, timeout, retries) {
+            timeout = timeout || TIMEOUT;
+            retries = retries || 0;
+            
+            return new Promise(function(resolve) {
               const start = Date.now();
-              const socket = net.createConnection({ host, port, timeout });
+              const socket = net.createConnection({ host: host, port: port, timeout: timeout });
               
-              socket.on('connect', () => {
+              socket.on('connect', function() {
                 const latency = Date.now() - start;
                 socket.destroy();
-                resolve({ success: true, latency, connected: true });
+                resolve({ success: true, latency: latency, connected: true });
               });
               
-              socket.on('error', (err) => {
+              socket.on('error', function(err) {
                 socket.destroy();
                 if (ENABLE_AUTO_RETRY && retries < 2) {
-                  setTimeout(() => testConnection(host, port, timeout, retries + 1).then(resolve), 500);
+                  setTimeout(function() {
+                    testConnection(host, port, timeout, retries + 1).then(resolve);
+                  }, 500);
                   return;
                 }
                 resolve({ success: false, latency: Date.now() - start, error: err.code });
               });
               
-              socket.on('timeout', () => {
+              socket.on('timeout', function() {
                 socket.destroy();
                 resolve({ success: false, latency: timeout, error: 'TIMEOUT' });
               });
@@ -628,12 +509,12 @@ jobs:
           }
           
           const dnsCache = new Map();
-          async function resolveHost(host) {
-            if (dnsCache.has(host)) return dnsCache.get(host);
-            if (/^\d+\.\d+\.\d+\.\d+$/.test(host)) { dnsCache.set(host, host); return host; }
-            
-            return new Promise((resolve) => {
-              dns.resolve4(host, (err, addresses) => {
+          function resolveHost(host) {
+            return new Promise(function(resolve) {
+              if (dnsCache.has(host)) { resolve(dnsCache.get(host)); return; }
+              if (/^\d+\.\d+\.\d+\.\d+$/.test(host)) { dnsCache.set(host, host); resolve(host); return; }
+              
+              dns.resolve4(host, function(err, addresses) {
                 const result = err ? null : addresses[0];
                 if (result) dnsCache.set(host, result);
                 resolve(result);
@@ -641,37 +522,39 @@ jobs:
             });
           }
           
-          async function testStability(host, port) {
-            const results = [];
-            const latencies = [];
-            
-            for (let i = 0; i < STABILITY_ATTEMPTS; i++) {
-              const result = await testConnection(host, port, TIMEOUT);
-              results.push(result);
-              if (result.success) latencies.push(result.latency);
-              await new Promise(r => setTimeout(r, 100));
-            }
-            
-            const successful = results.filter(r => r.success).length;
-            const avgLatency = latencies.length > 0 ? latencies.reduce((a, b) => a + b, 0) / latencies.length : 0;
-            
-            let jitter = 0;
-            if (latencies.length > 1) {
-              const variance = latencies.reduce((sum, lat) => sum + Math.pow(lat - avgLatency, 2), 0) / latencies.length;
-              jitter = Math.sqrt(variance);
-            }
-            
-            const stabilityScore = (successful / STABILITY_ATTEMPTS) * 100;
-            
-            return {
-              stable: stabilityScore >= 60,
-              veryStable: stabilityScore >= 85,
-              ultraStable: stabilityScore === 100 && jitter < 20,
-              score: stabilityScore,
-              avgLatency: Math.round(avgLatency),
-              jitter: Math.round(jitter),
-              successful
-            };
+          function testStability(host, port) {
+            return new Promise(async function(resolve) {
+              const results = [];
+              const latencies = [];
+              
+              for (let i = 0; i < STABILITY_ATTEMPTS; i++) {
+                const result = await testConnection(host, port, TIMEOUT, 0);
+                results.push(result);
+                if (result.success) latencies.push(result.latency);
+                await new Promise(function(r) { setTimeout(r, 100); });
+              }
+              
+              const successful = results.filter(function(r) { return r.success; }).length;
+              const avgLatency = latencies.length > 0 ? latencies.reduce(function(a, b) { return a + b; }, 0) / latencies.length : 0;
+              
+              let jitter = 0;
+              if (latencies.length > 1) {
+                const variance = latencies.reduce(function(sum, lat) { return sum + Math.pow(lat - avgLatency, 2); }, 0) / latencies.length;
+                jitter = Math.sqrt(variance);
+              }
+              
+              const stabilityScore = (successful / STABILITY_ATTEMPTS) * 100;
+              
+              resolve({
+                stable: stabilityScore >= 60,
+                veryStable: stabilityScore >= 85,
+                ultraStable: stabilityScore === 100 && jitter < 20,
+                score: stabilityScore,
+                avgLatency: Math.round(avgLatency),
+                jitter: Math.round(jitter),
+                successful: successful
+              });
+            });
           }
           
           function calculateScore(config, testResults, stability, ip) {
@@ -730,7 +613,7 @@ jobs:
             }
             
             if (ENABLE_DPI_EVASION && ENABLE_IRAN_OPT) {
-              const dpiRisk = calculateDPIRisk(config, testResults);
+              const dpiRisk = calculateDPIRisk(config);
               let ds;
               if (dpiRisk.risk === 'low') ds = 90;
               else if (dpiRisk.risk === 'medium') ds = 40;
@@ -750,7 +633,7 @@ jobs:
             if (hostSucc >= 10) { score += 60; breakdown.proven_host = 60; }
             else if (hostSucc >= 5) { score += 30; breakdown.known_host = 30; }
             
-            return { total: Math.round(score), breakdown };
+            return { total: Math.round(score), breakdown: breakdown };
           }
           
           function assignGrade(score) {
@@ -768,7 +651,7 @@ jobs:
             const config = parseConfig(url);
             if (!config) return null;
             
-            const testResult = await testConnection(config.host, config.port, TIMEOUT);
+            const testResult = await testConnection(config.host, config.port, TIMEOUT, 0);
             if (!testResult.success) {
               failedHosts.set(config.host, (failedHosts.get(config.host) || 0) + 1);
               return null;
@@ -789,14 +672,14 @@ jobs:
             if (ENABLE_HONEYPOT) {
               const hp = detectHoneypot(config, testResult);
               if (hp.isHoneypot) {
-                console.log(`🏴‍☠️ Honeypot: ${config.host}:${config.port}`);
+                console.log('🏴‍☠️ Honeypot:', config.host + ':' + config.port);
                 return null;
               }
             }
             
             successfulHosts.set(config.host, (successfulHosts.get(config.host) || 0) + 1);
             
-            const dpiRisk = ENABLE_IRAN_OPT ? calculateDPIRisk(config, testResult) : { risk: 'unknown', score: 0, reasons: [] };
+            const dpiRisk = ENABLE_IRAN_OPT ? calculateDPIRisk(config) : { risk: 'unknown', score: 0, reasons: [] };
             const mlConf = ENABLE_ML ? calculateMLConfidence(config) : 50;
             
             return {
@@ -827,7 +710,7 @@ jobs:
             };
           }
           
-          (async () => {
+          (async function() {
             console.log('════════════════════════════════════════════════════════════');
             console.log('🧪 QuantumRoute V6 - Supreme Intelligence Tester');
             console.log('════════════════════════════════════════════════════════════');
@@ -836,13 +719,13 @@ jobs:
             try {
               configs = fs.readFileSync('tmp/unique.txt', 'utf8')
                 .split('\n')
-                .filter(l => l.trim().length > 10);
+                .filter(function(l) { return l.trim().length > 10; });
             } catch (e) {
               console.log('⚠️ No configs to test');
               configs = [];
             }
             
-            console.log(`📊 Configs to test: ${configs.length}`);
+            console.log('📊 Configs to test:', configs.length);
             
             if (configs.length === 0) {
               console.log('⚠️ No configs available. Creating empty output...');
@@ -869,33 +752,35 @@ jobs:
             let working = 0;
             const startTime = Date.now();
             
-            const tasks = configs.map(c => limit(async () => {
-              const r = await testConfig(c);
-              tested++;
-              if (r) { working++; results.push(r); }
-              if (tested % 100 === 0) {
-                const pct = Math.round(tested / configs.length * 100);
-                console.log(`📊 Progress: ${pct}% | Working: ${working}`);
-              }
-            }));
+            const tasks = configs.map(function(c) {
+              return limit(async function() {
+                const r = await testConfig(c);
+                tested++;
+                if (r) { working++; results.push(r); }
+                if (tested % 100 === 0) {
+                  const pct = Math.round(tested / configs.length * 100);
+                  console.log('📊 Progress:', pct + '% | Working:', working);
+                }
+              });
+            });
             
             await Promise.all(tasks);
             
             const totalTime = ((Date.now() - startTime) / 1000).toFixed(1);
-            console.log(`✅ Complete in ${totalTime}s | Working: ${working}/${tested}`);
+            console.log('✅ Complete in', totalTime + 's | Working:', working + '/' + tested);
             
-            results.sort((a, b) => b.score - a.score);
+            results.sort(function(a, b) { return b.score - a.score; });
             
             const grades = { 'S+': 0, S: 0, 'A+': 0, A: 0, 'B+': 0, B: 0, C: 0, D: 0 };
-            results.forEach(r => grades[r.grade]++);
+            results.forEach(function(r) { grades[r.grade]++; });
             
-            const avgLatency = results.length ? Math.round(results.reduce((s, r) => s + r.latency, 0) / results.length) : 0;
-            const avgScore = results.length ? Math.round(results.reduce((s, r) => s + r.score, 0) / results.length) : 0;
-            const avgConf = results.length ? Math.round(results.reduce((s, r) => s + r.ml_confidence, 0) / results.length) : 0;
-            const avgJitter = results.length ? Math.round(results.reduce((s, r) => s + (r.jitter || 0), 0) / results.length) : 0;
+            const avgLatency = results.length ? Math.round(results.reduce(function(s, r) { return s + r.latency; }, 0) / results.length) : 0;
+            const avgScore = results.length ? Math.round(results.reduce(function(s, r) { return s + r.score; }, 0) / results.length) : 0;
+            const avgConf = results.length ? Math.round(results.reduce(function(s, r) { return s + r.ml_confidence; }, 0) / results.length) : 0;
+            const avgJitter = results.length ? Math.round(results.reduce(function(s, r) { return s + (r.jitter || 0); }, 0) / results.length) : 0;
             
             const protocols = {};
-            results.forEach(r => protocols[r.protocol] = (protocols[r.protocol] || 0) + 1);
+            results.forEach(function(r) { protocols[r.protocol] = (protocols[r.protocol] || 0) + 1; });
             
             const output = {
               timestamp: new Date().toISOString(),
@@ -907,56 +792,63 @@ jobs:
                 success_rate: tested ? ((working / tested) * 100).toFixed(2) + '%' : '0%',
                 testing_time: totalTime + 's'
               },
-              grades,
+              grades: grades,
               quality: { avg_latency: avgLatency, avg_jitter: avgJitter, avg_score: avgScore, avg_confidence: avgConf },
               security: {
                 honeypots_detected: 0,
-                dpi_risk_high: results.filter(r => r.dpi_risk === 'high').length,
-                dpi_risk_medium: results.filter(r => r.dpi_risk === 'medium').length,
-                dpi_risk_low: results.filter(r => r.dpi_risk === 'low').length,
-                cloudflare: results.filter(r => r.cdn === 'cloudflare').length,
-                reality: results.filter(r => r.reality).length
+                dpi_risk_high: results.filter(function(r) { return r.dpi_risk === 'high'; }).length,
+                dpi_risk_medium: results.filter(function(r) { return r.dpi_risk === 'medium'; }).length,
+                dpi_risk_low: results.filter(function(r) { return r.dpi_risk === 'low'; }).length,
+                cloudflare: results.filter(function(r) { return r.cdn === 'cloudflare'; }).length,
+                reality: results.filter(function(r) { return r.reality; }).length
               },
               stability: {
-                ultra_stable: results.filter(r => r.ultraStable).length,
-                very_stable: results.filter(r => r.veryStable).length,
-                stable_rate: working ? ((results.filter(r => r.veryStable).length / working) * 100).toFixed(2) + '%' : '0%'
+                ultra_stable: results.filter(function(r) { return r.ultraStable; }).length,
+                very_stable: results.filter(function(r) { return r.veryStable; }).length,
+                stable_rate: working ? ((results.filter(function(r) { return r.veryStable; }).length / working) * 100).toFixed(2) + '%' : '0%'
               },
-              protocols,
+              protocols: protocols,
               top_50: results.slice(0, 50),
               all_results: results
             };
             
             fs.writeFileSync('output/results.json', JSON.stringify(output, null, 2));
-            fs.writeFileSync('output/configs.txt', results.map(r => r.config).join('\n'));
-            fs.writeFileSync('output/configs_base64.txt', Buffer.from(results.map(r => r.config).join('\n')).toString('base64'));
-            fs.writeFileSync('output/best_200.txt', results.slice(0, 200).map(r => r.config).join('\n'));
-            fs.writeFileSync('output/best_100.txt', results.slice(0, 100).map(r => r.config).join('\n'));
-            fs.writeFileSync('output/best_50.txt', results.slice(0, 50).map(r => r.config).join('\n'));
-            fs.writeFileSync('output/premium.txt', results.filter(r => ['S+', 'S', 'A+', 'A'].includes(r.grade)).map(r => r.config).join('\n'));
-            fs.writeFileSync('output/grade_s_plus.txt', results.filter(r => r.grade === 'S+').map(r => r.config).join('\n'));
-            fs.writeFileSync('output/grade_s.txt', results.filter(r => r.grade === 'S').map(r => r.config).join('\n'));
-            fs.writeFileSync('output/iran_safe.txt', results.filter(r => r.dpi_risk === 'low' && r.score >= 600).map(r => r.config).join('\n'));
-            fs.writeFileSync('output/ultra_stable.txt', results.filter(r => r.ultraStable).map(r => r.config).join('\n'));
-            fs.writeFileSync('output/cloudflare.txt', results.filter(r => r.cdn === 'cloudflare').map(r => r.config).join('\n'));
-            fs.writeFileSync('output/reality.txt', results.filter(r => r.reality).map(r => r.config).join('\n'));
+            fs.writeFileSync('output/configs.txt', results.map(function(r) { return r.config; }).join('\n'));
+            fs.writeFileSync('output/configs_base64.txt', Buffer.from(results.map(function(r) { return r.config; }).join('\n')).toString('base64'));
+            fs.writeFileSync('output/best_200.txt', results.slice(0, 200).map(function(r) { return r.config; }).join('\n'));
+            fs.writeFileSync('output/best_100.txt', results.slice(0, 100).map(function(r) { return r.config; }).join('\n'));
+            fs.writeFileSync('output/best_50.txt', results.slice(0, 50).map(function(r) { return r.config; }).join('\n'));
+            fs.writeFileSync('output/premium.txt', results.filter(function(r) { return ['S+', 'S', 'A+', 'A'].includes(r.grade); }).map(function(r) { return r.config; }).join('\n'));
+            fs.writeFileSync('output/grade_s_plus.txt', results.filter(function(r) { return r.grade === 'S+'; }).map(function(r) { return r.config; }).join('\n'));
+            fs.writeFileSync('output/grade_s.txt', results.filter(function(r) { return r.grade === 'S'; }).map(function(r) { return r.config; }).join('\n'));
+            fs.writeFileSync('output/iran_safe.txt', results.filter(function(r) { return r.dpi_risk === 'low' && r.score >= 600; }).map(function(r) { return r.config; }).join('\n'));
+            fs.writeFileSync('output/ultra_stable.txt', results.filter(function(r) { return r.ultraStable; }).map(function(r) { return r.config; }).join('\n'));
+            fs.writeFileSync('output/cloudflare.txt', results.filter(function(r) { return r.cdn === 'cloudflare'; }).map(function(r) { return r.config; }).join('\n'));
+            fs.writeFileSync('output/reality.txt', results.filter(function(r) { return r.reality; }).map(function(r) { return r.config; }).join('\n'));
             
-            Object.keys(protocols).forEach(p => {
-              fs.writeFileSync(`output/protocol_${p}.txt`, results.filter(r => r.protocol === p).map(r => r.config).join('\n'));
+            Object.keys(protocols).forEach(function(p) {
+              fs.writeFileSync('output/protocol_' + p + '.txt', results.filter(function(r) { return r.protocol === p; }).map(function(r) { return r.config; }).join('\n'));
             });
             
             fs.writeFileSync('output/stats.json', JSON.stringify({
-              working, grade_s_plus: grades['S+'], grade_s: grades.S, grade_a_plus: grades['A+'], grade_a: grades.A,
-              avg_score: avgScore, iran_safe: results.filter(r => r.dpi_risk === 'low').length,
-              ultra_stable: results.filter(r => r.ultraStable).length,
-              cloudflare: results.filter(r => r.cdn === 'cloudflare').length,
-              reality: results.filter(r => r.reality).length
+              working: working,
+              grade_s_plus: grades['S+'],
+              grade_s: grades.S,
+              grade_a_plus: grades['A+'],
+              grade_a: grades.A,
+              avg_score: avgScore,
+              iran_safe: results.filter(function(r) { return r.dpi_risk === 'low'; }).length,
+              ultra_stable: results.filter(function(r) { return r.ultraStable; }).length,
+              cloudflare: results.filter(function(r) { return r.cdn === 'cloudflare'; }).length,
+              reality: results.filter(function(r) { return r.reality; }).length
             }));
             
-            const newHistory = results.map(r => ({ protocol: r.protocol, host: r.host, port: r.port, cdn: r.cdn, latency: r.latency, success: true, score: r.score, timestamp: Date.now() }));
-            fs.writeFileSync('output/history.json', JSON.stringify([...mlHistory, ...newHistory].slice(-2000)));
+            const newHistory = results.map(function(r) {
+              return { protocol: r.protocol, host: r.host, port: r.port, cdn: r.cdn, latency: r.latency, success: true, score: r.score, timestamp: Date.now() };
+            });
+            fs.writeFileSync('output/history.json', JSON.stringify([].concat(mlHistory, newHistory).slice(-2000)));
             
-            console.log(`📊 Grades: S+:${grades['S+']} S:${grades.S} A+:${grades['A+']} A:${grades.A}`);
+            console.log('📊 Grades: S+:' + grades['S+'] + ' S:' + grades.S + ' A+:' + grades['A+'] + ' A:' + grades.A);
             process.exit(0);
           })();
           TESTER_EOF
@@ -1048,37 +940,25 @@ jobs:
               <p>🇮🇷 Optimized for Iran | Updated: <span id="ts">-</span></p>
             </footer>
             <script>
-              fetch('results.json').then(r=>r.json()).then(d=>{
-                document.getElementById('stats').innerHTML=`
-                  <div class="stat"><div class="stat-value" style="color:var(--blue)">${d.summary.total_tested}</div><div class="stat-label">Tested</div></div>
-                  <div class="stat"><div class="stat-value" style="color:var(--green)">${d.summary.working}</div><div class="stat-label">Working</div></div>
-                  <div class="stat"><div class="stat-value" style="color:var(--gold)">${d.quality.avg_score}</div><div class="stat-label">Avg Score</div></div>
-                  <div class="stat"><div class="stat-value" style="color:var(--blue)">${d.quality.avg_latency}ms</div><div class="stat-label">Avg Latency</div></div>
-                `;
-                document.getElementById('grades').innerHTML=`
-                  <div class="grade"><div class="grade-badge g-sp">S+</div><div>${d.grades['S+']||0}</div></div>
-                  <div class="grade"><div class="grade-badge g-s">S</div><div>${d.grades.S||0}</div></div>
-                  <div class="grade"><div class="grade-badge g-ap">A+</div><div>${d.grades['A+']||0}</div></div>
-                  <div class="grade"><div class="grade-badge g-a">A</div><div>${d.grades.A||0}</div></div>
-                  <div class="grade"><div class="grade-badge g-bp">B+</div><div>${d.grades['B+']||0}</div></div>
-                  <div class="grade"><div class="grade-badge g-b">B</div><div>${d.grades.B||0}</div></div>
-                  <div class="grade"><div class="grade-badge g-c">C</div><div>${d.grades.C||0}</div></div>
-                `;
-                const tb=document.getElementById('results');
-                (d.top_50||[]).slice(0,30).forEach((r,i)=>{
-                  const gc=r.grade.toLowerCase().replace('+','-plus');
-                  const rc=r.dpi_risk==='high'?'high':r.dpi_risk==='medium'?'med':'low';
-                  tb.innerHTML+=`<tr>
-                    <td>${i+1}</td>
-                    <td><span class="grade-badge g-${gc.replace('-plus','p').replace('a','a').charAt(0)}${gc.includes('plus')?'p':''}" style="font-size:1em;padding:3px 8px">${r.grade}</span></td>
-                    <td><span class="tag t-${r.protocol}">${r.protocol}</span></td>
-                    <td style="font-family:monospace;font-size:0.85em">${r.host}</td>
-                    <td>${r.port}</td>
-                    <td>${r.latency}ms</td>
-                    <td><strong style="color:var(--gold)">${r.score}</strong></td>
-                    <td><span class="tag risk-${rc}">${r.dpi_risk||'low'}</span></td>
-                    <td>${r.cdn||'-'}</td>
-                  </tr>`;
+              fetch('results.json').then(function(r){return r.json();}).then(function(d){
+                document.getElementById('stats').innerHTML=
+                  '<div class="stat"><div class="stat-value" style="color:var(--blue)">'+d.summary.total_tested+'</div><div class="stat-label">Tested</div></div>'+
+                  '<div class="stat"><div class="stat-value" style="color:var(--green)">'+d.summary.working+'</div><div class="stat-label">Working</div></div>'+
+                  '<div class="stat"><div class="stat-value" style="color:var(--gold)">'+d.quality.avg_score+'</div><div class="stat-label">Avg Score</div></div>'+
+                  '<div class="stat"><div class="stat-value" style="color:var(--blue)">'+d.quality.avg_latency+'ms</div><div class="stat-label">Avg Latency</div></div>';
+                document.getElementById('grades').innerHTML=
+                  '<div class="grade"><div class="grade-badge g-sp">S+</div><div>'+(d.grades['S+']||0)+'</div></div>'+
+                  '<div class="grade"><div class="grade-badge g-s">S</div><div>'+(d.grades.S||0)+'</div></div>'+
+                  '<div class="grade"><div class="grade-badge g-ap">A+</div><div>'+(d.grades['A+']||0)+'</div></div>'+
+                  '<div class="grade"><div class="grade-badge g-a">A</div><div>'+(d.grades.A||0)+'</div></div>'+
+                  '<div class="grade"><div class="grade-badge g-bp">B+</div><div>'+(d.grades['B+']||0)+'</div></div>'+
+                  '<div class="grade"><div class="grade-badge g-b">B</div><div>'+(d.grades.B||0)+'</div></div>'+
+                  '<div class="grade"><div class="grade-badge g-c">C</div><div>'+(d.grades.C||0)+'</div></div>';
+                var tb=document.getElementById('results');
+                (d.top_50||[]).slice(0,30).forEach(function(r,i){
+                  var gc=r.grade.toLowerCase().replace('+','p');
+                  var rc=r.dpi_risk==='high'?'high':r.dpi_risk==='medium'?'med':'low';
+                  tb.innerHTML+='<tr><td>'+(i+1)+'</td><td><span class="grade-badge g-'+gc+'" style="font-size:1em;padding:3px 8px">'+r.grade+'</span></td><td><span class="tag t-'+r.protocol+'">'+r.protocol+'</span></td><td style="font-family:monospace;font-size:0.85em">'+r.host+'</td><td>'+r.port+'</td><td>'+r.latency+'ms</td><td><strong style="color:var(--gold)">'+r.score+'</strong></td><td><span class="tag risk-'+rc+'">'+(r.dpi_risk||'low')+'</span></td><td>'+(r.cdn||'-')+'</td></tr>';
                 });
                 document.getElementById('ts').textContent=new Date(d.timestamp).toLocaleString('fa-IR');
               });
