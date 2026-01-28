@@ -36,186 +36,166 @@ jobs:
         with:
           node-version: '20'
 
-      - name: 📦 Install All Dependencies
+      - name: 📦 Install Dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y jq curl netcat-openbsd openssl dnsutils file
           npm init -y
           npm install p-limit node-fetch@2 geoip-lite
 
-      - name: 📁 Create Directory Structure
+      - name: 📁 Create Directories
         run: |
-          mkdir -p "$OUTPUT_DIR" tmp logs cache history
-          touch tmp/raw_all.txt
-          touch logs/fetch.log
-          
-          if [[ -f output/history.json ]]; then
-            cp output/history.json cache/history.json
-          fi
-          
-          echo "✅ Directories created"
+          mkdir -p output tmp logs cache history
+          touch tmp/raw_all.txt logs/fetch.log
+          echo "✅ Ready"
 
-      - name: 🌐 Fetch Configs from All Sources
+      - name: 🌐 Fetch All Configs
         run: |
-          #!/bin/bash
-          
           echo "════════════════════════════════════════════════════════════"
-          echo "🌐 QuantumRoute V5 - Ultimate Intelligence Fetcher"
+          echo "🌐 QuantumRoute V5 - Fetching Configs"
           echo "════════════════════════════════════════════════════════════"
           
-          # ایجاد فایل‌های خالی
-          > tmp/raw_all.txt
-          > logs/fetch.log
+          # لیست URL ها
+          cat > tmp/urls.txt << 'URLS'
+          https://ghproxy.net/https://raw.githubusercontent.com/barry-far/V2ray-Configs/refs/heads/main/All_Configs_Sub.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/85la/v2ray.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/cfmeme/v2ray.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/datiya/v2ray.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/jichangx/v2ray.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/nodefree/v2ray.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/oneclash/v2ray.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/yudou/v2ray.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/roosterkid/openproxylist/refs/heads/main/V2RAY_RAW.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/roosterkid/openproxylist/refs/heads/main/V2RAY_BASE64.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/ebrasha/free-v2ray-public-list/refs/heads/main/all_extracted_configs.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/miladtahanian/V2RayCFGDumper/refs/heads/main/config.txt
+          https://openproxylist.com/v2ray/rawlist/text
+          https://openproxylist.com/v2ray/rawlist/subscribe
+          https://ghproxy.net/https://raw.githubusercontent.com/ShatakVPN/ConfigForge-V2Ray/refs/heads/main/configs/all.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/Epodonios/v2ray-configs/refs/heads/main/All_Configs_Sub.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/itsyebekhe/PSG/main/subscriptions/xray/base64/mix
+          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-6.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-7.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-8.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-9.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-10.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-11.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-12.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-13.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-14.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-15.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-16.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-17.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-18.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-19.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-20.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-21.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-22.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-23.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-24.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-25.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-26.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-27.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-28.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-29.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-30.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-31.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-32.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-33.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-34.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-35.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-36.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-37.txt
+          https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-38.txt
+          URLS
           
-          # تعریف URLs
-          SOURCES=(
-            "https://ghproxy.net/https://raw.githubusercontent.com/barry-far/V2ray-Configs/refs/heads/main/All_Configs_Sub.txt"
-            "https://ghproxy.net/https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/85la/v2ray.txt"
-            "https://ghproxy.net/https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/cfmeme/v2ray.txt"
-            "https://ghproxy.net/https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/datiya/v2ray.txt"
-            "https://ghproxy.net/https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/jichangx/v2ray.txt"
-            "https://ghproxy.net/https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/nodefree/v2ray.txt"
-            "https://ghproxy.net/https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/oneclash/v2ray.txt"
-            "https://ghproxy.net/https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/yudou/v2ray.txt"
-            "https://ghproxy.net/https://raw.githubusercontent.com/roosterkid/openproxylist/refs/heads/main/V2RAY_RAW.txt"
-            "https://ghproxy.net/https://raw.githubusercontent.com/roosterkid/openproxylist/refs/heads/main/V2RAY_BASE64.txt"
-            "https://ghproxy.net/https://raw.githubusercontent.com/ebrasha/free-v2ray-public-list/refs/heads/main/all_extracted_configs.txt"
-            "https://ghproxy.net/https://raw.githubusercontent.com/miladtahanian/V2RayCFGDumper/refs/heads/main/config.txt"
-            "https://openproxylist.com/v2ray/rawlist/text"
-            "https://openproxylist.com/v2ray/rawlist/subscribe"
-            "https://ghproxy.net/https://raw.githubusercontent.com/ShatakVPN/ConfigForge-V2Ray/refs/heads/main/configs/all.txt"
-            "https://ghproxy.net/https://raw.githubusercontent.com/Epodonios/v2ray-configs/refs/heads/main/All_Configs_Sub.txt"
-            "https://ghproxy.net/https://raw.githubusercontent.com/itsyebekhe/PSG/main/subscriptions/xray/base64/mix"
-          )
+          echo "📋 Sources: $(wc -l < tmp/urls.txt)"
+          echo ""
           
-          # اضافه کردن Firmfox subscriptions
-          for i in $(seq 6 38); do
-            SOURCES+=("https://ghproxy.net/https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-${i}.txt")
-          done
+          # Fetch یکی یکی (مطمئن‌تر)
+          idx=0
+          success=0
+          failed=0
           
-          echo "📋 Total sources: ${#SOURCES[@]}"
-          
-          # تابع fetch
-          fetch_source() {
-            local url="$1"
-            local idx="$2"
-            local outfile="tmp/src_${idx}.txt"
+          while IFS= read -r url || [[ -n "$url" ]]; do
+            [[ -z "$url" ]] && continue
             
-            if curl -fsSL --retry 3 --retry-delay 2 --connect-timeout 20 --max-time 60 \
-              -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" \
+            outfile="tmp/src_${idx}.txt"
+            
+            if curl -fsSL --retry 2 --connect-timeout 15 --max-time 45 \
+              -H "User-Agent: Mozilla/5.0" \
               "$url" -o "$outfile" 2>/dev/null; then
               
               # بررسی Base64
-              if [[ -f "$outfile" ]] && file "$outfile" 2>/dev/null | grep -q "ASCII"; then
-                if head -1 "$outfile" 2>/dev/null | grep -qE '^[A-Za-z0-9+/=]{20,}$'; then
-                  base64 -d "$outfile" 2>/dev/null > "${outfile}.dec" && mv "${outfile}.dec" "$outfile" 2>/dev/null || true
+              if [[ -s "$outfile" ]]; then
+                firstline=$(head -c 100 "$outfile" 2>/dev/null | tr -d '\n\r')
+                if [[ "$firstline" =~ ^[A-Za-z0-9+/=]{20,}$ ]]; then
+                  base64 -d "$outfile" > "${outfile}.dec" 2>/dev/null && mv "${outfile}.dec" "$outfile" 2>/dev/null
                 fi
               fi
               
-              if [[ -f "$outfile" ]]; then
-                local count
-                count=$(wc -l < "$outfile" 2>/dev/null || echo 0)
-                echo "✅ [$idx] $count lines" >> logs/fetch.log
-                cat "$outfile" >> tmp/raw_all.txt 2>/dev/null || true
+              if [[ -s "$outfile" ]]; then
+                lines=$(wc -l < "$outfile" 2>/dev/null || echo 0)
+                cat "$outfile" >> tmp/raw_all.txt 2>/dev/null
+                echo "✅ [$idx] $lines lines" >> logs/fetch.log
+                ((success++))
               fi
             else
-              echo "❌ [$idx] FAILED" >> logs/fetch.log
+              echo "❌ [$idx] failed" >> logs/fetch.log
+              ((failed++))
             fi
-          }
-          
-          # Fetch با محدودیت همزمانی
-          echo "🚀 Starting parallel fetch..."
-          
-          idx=0
-          active_jobs=0
-          max_jobs=10
-          
-          for url in "${SOURCES[@]}"; do
-            fetch_source "$url" "$idx" &
-            ((idx++))
-            ((active_jobs++))
             
-            # محدود کردن تعداد job همزمان
-            if (( active_jobs >= max_jobs )); then
-              wait -n 2>/dev/null || wait
-              ((active_jobs--)) || true
+            ((idx++))
+            
+            # نمایش پیشرفت هر 10 تا
+            if (( idx % 10 == 0 )); then
+              echo "   Progress: $idx sources processed..."
             fi
-          done
+            
+          done < tmp/urls.txt
           
-          # منتظر بقیه jobs
-          wait
-          
-          # نتیجه
-          if [[ -f tmp/raw_all.txt ]]; then
-            total_lines=$(wc -l < tmp/raw_all.txt 2>/dev/null || echo 0)
-            echo ""
-            echo "════════════════════════════════════════════════════════════"
-            echo "📊 Fetch completed: $total_lines total lines"
-            echo "════════════════════════════════════════════════════════════"
-          else
-            echo "⚠️ No configs fetched, creating empty file"
-            touch tmp/raw_all.txt
-          fi
-          
-          # نمایش لاگ
           echo ""
-          echo "📋 Fetch Log:"
-          cat logs/fetch.log 2>/dev/null || echo "No log available"
+          echo "════════════════════════════════════════════════════════════"
+          echo "📊 Fetch Complete: ✅ $success success | ❌ $failed failed"
+          echo "📄 Total lines: $(wc -l < tmp/raw_all.txt 2>/dev/null || echo 0)"
+          echo "════════════════════════════════════════════════════════════"
 
       - name: 🔍 Parse & Deduplicate
         run: |
-          echo "🔍 Parsing and deduplicating configs..."
-          
-          # ایجاد فایل‌ها
-          touch tmp/all_configs.txt
-          touch tmp/unique.txt
+          echo "🔍 Parsing configs..."
           
           # بررسی ورودی
           if [[ ! -s tmp/raw_all.txt ]]; then
-            echo "⚠️ No raw configs found"
+            echo "⚠️ No raw data, creating empty output"
+            touch tmp/unique.txt
             exit 0
           fi
           
           # استخراج کانفیگ‌ها
           grep -oE '(vmess|vless|trojan|ss|ssr|hysteria|hysteria2|tuic)://[^[:space:]"<>'"'"']+' tmp/raw_all.txt 2>/dev/null | \
             sed 's/[[:space:]]*$//' | \
-            sort -u > tmp/all_configs.txt || true
+            sort -u > tmp/all_configs.txt || touch tmp/all_configs.txt
           
-          # Deduplication با hash
-          declare -A SEEN
+          echo "📄 Extracted: $(wc -l < tmp/all_configs.txt) configs"
           
-          while IFS= read -r line || [[ -n "$line" ]]; do
-            [[ -z "$line" ]] && continue
-            [[ ${#line} -lt 10 ]] && continue
-            
-            clean=$(echo "$line" | tr -d '\r\n' | sed 's/[[:space:]]//g')
-            hash=$(echo -n "$clean" | sha256sum | cut -d' ' -f1)
-            
-            if [[ -z "${SEEN[$hash]:-}" ]]; then
-              SEEN[$hash]=1
-              echo "$clean" >> tmp/unique.txt
-            fi
-          done < tmp/all_configs.txt
+          # Deduplication
+          awk '!seen[$0]++' tmp/all_configs.txt > tmp/unique.txt 2>/dev/null || cp tmp/all_configs.txt tmp/unique.txt
           
-          unique_count=${#SEEN[@]}
-          echo ""
-          echo "════════════════════════════════════════════════════════════"
-          echo "📊 Parse Results: $(wc -l < tmp/all_configs.txt 2>/dev/null || echo 0) raw → $unique_count unique"
-          echo "════════════════════════════════════════════════════════════"
+          echo "🔷 Unique: $(wc -l < tmp/unique.txt) configs"
 
-      - name: 🧪 V5 Ultimate Intelligence Tester
+      - name: 🧪 V5 Tester
         run: |
-          # بررسی ورودی
           if [[ ! -s tmp/unique.txt ]]; then
             echo "⚠️ No configs to test"
             mkdir -p output
             echo "" > output/configs.txt
-            echo '{"summary":{"total":0,"working":0}}' > output/results.json
-            echo '{"total":0,"working":0}' > output/stats.json
+            echo "" > output/configs_base64.txt
+            echo '{"summary":{"total":0,"working":0,"failed":0},"grades":{"S":0,"A":0,"B":0,"C":0},"quality":{"avg_score":0,"avg_latency":0,"avg_confidence":0},"security":{"honeypots_detected":0,"cloudflare":0},"top_30":[]}' > output/results.json
+            echo '{"total":0,"working":0,"grade_s":0,"grade_a":0}' > output/stats.json
             exit 0
           fi
           
-          cat << 'TESTER_V5' > tester.js
+          node << 'NODEJS'
           const net = require('net');
           const tls = require('tls');
           const https = require('https');
@@ -223,146 +203,74 @@ jobs:
           const fs = require('fs');
           const dns = require('dns');
           const crypto = require('crypto');
-          const pLimit = require('p-limit');
           
-          // ═══════════════════════════════════════════════════════════════════════
           // تنظیمات
-          // ═══════════════════════════════════════════════════════════════════════
-          const TIMEOUT = parseInt(process.env.TIMEOUT_MS) || 6000;
-          const PARALLEL = parseInt(process.env.MAX_PARALLEL) || 30;
-          const MIN_SCORE = parseInt(process.env.MIN_SCORE) || 400;
-          const STABILITY_ATTEMPTS = parseInt(process.env.STABILITY_ATTEMPTS) || 5;
-          const ENABLE_ML = process.env.ENABLE_ML === 'true';
-          const ENABLE_HONEYPOT = process.env.ENABLE_HONEYPOT_DETECTION === 'true';
+          const TIMEOUT = 6000;
+          const PARALLEL = 30;
+          const MIN_SCORE = 400;
+          const STABILITY_ATTEMPTS = 4;
           
-          const limit = pLimit(PARALLEL);
-          
-          // ═══════════════════════════════════════════════════════════════════════
-          // CDN Ranges
-          // ═══════════════════════════════════════════════════════════════════════
+          // CDN
           const CDN_RANGES = {
-            cloudflare: ['103.21.244.', '103.22.200.', '103.31.4.', '104.16.', '104.17.',
-              '104.18.', '104.19.', '104.20.', '104.21.', '104.22.', '104.23.', '104.24.',
-              '104.25.', '104.26.', '104.27.', '108.162.', '131.0.72.', '141.101.', '162.158.',
-              '172.64.', '172.65.', '172.66.', '172.67.', '173.245.', '188.114.', '190.93.',
-              '197.234.', '198.41.'],
+            cloudflare: ['103.21.244.', '103.22.200.', '103.31.4.', '104.16.', '104.17.', '104.18.', '104.19.', '104.20.', '104.21.', '104.22.', '104.23.', '104.24.', '104.25.', '104.26.', '104.27.', '108.162.', '131.0.72.', '141.101.', '162.158.', '172.64.', '172.65.', '172.66.', '172.67.', '173.245.', '188.114.', '190.93.', '197.234.', '198.41.'],
             fastly: ['151.101.', '199.232.'],
-            akamai: ['23.', '104.64.', '104.65.', '104.66.', '104.67.'],
-            gcore: ['92.223.', '199.34.'],
-            amazon: ['13.', '52.', '54.', '99.']
+            gcore: ['92.223.', '199.34.']
           };
           
-          // ═══════════════════════════════════════════════════════════════════════
-          // Honeypot Detection
-          // ═══════════════════════════════════════════════════════════════════════
-          const HONEYPOT_PATTERNS = [
-            /^10\.\d+\.\d+\.\d+$/,
-            /^192\.168\.\d+\.\d+$/,
-            /^172\.(1[6-9]|2\d|3[01])\./,
-            /localhost/i,
-            /\.local$/i
-          ];
-          
-          const SUSPICIOUS_PORTS = [22, 23, 25, 53, 110, 143, 3389];
-          
-          // ═══════════════════════════════════════════════════════════════════════
           // Scoring
-          // ═══════════════════════════════════════════════════════════════════════
-          const TRANSPORT_SCORES = {
-            'ws': 150, 'grpc': 130, 'h2': 120, 'httpupgrade': 100,
-            'splithttp': 90, 'tcp': 40, 'kcp': 30, 'quic': 80
-          };
+          const TRANSPORT_SCORES = { ws: 150, grpc: 130, h2: 120, tcp: 40 };
+          const PROTOCOL_SCORES = { vless: 120, trojan: 110, hysteria2: 100, vmess: 70, ss: 50 };
+          const SECURITY_SCORES = { reality: 200, tls: 120, none: -80 };
           
-          const PROTOCOL_SCORES = {
-            'vless': 120, 'trojan': 110, 'hysteria2': 100, 'hysteria': 90,
-            'tuic': 85, 'vmess': 70, 'ss': 50, 'ssr': 40
-          };
-          
-          const SECURITY_SCORES = {
-            'reality': 200, 'tls': 120, 'none': -80
-          };
-          
-          // ═══════════════════════════════════════════════════════════════════════
           // ML History
-          // ═══════════════════════════════════════════════════════════════════════
-          let mlHistory = { hosts: {}, patterns: {} };
-          
+          let mlHistory = { hosts: {} };
           try {
             if (fs.existsSync('cache/history.json')) {
               mlHistory = JSON.parse(fs.readFileSync('cache/history.json', 'utf8'));
-              console.log(`📚 Loaded ML history: ${Object.keys(mlHistory.hosts).length} hosts`);
             }
-          } catch (e) {
-            console.log('📝 Starting fresh ML history');
-          }
+          } catch (e) {}
           
-          // ═══════════════════════════════════════════════════════════════════════
           // خواندن کانفیگ‌ها
-          // ═══════════════════════════════════════════════════════════════════════
           let configs = [];
           try {
-            const content = fs.readFileSync('tmp/unique.txt', 'utf8').trim();
-            configs = content ? content.split('\n').filter(Boolean) : [];
+            configs = fs.readFileSync('tmp/unique.txt', 'utf8').trim().split('\n').filter(Boolean);
           } catch (e) {
-            console.log('❌ Cannot read configs file');
+            console.log('No configs');
             process.exit(0);
           }
           
-          if (configs.length === 0) {
-            console.log('⚠️ No configs to test');
-            fs.writeFileSync('output/configs.txt', '');
-            fs.writeFileSync('output/results.json', JSON.stringify({summary:{total:0,working:0}}));
-            fs.writeFileSync('output/stats.json', JSON.stringify({total:0,working:0}));
-            process.exit(0);
-          }
+          console.log(`\n${'═'.repeat(60)}`);
+          console.log(`🚀 QuantumRoute V5 - Testing ${configs.length} configs`);
+          console.log(`${'═'.repeat(60)}\n`);
           
-          console.log(`\n${'═'.repeat(70)}`);
-          console.log(`🚀 QuantumRoute V5 - Ultimate Intelligence Engine`);
-          console.log(`${'═'.repeat(70)}`);
-          console.log(`📄 Configs: ${configs.length}`);
-          console.log(`🧠 ML: ${ENABLE_ML} | 🏴‍☠️ Honeypot: ${ENABLE_HONEYPOT}`);
-          console.log(`${'═'.repeat(70)}\n`);
-          
-          // ═══════════════════════════════════════════════════════════════════════
-          // توابع کمکی
-          // ═══════════════════════════════════════════════════════════════════════
-          
+          // توابع
           function extractHostPort(config) {
             try {
               const protocol = config.split('://')[0];
               
               if (protocol === 'vmess') {
-                try {
-                  const b64 = config.slice(8).split('#')[0];
-                  const decoded = Buffer.from(b64, 'base64').toString('utf8');
-                  const json = JSON.parse(decoded);
-                  return {
-                    protocol: 'vmess',
-                    host: json.add || json.host || json.address,
-                    port: parseInt(json.port) || 443,
-                    security: json.tls === 'tls' ? 'tls' : 'none',
-                    network: json.net || json.network || 'tcp',
-                    sni: json.sni || json.host || '',
-                    path: json.path || ''
-                  };
-                } catch { return null; }
+                const b64 = config.slice(8).split('#')[0];
+                const json = JSON.parse(Buffer.from(b64, 'base64').toString('utf8'));
+                return {
+                  protocol: 'vmess',
+                  host: json.add || json.host,
+                  port: parseInt(json.port) || 443,
+                  security: json.tls === 'tls' ? 'tls' : 'none',
+                  network: json.net || 'tcp',
+                  sni: json.sni || json.host || ''
+                };
               }
               
               const match = config.match(/@([^:/?#]+):(\d+)/);
               if (match) {
-                const urlPart = config.split('?')[1]?.split('#')[0] || '';
-                const params = Object.fromEntries(new URLSearchParams(urlPart));
-                
+                const params = Object.fromEntries(new URLSearchParams(config.split('?')[1]?.split('#')[0] || ''));
                 return {
                   protocol,
                   host: match[1],
                   port: parseInt(match[2]),
                   security: params.security || (parseInt(match[2]) === 443 ? 'tls' : 'none'),
-                  network: params.type || params.net || 'tcp',
-                  sni: params.sni || params.host || match[1],
-                  path: params.path || '',
-                  flow: params.flow || '',
-                  fp: params.fp || ''
+                  network: params.type || 'tcp',
+                  sni: params.sni || match[1]
                 };
               }
               
@@ -370,547 +278,235 @@ jobs:
                 const parts = config.slice(5).split('@');
                 if (parts.length >= 2) {
                   const hp = parts[parts.length - 1].split('#')[0].split('?')[0].split(':');
-                  return {
-                    protocol: 'ss', host: hp[0], port: parseInt(hp[1]) || 443,
-                    security: 'none', network: 'tcp', sni: ''
-                  };
+                  return { protocol: 'ss', host: hp[0], port: parseInt(hp[1]) || 443, security: 'none', network: 'tcp', sni: '' };
                 }
               }
               return null;
-            } catch { return null; }
+            } catch (e) { return null; }
           }
           
           function detectCDN(ip) {
             if (!ip) return null;
             for (const [cdn, ranges] of Object.entries(CDN_RANGES)) {
-              if (ranges.some(range => ip.startsWith(range))) return cdn;
+              if (ranges.some(r => ip.startsWith(r))) return cdn;
             }
             return null;
           }
           
           function resolveHost(host) {
-            return new Promise((resolve) => {
-              if (/^\d+\.\d+\.\d+\.\d+$/.test(host)) {
-                resolve({ ip: host, dns_time: 0 });
-                return;
-              }
+            return new Promise(resolve => {
+              if (/^\d+\.\d+\.\d+\.\d+$/.test(host)) return resolve({ ip: host, time: 0 });
               const start = Date.now();
-              dns.resolve4(host, (err, addresses) => {
-                resolve({
-                  ip: addresses?.[0] || null,
-                  dns_time: Date.now() - start,
-                  error: err?.code
-                });
-              });
+              dns.resolve4(host, (err, addr) => resolve({ ip: addr?.[0], time: Date.now() - start, error: err?.code }));
             });
           }
           
-          function detectHoneypot(info, ip) {
-            if (!ENABLE_HONEYPOT) return { isHoneypot: false, score: 0, flags: [] };
-            
-            const flags = [];
-            let score = 0;
-            
-            if (HONEYPOT_PATTERNS.some(p => p.test(info.host))) {
-              flags.push('private_ip');
-              score += 100;
-            }
-            
-            if (SUSPICIOUS_PORTS.includes(info.port)) {
-              flags.push('suspicious_port');
-              score += 50;
-            }
-            
-            return {
-              isHoneypot: score >= 100,
-              isPossibleHoneypot: score >= 50,
-              score,
-              flags
-            };
-          }
-          
-          function analyzeDPIRisk(info, tlsResult) {
-            let risk = 0;
-            const factors = [];
-            
-            if (!info.sni || info.sni === info.host) {
-              risk += 10;
-              factors.push('no_sni_masking');
-            }
-            
-            if (!tlsResult?.alpn) {
-              risk += 15;
-              factors.push('no_alpn');
-            }
-            
-            if (info.security === 'reality') {
-              risk -= 30;
-              factors.push('reality_protected');
-            }
-            
-            if (info.network === 'ws' && info.path) {
-              risk -= 10;
-              factors.push('ws_with_path');
-            }
-            
-            return {
-              risk: Math.max(0, risk),
-              level: risk > 50 ? 'high' : risk > 25 ? 'medium' : 'low',
-              factors
-            };
-          }
-          
-          // ═══════════════════════════════════════════════════════════════════════
-          // TCP Test
-          // ═══════════════════════════════════════════════════════════════════════
-          function testTCP(host, port, timeout = TIMEOUT) {
-            return new Promise((resolve) => {
+          function testTCP(host, port) {
+            return new Promise(resolve => {
               const start = Date.now();
               const socket = net.createConnection({ host, port });
-              socket.setTimeout(timeout);
-              
-              socket.on('connect', () => {
-                const latency = Date.now() - start;
-                socket.destroy();
-                resolve({ ok: true, latency });
-              });
-              
-              socket.on('error', (err) => {
-                socket.destroy();
-                resolve({ ok: false, latency: 9999, error: err.code });
-              });
-              
-              socket.on('timeout', () => {
-                socket.destroy();
-                resolve({ ok: false, latency: 9999, error: 'TIMEOUT' });
-              });
+              socket.setTimeout(TIMEOUT);
+              socket.on('connect', () => { socket.destroy(); resolve({ ok: true, latency: Date.now() - start }); });
+              socket.on('error', e => { socket.destroy(); resolve({ ok: false, latency: 9999, error: e.code }); });
+              socket.on('timeout', () => { socket.destroy(); resolve({ ok: false, latency: 9999, error: 'TIMEOUT' }); });
             });
           }
           
-          // ═══════════════════════════════════════════════════════════════════════
-          // TLS Test
-          // ═══════════════════════════════════════════════════════════════════════
-          function testTLS(host, port, sni, timeout = TIMEOUT) {
-            return new Promise((resolve) => {
+          function testTLS(host, port, sni) {
+            return new Promise(resolve => {
               const start = Date.now();
-              
               try {
                 const socket = tls.connect({
-                  host, port,
-                  servername: sni || host,
-                  rejectUnauthorized: false,
-                  timeout,
-                  minVersion: 'TLSv1.2',
-                  maxVersion: 'TLSv1.3',
+                  host, port, servername: sni || host,
+                  rejectUnauthorized: false, timeout: TIMEOUT,
                   ALPNProtocols: ['h2', 'http/1.1']
                 });
-                
-                socket.setTimeout(timeout);
-                
+                socket.setTimeout(TIMEOUT);
                 socket.on('secureConnect', () => {
-                  const latency = Date.now() - start;
                   const cert = socket.getPeerCertificate();
-                  const tlsVersion = socket.getProtocol();
-                  const cipher = socket.getCipher();
+                  const version = socket.getProtocol();
                   const alpn = socket.alpnProtocol;
-                  
-                  let certInfo = null;
-                  if (cert && Object.keys(cert).length > 0) {
-                    certInfo = {
-                      issuer: cert.issuer?.O || cert.issuer?.CN,
-                      valid: cert.valid_to ? new Date(cert.valid_to) > new Date() : false,
-                      selfSigned: cert.issuer?.CN === cert.subject?.CN
-                    };
-                  }
-                  
                   socket.destroy();
-                  
                   resolve({
-                    ok: true,
-                    latency,
-                    version: tlsVersion,
-                    cipher: cipher?.name,
-                    alpn,
-                    cert: certInfo,
-                    isModernTLS: tlsVersion === 'TLSv1.3',
-                    hasH2: alpn === 'h2'
+                    ok: true, latency: Date.now() - start, version, alpn,
+                    cert: cert ? { valid: cert.valid_to ? new Date(cert.valid_to) > new Date() : false } : null,
+                    isModernTLS: version === 'TLSv1.3', hasH2: alpn === 'h2'
                   });
                 });
-                
-                socket.on('error', (err) => {
-                  socket.destroy();
-                  resolve({ ok: false, error: err.code, latency: Date.now() - start });
-                });
-                
-                socket.on('timeout', () => {
-                  socket.destroy();
-                  resolve({ ok: false, error: 'TLS_TIMEOUT', latency: Date.now() - start });
-                });
-              } catch (e) {
-                resolve({ ok: false, error: e.message });
-              }
+                socket.on('error', e => { socket.destroy(); resolve({ ok: false, error: e.code }); });
+                socket.on('timeout', () => { socket.destroy(); resolve({ ok: false, error: 'TIMEOUT' }); });
+              } catch (e) { resolve({ ok: false, error: e.message }); }
             });
           }
           
-          // ═══════════════════════════════════════════════════════════════════════
-          // HTTP Test
-          // ═══════════════════════════════════════════════════════════════════════
-          function testHTTP(host, port, useTLS, timeout = TIMEOUT) {
-            return new Promise((resolve) => {
+          function testHTTP(host, port, useTLS) {
+            return new Promise(resolve => {
               const start = Date.now();
-              
-              const options = {
-                hostname: host, port, path: '/',
-                method: 'HEAD',
-                timeout,
-                headers: {
-                  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-                  'Connection': 'close'
-                },
-                rejectUnauthorized: false
-              };
-              
-              const protocol = useTLS ? https : http;
-              
+              const proto = useTLS ? https : http;
               try {
-                const req = protocol.request(options, (res) => {
+                const req = proto.request({
+                  hostname: host, port, path: '/', method: 'HEAD', timeout: TIMEOUT,
+                  headers: { 'User-Agent': 'Mozilla/5.0', Connection: 'close' },
+                  rejectUnauthorized: false
+                }, res => {
                   resolve({
-                    ok: true,
-                    latency: Date.now() - start,
-                    status: res.statusCode,
-                    headers: {
-                      server: res.headers['server'],
-                      cfRay: res.headers['cf-ray']
-                    },
+                    ok: true, latency: Date.now() - start, status: res.statusCode,
                     isCloudflare: !!res.headers['cf-ray']
                   });
                 });
-                
-                req.on('error', (err) => {
-                  resolve({ ok: false, error: err.code });
-                });
-                
-                req.on('timeout', () => {
-                  req.destroy();
-                  resolve({ ok: false, error: 'HTTP_TIMEOUT' });
-                });
-                
+                req.on('error', () => resolve({ ok: false }));
+                req.on('timeout', () => { req.destroy(); resolve({ ok: false }); });
                 req.end();
-              } catch (e) {
-                resolve({ ok: false, error: e.message });
-              }
+              } catch (e) { resolve({ ok: false }); }
             });
           }
           
-          // ═══════════════════════════════════════════════════════════════════════
-          // Stability Test
-          // ═══════════════════════════════════════════════════════════════════════
-          async function testStability(host, port, attempts = STABILITY_ATTEMPTS) {
+          async function testStability(host, port) {
             const latencies = [];
-            let successCount = 0;
-            
-            for (let i = 0; i < attempts; i++) {
-              const tcp = await testTCP(host, port, TIMEOUT / 2);
-              if (tcp.ok && tcp.latency < 9999) {
-                latencies.push(tcp.latency);
-                successCount++;
-              }
-              await new Promise(r => setTimeout(r, 300));
+            for (let i = 0; i < STABILITY_ATTEMPTS; i++) {
+              const r = await testTCP(host, port);
+              if (r.ok && r.latency < 9999) latencies.push(r.latency);
+              await new Promise(r => setTimeout(r, 200));
             }
-            
-            const successRate = successCount / attempts;
-            
-            let jitter = 0, avgLatency = 0;
-            if (latencies.length > 0) {
-              avgLatency = latencies.reduce((a, b) => a + b, 0) / latencies.length;
-              const variance = latencies.reduce((a, b) => a + Math.pow(b - avgLatency, 2), 0) / latencies.length;
-              jitter = Math.sqrt(variance);
-            }
-            
-            return {
-              successRate,
-              avgLatency: Math.round(avgLatency),
-              jitter: Math.round(jitter),
-              stable: successRate >= 0.8 && jitter < 150,
-              veryStable: successRate >= 0.95 && jitter < 80,
-              unreliable: successRate < 0.5
-            };
+            if (latencies.length === 0) return { stable: false, veryStable: false, jitter: 9999 };
+            const avg = latencies.reduce((a, b) => a + b, 0) / latencies.length;
+            const jitter = Math.sqrt(latencies.reduce((a, b) => a + Math.pow(b - avg, 2), 0) / latencies.length);
+            const rate = latencies.length / STABILITY_ATTEMPTS;
+            return { stable: rate >= 0.75 && jitter < 150, veryStable: rate >= 0.9 && jitter < 80, jitter: Math.round(jitter), avgLatency: Math.round(avg) };
           }
           
-          // ═══════════════════════════════════════════════════════════════════════
-          // Early Reset Detection
-          // ═══════════════════════════════════════════════════════════════════════
-          function testEarlyReset(host, port, timeout = 3000) {
-            return new Promise((resolve) => {
-              const start = Date.now();
-              let connected = false;
-              let dataReceived = false;
-              
-              const socket = net.createConnection({ host, port });
-              socket.setTimeout(timeout);
-              
-              socket.on('connect', () => {
-                connected = true;
-                socket.write('GET / HTTP/1.1\r\nHost: ' + host + '\r\n\r\n');
-              });
-              
-              socket.on('data', () => { dataReceived = true; });
-              
-              socket.on('close', () => {
-                const resetTime = Date.now() - start;
-                socket.destroy();
-                resolve({
-                  connected,
-                  dataReceived,
-                  earlyReset: connected && !dataReceived && resetTime < 1000
-                });
-              });
-              
-              socket.on('error', () => {
-                socket.destroy();
-                resolve({ connected, dataReceived, earlyReset: false });
-              });
-              
-              socket.on('timeout', () => {
-                socket.destroy();
-                resolve({ connected, dataReceived, earlyReset: false });
-              });
-            });
+          function detectHoneypot(info) {
+            if (/^(10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)/.test(info.host)) return { isHoneypot: true };
+            if ([22, 23, 25].includes(info.port)) return { isHoneypot: true };
+            return { isHoneypot: false };
           }
           
-          // ═══════════════════════════════════════════════════════════════════════
-          // ML Confidence
-          // ═══════════════════════════════════════════════════════════════════════
-          function calculateMLConfidence(result, hostHistory) {
-            if (!ENABLE_ML) return 50;
-            
-            let confidence = 50;
-            
-            if (hostHistory) {
-              const rate = hostHistory.successes / (hostHistory.total || 1);
-              confidence += (rate - 0.5) * 40;
-              if (hostHistory.consecutiveFails >= 3) confidence -= 30;
-            }
-            
-            if (result.stability?.veryStable) confidence += 20;
-            else if (result.stability?.stable) confidence += 10;
-            else if (result.stability?.unreliable) confidence -= 25;
-            
-            if (result.cdn === 'cloudflare') confidence += 15;
-            if (result.tls?.isModernTLS) confidence += 10;
-            if (result.tls?.hasH2) confidence += 10;
-            if (result.honeypot?.isHoneypot) confidence -= 50;
-            if (result.earlyReset?.earlyReset) confidence -= 30;
-            
-            return Math.max(0, Math.min(100, Math.round(confidence)));
+          function calcDPIRisk(info, tls) {
+            let risk = 0;
+            if (!info.sni) risk += 10;
+            if (!tls?.alpn) risk += 15;
+            if (info.security === 'reality') risk -= 30;
+            if (info.network === 'ws') risk -= 10;
+            return { risk: Math.max(0, risk), level: risk > 40 ? 'high' : risk > 20 ? 'medium' : 'low' };
           }
           
-          // ═══════════════════════════════════════════════════════════════════════
-          // Scoring Engine
-          // ═══════════════════════════════════════════════════════════════════════
-          function calculateScore(result) {
+          function calcScore(r) {
             let score = 500;
-            const bonuses = [];
-            const penalties = [];
+            const bonuses = [], penalties = [];
             
-            if (!result.tcp.ok) return { score: 0, grade: 'F', bonuses, penalties };
+            if (!r.tcp.ok) return { score: 0, grade: 'F', bonuses, penalties };
             
-            // Latency
-            if (result.tcp.latency < 100) { score += 180; bonuses.push('ultra_low_latency'); }
-            else if (result.tcp.latency < 200) { score += 120; bonuses.push('low_latency'); }
-            else if (result.tcp.latency < 400) { score += 60; }
-            else if (result.tcp.latency > 800) { score -= 100; penalties.push('high_latency'); }
+            if (r.tcp.latency < 100) { score += 180; bonuses.push('ultra_fast'); }
+            else if (r.tcp.latency < 200) { score += 120; bonuses.push('fast'); }
+            else if (r.tcp.latency < 400) score += 60;
+            else if (r.tcp.latency > 800) { score -= 100; penalties.push('slow'); }
             
-            // TLS
-            if (result.tls) {
-              if (result.tls.ok) {
-                score += 100; bonuses.push('tls_ok');
-                if (result.tls.isModernTLS) { score += 50; bonuses.push('tls13'); }
-                if (result.tls.hasH2) { score += 60; bonuses.push('h2'); }
-                if (result.tls.cert?.valid) { score += 30; }
-                if (result.tls.cert?.selfSigned) { score -= 40; penalties.push('self_signed'); }
-              } else {
-                score -= 150; penalties.push('tls_fail');
-              }
-            }
+            if (r.tls?.ok) {
+              score += 100; bonuses.push('tls_ok');
+              if (r.tls.isModernTLS) { score += 50; bonuses.push('tls13'); }
+              if (r.tls.hasH2) { score += 60; bonuses.push('h2'); }
+              if (r.tls.cert?.valid) score += 30;
+            } else if (r.needsTLS) { score -= 150; penalties.push('tls_fail'); }
             
-            // HTTP
-            if (result.http?.ok) {
-              score += 80; bonuses.push('http_ok');
-              if (result.http.isCloudflare) { score += 50; bonuses.push('cf_verified'); }
-            }
+            if (r.http?.ok) { score += 80; if (r.http.isCloudflare) { score += 50; bonuses.push('cf'); } }
             
-            // CDN
-            const cdnScores = { cloudflare: 180, gcore: 140, fastly: 120, akamai: 100 };
-            if (result.cdn) {
-              score += cdnScores[result.cdn] || 40;
-              bonuses.push(`cdn_${result.cdn}`);
-            }
+            const cdnScores = { cloudflare: 180, gcore: 140, fastly: 120 };
+            if (r.cdn) { score += cdnScores[r.cdn] || 40; bonuses.push('cdn'); }
             
-            // Stability
-            if (result.stability) {
-              if (result.stability.veryStable) { score += 150; bonuses.push('very_stable'); }
-              else if (result.stability.stable) { score += 80; bonuses.push('stable'); }
-              else if (result.stability.unreliable) { score -= 120; penalties.push('unreliable'); }
-              
-              if (result.stability.jitter > 200) { score -= 80; penalties.push('high_jitter'); }
-            }
+            if (r.stability?.veryStable) { score += 150; bonuses.push('very_stable'); }
+            else if (r.stability?.stable) { score += 80; bonuses.push('stable'); }
+            else if (r.stability?.jitter > 200) { score -= 80; penalties.push('jitter'); }
             
-            // Early Reset
-            if (result.earlyReset?.earlyReset) {
-              score -= 150; penalties.push('early_reset');
-            }
+            if (r.honeypot?.isHoneypot) { score -= 300; penalties.push('honeypot'); }
+            if (r.dpiRisk?.level === 'high') { score -= 100; penalties.push('dpi_risk'); }
             
-            // Honeypot
-            if (result.honeypot?.isHoneypot) {
-              score -= 300; penalties.push('honeypot');
-            }
+            score += PROTOCOL_SCORES[r.protocol] || 0;
+            score += TRANSPORT_SCORES[r.network] || 0;
+            score += SECURITY_SCORES[r.security] || 0;
             
-            // DPI Risk
-            if (result.dpiRisk?.level === 'high') { score -= 100; penalties.push('high_dpi_risk'); }
-            else if (result.dpiRisk?.level === 'low') { score += 30; bonuses.push('low_dpi_risk'); }
-            
-            // Protocol & Transport
-            score += PROTOCOL_SCORES[result.protocol] || 0;
-            score += TRANSPORT_SCORES[result.network] || 0;
-            score += SECURITY_SCORES[result.security] || 0;
-            
-            // Special Combos
-            if (result.security === 'reality' && result.protocol === 'vless') {
-              score += 120; bonuses.push('reality_vless');
-            }
-            if (result.network === 'ws' && result.cdn === 'cloudflare') {
-              score += 100; bonuses.push('ws_cf');
-            }
-            
-            // ML Confidence
-            if (result.confidence) {
-              score += (result.confidence - 50) * 2;
-            }
+            if (r.security === 'reality' && r.protocol === 'vless') { score += 120; bonuses.push('reality_vless'); }
+            if (r.network === 'ws' && r.cdn === 'cloudflare') { score += 100; bonuses.push('ws_cf'); }
             
             const finalScore = Math.max(0, Math.round(score));
             const grade = finalScore >= 1000 ? 'S' : finalScore >= 800 ? 'A' : finalScore >= 600 ? 'B' : finalScore >= 400 ? 'C' : 'D';
-            
             return { score: finalScore, grade, bonuses, penalties };
           }
           
-          // ═══════════════════════════════════════════════════════════════════════
-          // Main Test
-          // ═══════════════════════════════════════════════════════════════════════
           async function testConfig(config, idx) {
             const info = extractHostPort(config);
-            if (!info || !info.host || !info.port) {
-              return { config, ok: false, reason: 'PARSE_ERROR' };
-            }
+            if (!info) return { config, ok: false, reason: 'PARSE_ERROR' };
             
-            const { host, port, protocol, security, network, sni, path, flow, fp } = info;
+            const { host, port, protocol, security, network, sni } = info;
             const needsTLS = security === 'tls' || security === 'reality' || port === 443;
             
-            const hostHistory = ENABLE_ML ? mlHistory.hosts[host] : null;
+            const honeypot = detectHoneypot(info);
+            if (honeypot.isHoneypot) return { config, host, port, protocol, ok: false, reason: 'HONEYPOT', honeypot };
             
-            // DNS
-            const dnsResult = await resolveHost(host);
-            if (!dnsResult.ip) {
-              return { config, host, port, protocol, ok: false, reason: 'DNS_FAIL' };
-            }
+            const dns = await resolveHost(host);
+            if (!dns.ip) return { config, host, port, protocol, ok: false, reason: 'DNS_FAIL' };
             
-            const ip = dnsResult.ip;
-            const cdn = detectCDN(ip);
-            
-            // Honeypot
-            const honeypot = detectHoneypot(info, ip);
-            if (honeypot.isHoneypot) {
-              return { config, host, port, protocol, ip, cdn, ok: false, reason: 'HONEYPOT', honeypot };
-            }
-            
-            // TCP
+            const cdn = detectCDN(dns.ip);
             const tcp = await testTCP(host, port);
             if (!tcp.ok) {
-              if (ENABLE_ML) {
-                mlHistory.hosts[host] = mlHistory.hosts[host] || { total: 0, successes: 0, consecutiveFails: 0 };
-                mlHistory.hosts[host].total++;
-                mlHistory.hosts[host].consecutiveFails++;
-              }
-              return { config, host, port, protocol, ip, cdn, ok: false, reason: tcp.error, tcp };
+              mlHistory.hosts[host] = mlHistory.hosts[host] || { total: 0, fails: 0 };
+              mlHistory.hosts[host].total++;
+              mlHistory.hosts[host].fails++;
+              return { config, host, port, protocol, cdn, ok: false, reason: tcp.error, tcp };
             }
             
-            // Early Reset
-            const earlyReset = await testEarlyReset(host, port);
-            
-            // TLS
             let tlsResult = null;
-            if (needsTLS) {
-              tlsResult = await testTLS(host, port, sni);
-            }
+            if (needsTLS) tlsResult = await testTLS(host, port, sni);
             
-            // HTTP
             let httpResult = null;
-            if ((tlsResult?.ok || !needsTLS) && ![22, 3389].includes(port)) {
-              httpResult = await testHTTP(host, port, needsTLS);
-            }
+            if (tlsResult?.ok || !needsTLS) httpResult = await testHTTP(host, port, needsTLS);
             
-            // Stability
             let stability = null;
-            if (tcp.ok && tcp.latency < 1500) {
-              stability = await testStability(host, port);
-            }
+            if (tcp.latency < 1500) stability = await testStability(host, port);
             
-            // DPI Risk
-            const dpiRisk = analyzeDPIRisk(info, tlsResult);
+            const dpiRisk = calcDPIRisk(info, tlsResult);
             
-            // Result
             const result = {
-              config, host, port, ip, protocol, network, security, sni, path, cdn,
-              tcp, tls: tlsResult, http: httpResult, stability, earlyReset, honeypot, dpiRisk
+              config, host, port, ip: dns.ip, protocol, network, security, sni, cdn, needsTLS,
+              tcp, tls: tlsResult, http: httpResult, stability, honeypot, dpiRisk
             };
             
-            // ML
-            result.confidence = calculateMLConfidence(result, hostHistory);
-            
-            // Score
-            const scoreResult = calculateScore(result);
-            result.score = scoreResult.score;
-            result.grade = scoreResult.grade;
-            result.bonuses = scoreResult.bonuses;
-            result.penalties = scoreResult.penalties;
+            const scoreResult = calcScore(result);
+            Object.assign(result, scoreResult);
             result.ok = result.score >= MIN_SCORE;
             
-            // Update ML
-            if (ENABLE_ML) {
-              mlHistory.hosts[host] = mlHistory.hosts[host] || { total: 0, successes: 0, consecutiveFails: 0 };
-              mlHistory.hosts[host].total++;
-              if (result.ok) {
-                mlHistory.hosts[host].successes++;
-                mlHistory.hosts[host].consecutiveFails = 0;
-              } else {
-                mlHistory.hosts[host].consecutiveFails++;
-              }
-            }
+            mlHistory.hosts[host] = mlHistory.hosts[host] || { total: 0, fails: 0 };
+            mlHistory.hosts[host].total++;
+            if (!result.ok) mlHistory.hosts[host].fails++;
             
-            // Progress
-            if (idx % 100 === 0) {
-              process.stdout.write(`\r   📊 Progress: ${idx}/${configs.length} (${Math.round(idx/configs.length*100)}%)`);
-            }
+            if (idx % 100 === 0) process.stdout.write(`\r   Progress: ${idx}/${configs.length}`);
             
             return result;
           }
           
-          // ═══════════════════════════════════════════════════════════════════════
-          // Main
-          // ═══════════════════════════════════════════════════════════════════════
+          // Simple parallel limiter
+          async function runWithLimit(items, limit, fn) {
+            const results = [];
+            let idx = 0;
+            
+            async function worker() {
+              while (idx < items.length) {
+                const i = idx++;
+                results[i] = await fn(items[i], i);
+              }
+            }
+            
+            await Promise.all(Array(Math.min(limit, items.length)).fill(null).map(worker));
+            return results;
+          }
+          
           async function main() {
             const startTime = Date.now();
             
-            console.log('🔬 Starting V5 Ultimate Tests...\n');
-            
-            const results = await Promise.all(
-              configs.map((c, i) => limit(() => testConfig(c, i)))
-            );
+            const results = await runWithLimit(configs, PARALLEL, testConfig);
             
             console.log('\n\n');
             
-            // Categorize
-            const working = results.filter(r => r.ok && r.score >= MIN_SCORE).sort((a, b) => b.score - a.score);
+            const working = results.filter(r => r.ok).sort((a, b) => b.score - a.score);
             const failed = results.filter(r => !r.ok);
             
             const gradeS = working.filter(r => r.grade === 'S');
@@ -918,9 +514,7 @@ jobs:
             const gradeB = working.filter(r => r.grade === 'B');
             const gradeC = working.filter(r => r.grade === 'C');
             
-            const honeypots = results.filter(r => r.honeypot?.isHoneypot);
-            
-            // Save Files
+            // Save files
             fs.writeFileSync('output/configs.txt', working.map(r => r.config).join('\n'));
             fs.writeFileSync('output/configs_base64.txt', working.map(r => Buffer.from(r.config).toString('base64')).join('\n'));
             fs.writeFileSync('output/working.txt', working.map(r => r.config).join('\n'));
@@ -929,11 +523,9 @@ jobs:
             fs.writeFileSync('output/grade_s.txt', gradeS.map(r => r.config).join('\n'));
             fs.writeFileSync('output/top50.txt', working.slice(0, 50).map(r => r.config).join('\n'));
             
-            // Stats
             const duration = Math.round((Date.now() - startTime) / 1000);
             
-            const protocols = {};
-            const networks = {};
+            const protocols = {}, networks = {};
             working.forEach(r => {
               protocols[r.protocol] = (protocols[r.protocol] || 0) + 1;
               networks[r.network] = (networks[r.network] || 0) + 1;
@@ -954,11 +546,11 @@ jobs:
                 avg_score: working.length ? Math.round(working.reduce((a, b) => a + b.score, 0) / working.length) : 0,
                 max_score: working.length ? Math.max(...working.map(r => r.score)) : 0,
                 avg_latency: working.length ? Math.round(working.reduce((a, b) => a + b.tcp.latency, 0) / working.length) : 0,
-                avg_confidence: working.filter(r => r.confidence).length ?
-                  Math.round(working.filter(r => r.confidence).reduce((a, b) => a + b.confidence, 0) / working.filter(r => r.confidence).length) : 0
+                avg_confidence: 50
               },
               security: {
-                honeypots_detected: honeypots.length,
+                honeypots_detected: results.filter(r => r.honeypot?.isHoneypot).length,
+                high_dpi_risk: results.filter(r => r.dpiRisk?.level === 'high').length,
                 cloudflare: working.filter(r => r.cdn === 'cloudflare').length,
                 reality: working.filter(r => r.security === 'reality').length
               },
@@ -971,80 +563,56 @@ jobs:
               top_30: working.slice(0, 30).map(r => ({
                 host: r.host, port: r.port, protocol: r.protocol, network: r.network,
                 security: r.security, latency: r.tcp.latency, score: r.score, grade: r.grade,
-                confidence: r.confidence, cdn: r.cdn, tls_version: r.tls?.version,
-                stable: r.stability?.stable, dpi_risk: r.dpiRisk?.level
+                confidence: 50, cdn: r.cdn, tls_version: r.tls?.version,
+                stable: r.stability?.stable, dpi_risk: r.dpiRisk?.level,
+                bonuses: r.bonuses?.slice(0, 5), penalties: r.penalties?.slice(0, 3)
               }))
             };
             
             fs.writeFileSync('output/results.json', JSON.stringify(stats, null, 2));
             fs.writeFileSync('output/stats.json', JSON.stringify({
-              total: configs.length,
-              working: working.length,
-              failed: failed.length,
-              grade_s: gradeS.length,
-              grade_a: gradeA.length,
-              avg_score: stats.quality.avg_score,
-              avg_latency: stats.quality.avg_latency,
-              avg_confidence: stats.quality.avg_confidence,
-              cloudflare: stats.security.cloudflare,
-              honeypots: honeypots.length,
-              updated: new Date().toISOString()
+              total: configs.length, working: working.length, failed: failed.length,
+              grade_s: gradeS.length, grade_a: gradeA.length,
+              avg_score: stats.quality.avg_score, avg_latency: stats.quality.avg_latency,
+              cloudflare: stats.security.cloudflare, updated: new Date().toISOString()
             }, null, 2));
             
-            // ML History
-            if (ENABLE_ML) {
-              fs.writeFileSync('output/history.json', JSON.stringify(mlHistory, null, 2));
-            }
+            fs.writeFileSync('output/history.json', JSON.stringify(mlHistory, null, 2));
             
-            // Metrics
             const metrics = [
-              `quantum_version 5`,
+              'quantum_version 5',
               `quantum_total ${configs.length}`,
               `quantum_working ${working.length}`,
               `quantum_grade_s ${gradeS.length}`,
               `quantum_grade_a ${gradeA.length}`,
               `quantum_avg_score ${stats.quality.avg_score}`,
-              ...working.slice(0, 50).map(r =>
-                `quantum_score{host="${r.host}",protocol="${r.protocol}",grade="${r.grade}"} ${r.score}`
-              )
+              ...working.slice(0, 50).map(r => `quantum_score{host="${r.host}",protocol="${r.protocol}"} ${r.score}`)
             ].join('\n');
-            
             fs.writeFileSync('output/metrics.prom', metrics);
             
-            // Report
-            console.log('═'.repeat(70));
-            console.log('📊 QUANTUMROUTE V5 - FINAL RESULTS');
-            console.log('═'.repeat(70));
-            console.log(`   ⏱️  Duration:        ${duration}s`);
-            console.log(`   📄 Total:           ${configs.length}`);
-            console.log(`   ✅ Working:         ${working.length} (${((working.length/configs.length)*100).toFixed(1)}%)`);
-            console.log('');
-            console.log('   📊 Grades:');
-            console.log(`      🏆 S: ${gradeS.length} | 🥇 A: ${gradeA.length} | 🥈 B: ${gradeB.length} | 🥉 C: ${gradeC.length}`);
-            console.log('');
-            console.log(`   ⚡ Avg Latency:     ${stats.quality.avg_latency}ms`);
-            console.log(`   🏆 Avg Score:       ${stats.quality.avg_score}`);
-            console.log(`   🧠 Avg Confidence:  ${stats.quality.avg_confidence}%`);
-            console.log(`   ☁️  Cloudflare:     ${stats.security.cloudflare}`);
-            console.log(`   🏴‍☠️ Honeypots:      ${honeypots.length}`);
-            console.log('═'.repeat(70));
+            console.log('═'.repeat(60));
+            console.log('📊 QUANTUMROUTE V5 RESULTS');
+            console.log('═'.repeat(60));
+            console.log(`   ⏱️  Duration:    ${duration}s`);
+            console.log(`   📄 Total:       ${configs.length}`);
+            console.log(`   ✅ Working:     ${working.length} (${((working.length/configs.length)*100).toFixed(1)}%)`);
+            console.log(`   🏆 S: ${gradeS.length} | A: ${gradeA.length} | B: ${gradeB.length} | C: ${gradeC.length}`);
+            console.log(`   ⚡ Avg Latency: ${stats.quality.avg_latency}ms`);
+            console.log(`   ☁️  Cloudflare: ${stats.security.cloudflare}`);
+            console.log('═'.repeat(60));
           }
           
-          main().catch(err => {
-            console.error('❌ Fatal:', err);
-            // ایجاد فایل‌های خالی در صورت خطا
+          main().catch(e => {
+            console.error('Error:', e.message);
             fs.writeFileSync('output/configs.txt', '');
-            fs.writeFileSync('output/results.json', JSON.stringify({summary:{total:0,working:0,failed:0}}));
+            fs.writeFileSync('output/results.json', JSON.stringify({summary:{total:0,working:0}}));
             fs.writeFileSync('output/stats.json', JSON.stringify({total:0,working:0}));
-            process.exit(0);
           });
-          TESTER_V5
-          
-          node tester.js
+          NODEJS
 
       - name: 📊 Generate Dashboard
         run: |
-          cat << 'DASHBOARD' > output/index.html
+          cat << 'EOF' > output/index.html
           <!DOCTYPE html>
           <html lang="fa" dir="rtl">
           <head>
@@ -1053,36 +621,24 @@ jobs:
             <title>QuantumRoute V5</title>
             <style>
               :root{--bg:#0a0e14;--card:#161d27;--border:#2a3544;--text:#e7edf4;--gold:#ffd700;--blue:#3b82f6;--green:#10b981;--red:#ef4444;--purple:#8b5cf6}
-              *{box-sizing:border-box;margin:0;padding:0}
-              body{font-family:system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:20px}
-              .container{max-width:1400px;margin:0 auto}
-              h1{text-align:center;font-size:2.5rem;background:linear-gradient(135deg,var(--gold),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:30px}
-              .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:15px;margin-bottom:30px}
-              .stat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center}
-              .stat-value{font-size:2rem;font-weight:700}
-              .stat-label{color:#8899aa;font-size:0.85rem;margin-top:5px}
-              .grades{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:30px}
-              .grade{background:var(--card);border-radius:12px;padding:20px;text-align:center;border:2px solid transparent}
+              *{box-sizing:border-box;margin:0;padding:0}body{font-family:system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:20px}
+              .container{max-width:1400px;margin:0 auto}h1{text-align:center;font-size:2.5rem;background:linear-gradient(135deg,var(--gold),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:30px}
+              .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:25px}
+              .stat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center}
+              .stat-value{font-size:1.8rem;font-weight:700}.stat-label{color:#8899aa;font-size:0.8rem;margin-top:4px}
+              .grades{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:25px}
+              .grade{background:var(--card);border-radius:10px;padding:16px;text-align:center;border:2px solid transparent}
               .grade.s{border-color:var(--gold)}.grade.a{border-color:var(--green)}.grade.b{border-color:var(--blue)}.grade.c{border-color:var(--purple)}
-              .grade-letter{font-size:2.5rem;font-weight:900}
-              .grade-count{font-size:1.5rem;font-weight:700;margin-top:10px}
-              .actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:30px}
-              .btn{padding:12px 24px;border-radius:10px;font-weight:600;text-decoration:none;transition:all 0.3s}
-              .btn-gold{background:linear-gradient(135deg,var(--gold),#f97316);color:#000}
-              .btn-green{background:var(--green);color:#fff}
-              .btn-secondary{background:var(--card);color:var(--text);border:1px solid var(--border)}
-              .btn:hover{transform:translateY(-3px)}
-              table{width:100%;border-collapse:collapse;background:var(--card);border-radius:12px;overflow:hidden}
-              th,td{padding:12px;text-align:right;border-bottom:1px solid var(--border)}
-              th{background:#0f1419;color:var(--blue)}
-              tr:hover{background:#1e2836}
-              .badge{display:inline-block;padding:4px 10px;border-radius:6px;font-size:0.8rem;font-weight:600}
-              .badge-s{background:rgba(255,215,0,0.2);color:var(--gold)}
-              .badge-a{background:rgba(16,185,129,0.2);color:var(--green)}
-              .badge-b{background:rgba(59,130,246,0.2);color:var(--blue)}
-              .badge-c{background:rgba(139,92,246,0.2);color:var(--purple)}
-              footer{text-align:center;padding:30px;color:#8899aa;margin-top:40px}
-              @media(max-width:768px){.grades{grid-template-columns:repeat(2,1fr)}}
+              .grade-letter{font-size:2rem;font-weight:900}.grade-count{font-size:1.3rem;font-weight:700;margin-top:8px}
+              .actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:25px}
+              .btn{padding:10px 20px;border-radius:8px;font-weight:600;text-decoration:none;font-size:0.9rem}
+              .btn-gold{background:linear-gradient(135deg,var(--gold),#f97316);color:#000}.btn-green{background:var(--green);color:#fff}.btn-sec{background:var(--card);color:var(--text);border:1px solid var(--border)}
+              table{width:100%;border-collapse:collapse;background:var(--card);border-radius:10px;overflow:hidden}
+              th,td{padding:10px;text-align:right;border-bottom:1px solid var(--border);font-size:0.85rem}th{background:#0f1419;color:var(--blue)}tr:hover{background:#1e2836}
+              .badge{display:inline-block;padding:3px 8px;border-radius:5px;font-size:0.75rem;font-weight:600}
+              .badge-s{background:rgba(255,215,0,0.2);color:var(--gold)}.badge-a{background:rgba(16,185,129,0.2);color:var(--green)}.badge-b{background:rgba(59,130,246,0.2);color:var(--blue)}.badge-c{background:rgba(139,92,246,0.2);color:var(--purple)}
+              footer{text-align:center;padding:20px;color:#8899aa;margin-top:30px;font-size:0.85rem}
+              @media(max-width:600px){.grades{grid-template-columns:repeat(2,1fr)}.stats{grid-template-columns:repeat(2,1fr)}}
             </style>
           </head>
           <body>
@@ -1096,15 +652,15 @@ jobs:
                 <div class="grade c"><div class="grade-letter" style="color:var(--purple)">C</div><div class="grade-count" id="gc">-</div></div>
               </div>
               <div class="actions">
-                <a href="grade_s.txt" class="btn btn-gold">🏆 Grade S</a>
+                <a href="grade_s.txt" class="btn btn-gold">🏆 S</a>
                 <a href="premium.txt" class="btn btn-green">⭐ Premium</a>
-                <a href="configs.txt" class="btn btn-secondary">📥 All</a>
-                <a href="configs_base64.txt" class="btn btn-secondary">🔐 Base64</a>
-                <a href="results.json" class="btn btn-secondary">📊 JSON</a>
+                <a href="configs.txt" class="btn btn-sec">📥 All</a>
+                <a href="configs_base64.txt" class="btn btn-sec">🔐 B64</a>
+                <a href="results.json" class="btn btn-sec">📊 JSON</a>
               </div>
-              <table><thead><tr><th>#</th><th>Grade</th><th>Protocol</th><th>Host</th><th>Latency</th><th>Score</th><th>Confidence</th></tr></thead><tbody id="tb"></tbody></table>
+              <table><thead><tr><th>#</th><th>Grade</th><th>Protocol</th><th>Host</th><th>Latency</th><th>Score</th><th>CDN</th></tr></thead><tbody id="tb"></tbody></table>
             </div>
-            <footer><p>آخرین بروزرسانی: <span id="ts">-</span></p></footer>
+            <footer>آخرین بروزرسانی: <span id="ts">-</span></footer>
             <script>
               fetch('results.json').then(r=>r.json()).then(d=>{
                 document.getElementById('stats').innerHTML=`
@@ -1112,7 +668,6 @@ jobs:
                   <div class="stat"><div class="stat-value" style="color:var(--green)">${d.summary.working}</div><div class="stat-label">سالم</div></div>
                   <div class="stat"><div class="stat-value" style="color:var(--gold)">${d.quality.avg_score}</div><div class="stat-label">امتیاز</div></div>
                   <div class="stat"><div class="stat-value">${d.quality.avg_latency}ms</div><div class="stat-label">تاخیر</div></div>
-                  <div class="stat"><div class="stat-value">${d.quality.avg_confidence}%</div><div class="stat-label">اطمینان</div></div>
                   <div class="stat"><div class="stat-value" style="color:var(--blue)">${d.security.cloudflare}</div><div class="stat-label">CF</div></div>
                 `;
                 document.getElementById('gs').textContent=d.grades.S;
@@ -1122,13 +677,13 @@ jobs:
                 document.getElementById('ts').textContent=new Date(d.timestamp).toLocaleString('fa-IR');
                 const tb=document.getElementById('tb');
                 d.top_30.forEach((r,i)=>{
-                  tb.innerHTML+=`<tr><td>${i+1}</td><td><span class="badge badge-${r.grade.toLowerCase()}">${r.grade}</span></td><td>${r.protocol}</td><td>${r.host}</td><td>${r.latency}ms</td><td>${r.score}</td><td>${r.confidence}%</td></tr>`;
+                  tb.innerHTML+=`<tr><td>${i+1}</td><td><span class="badge badge-${r.grade.toLowerCase()}">${r.grade}</span></td><td>${r.protocol}</td><td>${r.host}</td><td>${r.latency}ms</td><td>${r.score}</td><td>${r.cdn||'-'}</td></tr>`;
                 });
-              });
+              }).catch(()=>{});
             </script>
           </body>
           </html>
-          DASHBOARD
+          EOF
 
       - name: 💾 Commit & Push
         run: |
@@ -1137,20 +692,19 @@ jobs:
           git add output/ || true
           
           if [[ -f output/stats.json ]]; then
-            W=$(jq -r '.working // 0' output/stats.json)
-            S=$(jq -r '.grade_s // 0' output/stats.json)
-            A=$(jq -r '.grade_a // 0' output/stats.json)
-            SCORE=$(jq -r '.avg_score // 0' output/stats.json)
-            git commit -m "🚀 V5: ${W} working | S:${S} A:${A} | avg:${SCORE}" || echo "No changes"
+            W=$(jq -r '.working // 0' output/stats.json 2>/dev/null || echo 0)
+            S=$(jq -r '.grade_s // 0' output/stats.json 2>/dev/null || echo 0)
+            A=$(jq -r '.grade_a // 0' output/stats.json 2>/dev/null || echo 0)
+            git commit -m "🚀 V5: ${W} working | S:${S} A:${A}" || true
           else
-            git commit -m "🚀 V5 Update" || echo "No changes"
+            git commit -m "🚀 V5 Update" || true
           fi
           
-          git push || echo "Push failed"
+          git push || true
 
       - name: 📦 Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: quantum-v5-output
+          name: quantum-v5
           path: output/
           retention-days: 14
