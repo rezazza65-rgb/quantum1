@@ -167,6 +167,8 @@ jobs:
           declare -A SEEN
           > tmp/configs_unique.txt
           
+          UNIQUE_COUNT=0
+          
           while IFS= read -r line || [[ -n "$line" ]]; do
             [[ -z "$line" ]] && continue
             
@@ -174,13 +176,15 @@ jobs:
             norm="$(echo "$line" | tr -d '\r\n[:space:]')"
             hash="$(echo -n "$norm" | sha256sum | cut -d' ' -f1)"
             
-            if [[ -z "${SEEN[$hash]:-}" ]]; then
+            # Check if hash exists in array (compatible with set -u)
+            if [[ ! -v "SEEN[$hash]" ]]; then
               SEEN[$hash]=1
               echo "$line" >> tmp/configs_unique.txt
+              ((UNIQUE_COUNT++))
             fi
           done < tmp/configs_parsed.txt
           
-          echo "✅ Unique configs: ${#SEEN[@]}"
+          echo "✅ Unique configs: $UNIQUE_COUNT"
 
       - name: Real connection test (Iran-optimized)
         run: |
