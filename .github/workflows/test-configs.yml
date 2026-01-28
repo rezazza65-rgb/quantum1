@@ -11,7 +11,6 @@ concurrency:
   group: v2ray-test
   cancel-in-progress: true
 
-# Add permissions to allow writing to repository
 permissions:
   contents: write
 
@@ -46,35 +45,28 @@ jobs:
         run: |
           echo "📦 Installing Xray-core for real protocol testing..."
           
-          # Get latest version
           XRAY_VERSION=$(curl -s https://api.github.com/repos/XTLS/Xray-core/releases/latest | grep -Po '"tag_name": "\K.*?(?=")')
           echo "  → Version: ${XRAY_VERSION}"
           
-          # Validate version was retrieved
           if [ -z "$XRAY_VERSION" ]; then
             echo "❌ Failed to get Xray version"
             exit 1
           fi
           
-          # Construct download URL
           DOWNLOAD_URL="https://github.com/XTLS/Xray-core/releases/download/${XRAY_VERSION}/Xray-linux-64.zip"
           echo "  → Download URL: ${DOWNLOAD_URL}"
           
-          # Download with retry
           wget --retry-connrefused --waitretry=1 --read-timeout=20 --timeout=15 --tries=3 "${DOWNLOAD_URL}" -O xray.zip
           
-          # Verify download
           if [ ! -f xray.zip ]; then
             echo "❌ Download failed"
             exit 1
           fi
           
-          # Extract and install
           unzip -o xray.zip xray
           chmod +x xray
           sudo mv xray /usr/local/bin/
           
-          # Verify installation
           xray version
           echo "✅ Xray-core installed successfully"
 
@@ -89,7 +81,6 @@ jobs:
           
           echo "🌐 Fetching configs from multiple sources..."
           
-          # All source URLs
           SOURCES=(
             "https://raw.githubusercontent.com/barry-far/V2ray-Config/refs/heads/main/All_Configs_Sub.txt"
             "https://raw.githubusercontent.com/cook369/proxy-collect/main/dist/85la/v2ray.txt"
@@ -110,12 +101,10 @@ jobs:
             "https://openproxylist.com/v2ray/rawlist/subscribe"
           )
           
-          # Add Firmfox subscriptions (1-38)
           for i in {1..38}; do
             SOURCES+=("https://raw.githubusercontent.com/Firmfox/proxify/main/v2ray_configs/mixed/subscription-${i}.txt")
           done
           
-          # Initialize output file
           true > tmp/all_raw.txt
           
           fetch_source() {
@@ -133,7 +122,6 @@ jobs:
             fi
           }
           
-          # Parallel fetch
           for i in "${!SOURCES[@]}"; do
             fetch_source "${SOURCES[$i]}" "$i" &
             
@@ -143,7 +131,6 @@ jobs:
           done
           wait
           
-          # Combine all sources
           cat tmp/source_*.txt 2>/dev/null | sed '/^$/d' > tmp/all_raw.txt || true
           
           echo "✅ Fetching complete"
@@ -154,15 +141,11 @@ jobs:
           
           echo "🔍 Parsing and normalizing configs..."
           
-          # Initialize output file
           true > tmp/configs_parsed.txt
           
-          # Decode base64 if needed and extract configs
           while IFS= read -r line || [[ -n "$line" ]]; do
-            # Skip empty lines
             [[ -z "${line// }" ]] && continue
             
-            # If line is base64 encoded
             if echo "$line" | grep -qE '^[A-Za-z0-9+/=]{20,}$' && ! echo "$line" | grep -q '://'; then
               decoded=$(echo "$line" | base64 -d 2>/dev/null || echo "")
               if [[ -n "$decoded" ]]; then
@@ -189,11 +172,9 @@ jobs:
           while IFS= read -r line || [[ -n "$line" ]]; do
             [[ -z "$line" ]] && continue
             
-            # Normalize for hashing
             norm="$(echo "$line" | tr -d '\r\n[:space:]')"
             hash="$(echo -n "$norm" | sha256sum | cut -d' ' -f1)"
             
-            # Check if hash exists in array (compatible with set -u)
             if [[ ! -v "SEEN[$hash]" ]]; then
               SEEN[$hash]=1
               echo "$line" >> tmp/configs_unique.txt
@@ -242,7 +223,6 @@ jobs:
             
             const { host, port } = info;
             
-            // TCP connection test
             const tcpOk = await new Promise((resolve) => {
               const socket = net.connect(port, host);
               const timer = setTimeout(() => {
@@ -266,7 +246,6 @@ jobs:
               return { config, success: false, error: 'tcp_timeout' };
             }
             
-            // TLS handshake test
             const tlsOk = await new Promise((resolve) => {
               const socket = tls.connect({
                 host,
@@ -336,129 +315,35 @@ jobs:
           
           node test.js
 
-      - name: Real protocol test with Xray-core
+      - name: Simplified protocol validation
         run: |
           set -Eeuo pipefail
           
-          echo "🚀 Stage 2: Real protocol testing with Xray-core..."
+          echo "🚀 Stage 2: Protocol validation..."
           
-          PASSED_COUNT=0
-          FAILED_COUNT=0
-          
-          true > tmp/xray_passed.txt
-          true > logs/xray_failed.txt
-          
-          # Function to test single config with Xray
-          test_xray_config() {
-            local config="$1"
-            local temp_config="tmp/test_config_$$.json"
-            
-            # Create minimal Xray config for testing
-            cat > "$temp_config" << XEOF
-          {
-            "log": {
-              "loglevel": "error"
-            },
-            "outbounds": [
-              {
-                "protocol": "freedom",
-                "settings": {},
-                "tag": "direct"
-              }
-            ],
-            "remarks": "test"
-          }
-          XEOF
-            
-            # Try to connect with timeout
-            local result=1
-            timeout $TIMEOUT xray test -c "$temp_config" 2>/dev/null && result=0 || result=1
-            
-            rm -f "$temp_config"
-            return $result
-          }
-          
-          # Read network-passed configs
-          if [[ ! -f tmp/network_passed.txt ]]; then
+          if [[ ! -f tmp/network_passed.txt ]] || [[ ! -s tmp/network_passed.txt ]]; then
             echo "⚠️  No configs passed network test"
-            touch tmp/xray_passed.txt
+            touch tmp/working_configs.txt
             exit 0
           fi
           
-          TOTAL=$(wc -l < tmp/network_passed.txt)
-          echo "  Testing $TOTAL configs with Xray-core..."
+          # For now, we'll use network-passed configs directly
+          # The network test already validates TCP and TLS connectivity
+          # Proper Xray validation requires parsing each protocol's specific format
           
-          COUNTER=0
-          while IFS= read -r config || [[ -n "$config" ]]; do
-            [[ -z "$config" ]] && continue
-            
-            ((COUNTER++))
-            
-            # Progress indicator
-            if (( COUNTER % 10 == 0 )); then
-              echo "  → Progress: $COUNTER/$TOTAL"
-            fi
-            
-            # Extract protocol type
-            protocol=$(echo "$config" | cut -d: -f1)
-            
-            # Test based on protocol
-            case "$protocol" in
-              vmess|vless|trojan|ss)
-                # Create temp config file for this specific protocol
-                temp_conf="tmp/xray_test_${COUNTER}.json"
-                
-                # Generate Xray config from URL
-                # This is a simplified approach - in production you'd parse the URL properly
-                cat > "$temp_conf" << XEOF
-          {
-            "log": {"loglevel": "error"},
-            "inbounds": [{
-              "port": 10808,
-              "protocol": "socks",
-              "settings": {"udp": true}
-            }],
-            "outbounds": [{
-              "protocol": "$protocol",
-              "settings": {},
-              "streamSettings": {
-                "network": "tcp",
-                "security": "tls"
-              }
-            }]
-          }
-          XEOF
-                
-                # Test config validity
-                if timeout 3 xray test -c "$temp_conf" >/dev/null 2>&1; then
-                  echo "$config" >> tmp/xray_passed.txt
-                  ((PASSED_COUNT++))
-                else
-                  echo "$config" >> logs/xray_failed.txt
-                  ((FAILED_COUNT++))
-                fi
-                
-                rm -f "$temp_conf"
-                ;;
-              *)
-                # For unknown protocols, pass them through
-                echo "$config" >> tmp/xray_passed.txt
-                ((PASSED_COUNT++))
-                ;;
-            esac
-            
-          done < tmp/network_passed.txt
+          cp tmp/network_passed.txt tmp/working_configs.txt
           
-          echo "✅ Xray test complete: $PASSED_COUNT passed, $FAILED_COUNT failed"
+          TOTAL=$(wc -l < tmp/working_configs.txt)
+          echo "✅ Using ${TOTAL} network-validated configs"
           
-          # Use Xray-validated configs as final output
-          if [[ -s tmp/xray_passed.txt ]]; then
-            cp tmp/xray_passed.txt tmp/working_configs.txt
-          else
-            # Fallback to network-passed if Xray testing had issues
-            echo "⚠️  Falling back to network-tested configs"
-            cp tmp/network_passed.txt tmp/working_configs.txt
-          fi
+          # Log a note about Xray validation being simplified
+          cat > logs/xray_note.txt << 'EOF'
+          NOTE: Full Xray protocol testing requires parsing and converting each 
+          config URL into proper Xray JSON format. The current implementation 
+          validates network connectivity (TCP + TLS handshake) which ensures 
+          the servers are reachable, but full protocol compliance testing would 
+          require additional parsing logic for each protocol type (vmess, vless, etc).
+          EOF
 
       - name: Generate output files
         run: |
@@ -466,10 +351,8 @@ jobs:
           
           echo "📝 Generating final output files..."
           
-          # configs.txt (raw)
           cp tmp/working_configs.txt "$OUTPUT_DIR/configs.txt"
           
-          # configs_base64.txt (base64 encoded, each config on separate line)
           true > "$OUTPUT_DIR/configs_base64.txt"
           while IFS= read -r line || [[ -n "$line" ]]; do
             [[ -z "$line" ]] && continue
@@ -477,12 +360,10 @@ jobs:
             echo >> "$OUTPUT_DIR/configs_base64.txt"
           done < "$OUTPUT_DIR/configs.txt"
           
-          # Stats with two-stage testing info
           TOTAL=$(wc -l < tmp/configs_unique.txt)
           NETWORK_PASSED=$(wc -l < tmp/network_passed.txt 2>/dev/null || echo 0)
           FINAL_WORKING=$(wc -l < "$OUTPUT_DIR/configs.txt")
           NETWORK_FAILED=$((TOTAL - NETWORK_PASSED))
-          XRAY_FAILED=$((NETWORK_PASSED - FINAL_WORKING))
           
           cat > "$OUTPUT_DIR/stats.json" << EOF
           {
@@ -490,17 +371,16 @@ jobs:
             "stage1_network_test": {
               "passed": $NETWORK_PASSED,
               "failed": $NETWORK_FAILED,
-              "success_rate": "$(awk "BEGIN {printf \"%.2f\", ($NETWORK_PASSED/$TOTAL)*100}")%"
+              "success_rate": "$(awk "BEGIN {if($TOTAL>0) printf \"%.2f\", ($NETWORK_PASSED/$TOTAL)*100; else print \"0.00\"}")%"
             },
-            "stage2_xray_test": {
+            "stage2_validation": {
               "passed": $FINAL_WORKING,
-              "failed": $XRAY_FAILED,
-              "success_rate": "$(awk "BEGIN {if($NETWORK_PASSED>0) printf \"%.2f\", ($FINAL_WORKING/$NETWORK_PASSED)*100; else print \"0.00\"}")%"
+              "method": "network_connectivity"
             },
             "final_working": $FINAL_WORKING,
-            "overall_success_rate": "$(awk "BEGIN {printf \"%.2f\", ($FINAL_WORKING/$TOTAL)*100}")%",
+            "overall_success_rate": "$(awk "BEGIN {if($TOTAL>0) printf \"%.2f\", ($FINAL_WORKING/$TOTAL)*100; else print \"0.00\"}")%",
             "updated_at": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
-            "testing_method": "two-stage (network + xray-core)"
+            "testing_method": "tcp_tls_connectivity"
           }
           EOF
           
@@ -511,8 +391,8 @@ jobs:
           echo "📊 Summary:"
           echo "  Total fetched: $TOTAL"
           echo "  Network test passed: $NETWORK_PASSED"
-          echo "  Xray test passed: $FINAL_WORKING"
-          echo "  Overall success: $(awk "BEGIN {printf \"%.2f\", ($FINAL_WORKING/$TOTAL)*100}")%"
+          echo "  Final working: $FINAL_WORKING"
+          echo "  Overall success: $(awk "BEGIN {if($TOTAL>0) printf \"%.2f\", ($FINAL_WORKING/$TOTAL)*100; else print \"0.00\"}")%"
 
       - name: Commit and push results
         run: |
@@ -526,7 +406,6 @@ jobs:
           else
             git commit -m "Auto-update: $(wc -l < output/configs.txt) working configs [$(date -u +"%Y-%m-%d %H:%M UTC")]"
             
-            # Push with retry logic
             max_retries=3
             retry_count=0
             
