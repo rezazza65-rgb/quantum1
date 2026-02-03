@@ -7,7 +7,6 @@ trojan://7248e825-887c-48b9-83bc-c26bc6392bf8@172.67.214.21:443?type=ws&s
 trojan://84831b86-5c76-4173-bdf1-02fa3ed78a32@104.21.96.1:443/?type=ws&host=eee
 trojan://Xa4%5El(%3B.%3BB%23a@104.18.26.90:443/?type=ws&host=s1.mitivp
 trojan://ba4e0314-c815-4711-81ac-4d37f0fb59fc@172.67.204.84:443/?type=ws&host=se1.safecd
-trojan://6c0ed3fb-f0b0-5b53-a762-f8f8d832bdba@172.67.204.84:8443/?type=ws&host=vfa
 trojan://%3AZ%23%253cdIG%27c*%3B*O%7D@172.66.47.83:443/?type=ws&host=Joi
 trojan://03c93f49-d573-4889-a4bb-187047c5a314@104.21.71.83:443/?type=ws&host=M7Yyu.777162.xYZ&path=🔒
 trojan://049b291e-5752-448c-9b9d-92c7ea45611f@104.21.24.172:443/?type=ws&host=xsdcf
@@ -74,8 +73,8 @@ trojan://NISHIKUITAN222@188.114.98.152:443/?type=ws&host=i
 trojan://Ng35283528@104.16.83.176:443/?type=ws&host=c2.validbv3528.eu.o
 trojan://WOeXShhJpL@104.16.148.178:443/?type=ws&host=07jzus.zdzdzd.xyz&path=🔒
 trojan://WOeXShhJpL@104.17.49.240:443/?type=ws&host=09jzus.zdzdzd.xyz&path=🔒
-trojan://WOeXShhJpL@104.17.8.124:443/?type=ws&host=10jzus.zdzdzd.xyz&path=🔒
 trojan://WOeXShhJpL@104.18.183.139:443/?type=ws&host=08jzus.zdzdzd.xyz&path=🔒
+trojan://WOeXShhJpL@104.17.8.124:443/?type=ws&host=10jzus.zdzdzd.xyz&path=🔒
 trojan://WOeXShhJpL@104.18.71.140:443/?type=ws&host=09jzus.zdzdzd.xyz&path=🔒
 trojan://WOeXShhJpL@104.21.19.243:443/?type=ws&host=06jzus.zdzdzd.xyz&path=🔒
 trojan://WOeXShhJpL@172.67.232.40:443/?type=ws&host=10jzus.zdzdzd.xyz&path=🔒
@@ -98,3 +97,4 @@ trojan://auto@104.20.21.229:443/?type=ws&host=b96ef9ae.t
 trojan://auto@104.20.22.111:443/?type=ws&host=b96ef9ae.t
 trojan://auto@104.20.22.241:443/?type=ws&host=b96ef9ae.t
 trojan://auto@104.21.21.129:443/?type=ws&host=t
+trojan://auto@104.21.31.51:443/?type=ws&host=esetsecu
