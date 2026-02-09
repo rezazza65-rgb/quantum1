@@ -50,8 +50,6 @@ trojan://6884d714-d3c4-4b49-aa20-767ea92837d6@104.16.21.118:443/?type=ws&host=ic
 trojan://6884d714-d3c4-4b49-aa20-767ea92837d6@162.159.152.17:443/?type=ws&host=icec
 trojan://6884d714-d3c4-4b49-aa20-767ea92837d6@172.64.145.239:443/?type=ws&host=icec
 trojan://6884d714-d3c4-4b49-aa20-767ea92837d6@172.67.68.240:443/?type=ws&host=icec
-trojan://6884d714-d3c4-4b49-aa20-767ea92837d6@www.epicgames.com:443/?type=ws&host=icec
-trojan://6884d714-d3c4-4b49-aa20-767ea92837d6@www.mashable.com:443/?type=ws&host=icec
 trojan://6d898085-bf6a-449b-9763-0073d4dc2ce0@104.21.26.69:443/?type=ws&path=🔒
 trojan://6d898085-bf6a-449b-9763-0073d4dc2ce0@104.21.63.236:443/?type=ws&path=🔒
 trojan://6d898085-bf6a-449b-9763-0073d4dc2ce0@172.67.133.248:443/?type=ws&path=🔒
@@ -67,8 +65,8 @@ trojan://89c1aea7-4d0d-4013-b663-0f94a3e6bdbd@104.21.23.115:443/?type=ws&path=�
 trojan://8ac9d280-afe3-4389-bc00-25128983a689@104.21.69.44:443/?type=ws&host=ttbi
 trojan://936c6853-6bbf-4e24-8667-ec5b2fc275b3@104.26.15.85:443/?type=ws&host=md1.safecd
 trojan://CMLiussss@104.27.195.88:443/?type=ws&host=x
-trojan://CMLiussss@162.159.134.233:443/?type=ws&host=x
 trojan://CMLiussss@172.67.193.36:443/?type=ws&host=x
+trojan://CMLiussss@162.159.134.233:443/?type=ws&host=x
 trojan://NISHIKUITAN111@104.21.84.200:443/?type=ws&host=zb.ylks.xyz&path=🔒
 trojan://NISHIKUITAN222@141.101.120.152:443/?type=ws&host=i
 trojan://NISHIKUITAN222@173.245.59.61:443/?type=ws&host=i
@@ -93,8 +91,10 @@ trojan://auto@104.16.25.46:443/?type=ws&host=t
 trojan://auto@104.18.1.89:443/?type=ws&host=joi
 trojan://auto@104.20.17.176:443/?type=ws&host=b96ef9ae.t
 trojan://auto@104.20.18.119:443/?type=ws&host=b96ef9ae.t
-trojan://auto@104.20.20.150:443/?type=ws&host=b96ef9ae.t
 trojan://auto@104.20.19.25:443/?type=ws&host=b96ef9ae.t
+trojan://auto@104.20.20.150:443/?type=ws&host=b96ef9ae.t
 trojan://auto@104.20.20.162:443/?type=ws&host=b96ef9ae.t
 trojan://auto@104.20.21.229:443/?type=ws&host=b96ef9ae.t
 trojan://auto@104.20.22.111:443/?type=ws&host=b96ef9ae.t
+trojan://auto@104.20.22.241:443/?type=ws&host=b96ef9ae.t
+trojan://auto@104.21.21.129:443/?type=ws&host=t
