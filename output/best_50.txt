@@ -19,7 +19,6 @@ trojan://0RiSuJPsug%23v@104.21.43.168:443/?type=ws&host=2.lINK-KoN.IR&path=🔒
 trojan://0ab6c98dae3b48e8b9c4a776b6c9c19a@104.16.192.1:443/?type=ws&host=she
 trojan://0ab6c98dae3b48e8b9c4a776b6c9c19a@104.17.147.11:443/?type=ws&host=jobsca
 trojan://0b65bb06-6b28-487a-8e3c-820dda51e977@104.21.12.87:443/?type=ws&path=🔒
-trojan://0c6b96bc-5e3a-4500-8497-6dead1965609@104.21.70.50:443?type=ws&secu
 trojan://1187ba87-8ebc-4a07-aa89-b331ed2cb356@172.66.47.147:443/?type=ws&host=meti-u9d.pages.dev&secu
 trojan://13253e6e-a1f7-4090-801f-a8dc2b083bef@104.21.75.120:443/?type=ws&host=i
 trojan://13253e6e-a1f7-4090-801f-a8dc2b083bef@172.67.175.148:443/?type=ws&host=i
@@ -39,6 +38,7 @@ trojan://4785f3ca-8fa3-4717-8c81-9d19087c73a3@172.66.44.171:443/?type=ws&host=pa
 trojan://4be20cf1-6af1-4e87-ae5a-80d6ec30fecd@172.67.214.21:443/?type=ws&path=🔒
 trojan://4f435a3a-dfb8-4c90-b637-8df8c5d44550@172.67.135.37:443/?type=ws&path=🔒
 trojan://4f9219f6-ba56-4e5a-a676-0978d8b613e4@188.114.99.91:443/?type=ws&host=Noshte
+trojan://5196aae7-1479-4f3c-978b-68e74977b509@mkouy.99890604.xyz:443?type=ws&secu
 trojan://5453ae26-250d-4e79-b4ec-016baf806865@172.67.204.22:443/?type=ws&path=🔒
 trojan://5453ae26-250d-4e79-b4ec-016baf806865@172.67.210.210:443/?type=ws&host=1cc.852224.ggff.
 trojan://559c3b5f-3dd1-47e4-94ad-017cb392a7ba@104.26.8.202:443?type=ws&s
