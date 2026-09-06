@@ -1,5 +1,5 @@
 hysteria2://6aab8efdf13945829ae3699c342be406@31.76.80.69:443/?obfs=salama
+hysteria2://cd74c0a406664a5bc0bac098220a2468@2.27.249.79:443/?obfs=salama
 hysteria2://2691cbe7c20cced8b0aeb12c812d09077e5b3eec7669fb8f@144.31.148.87:443/?i
 hysteria2://BPvdjudCGodsF67hRP3xgBYvcKp48coTsh6ANydLhQs=@78.17.187.184:443/?i
-hysteria2://cd74c0a406664a5bc0bac098220a2468@2.27.249.79:443/?obfs=salama
 hysteria2://cd74c0a406664a5bc0bac098220a2468@144.31.49.138:443?secu
