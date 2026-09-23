@@ -1,6 +1,10 @@
+vmess://eyJhZGQiOiIxNDEuMTAxLjExNS4zMCIsImFpZCI6MCwiaG9zdCI6IiIsImlkIjoiNDBkNDk2YTYtY2VlYi00MDk2LWJhZWItNGNjNTJiMjA1NjIxIiwibmV0Ijoid3MiLCJwYXRoIjoiL0VDVENKMERGIiwicG9ydCI6NDQzLCJwcyI6IkJ5IEVicmFTaGEg4pqhIiwic2VjdXJpdHkiOiJhdXRvIiwic2tpcC1jZXJ0LXZlcmlmeSI6dHJ1ZSwic25pIjoiIiwidGxzIjoidGxzIiwidHlwZSI6ImF1dG8ifQ==
+vmess://eyJhZGQiOiIxMDQuMjQuMTk0LjEwNSIsImFpZCI6MCwiaG9zdCI6IiIsImlkIjoiYjNhMjFkZWYtNWZjYy00N2E4LWE2YTAtYTM0ZTI5ZDUyODhhIiwibmV0Ijoid3MiLCJwYXRoIjoiL3dzczUxMDY4IiwicG9ydCI6NDQzLCJwcyI6IkJ5IEVicmFTaGEg4oyo77iPIiwic2VjdXJpdHkiOiJhdXRvIiwic2tpcC1jZXJ0LXZlcmlmeSI6dHJ1ZSwic25pIjoiIiwidGxzIjoidGxzIiwidHlwZSI6ImF1dG8ifQ==
+vmess://eyJhZGQiOiIxNjIuMTU5LjEzNS40MiIsImFpZCI6MCwiaG9zdCI6IiIsImlkIjoiMTdiMmEzMTMtMzdhMC00OTQ1LWE4ZTQtZTYzMzc1NTA2YjRhIiwibmV0Ijoid3MiLCJwYXRoIjoiL0EyREpPUEZUIiwicG9ydCI6NDQzLCJwcyI6IkJ5IEVicmFTaGEg4oyo77iPIiwic2VjdXJpdHkiOiJhdXRvIiwic2tpcC1jZXJ0LXZlcmlmeSI6dHJ1ZSwic25pIjoiIiwidGxzIjoidGxzIiwidHlwZSI6ImF1dG8ifQ==
+vmess://eyJhZGQiOiIxNzIuNjcuMTI3LjI1MCIsImFpZCI6MCwiaG9zdCI6IiIsImlkIjoiMmIyMTQxMjItMTkwNi00MjhhLWJiYjctYTAzOWNiYjdjZDVjIiwibmV0Ijoid3MiLCJwYXRoIjoiLzlKWkZEVEtFIiwicG9ydCI6NDQzLCJwcyI6IkJ5IEVicmFTaGEg4oyo77iPIiwic2VjdXJpdHkiOiJhdXRvIiwic2tpcC1jZXJ0LXZlcmlmeSI6dHJ1ZSwic25pIjoiIiwidGxzIjoidGxzIiwidHlwZSI6ImF1dG8ifQ==
+vmess://eyJhZGQiOiIxNzIuNjcuMjAzLjE2MiIsImFpZCI6MCwiaG9zdCI6IiIsImlkIjoiYzVhMmQ3YjgtYmY4NC00Zjk3LTg1NzctYjliODdmMmJhYWY3IiwibmV0Ijoid3MiLCJwYXRoIjoiL0FVSUtOOEFVIiwicG9ydCI6NDQzLCJwcyI6IkJ5IEVicmFTaGEg4pmj77iPIiwic2VjdXJpdHkiOiJhdXRvIiwic2tpcC1jZXJ0LXZlcmlmeSI6dHJ1ZSwic25pIjoiIiwidGxzIjoidGxzIiwidHlwZSI6ImF1dG8ifQ==
 trojan://auto@104.17.147.22:2087/?type=ws&host=abbas.ab841vp
 trojan://auto@104.17.148.22:2087/?type=ws&host=abbas.ab841vp
-vmess://eyJhZGQiOiIxNzIuNjcuMTY0LjEyMyIsImFpZCI6MCwiaG9zdCI6IiIsImlkIjoiYzVhMmQ3YjgtYmY4NC00Zjk3LTg1NzctYjliODdmMmJhYWY3IiwibmV0Ijoid3MiLCJwYXRoIjoiL0FVSUtOOEFVIiwicG9ydCI6NDQzLCJwcyI6IkJ5IEVicmFTaGEg4pqZ77iPIiwic2VjdXJpdHkiOiJhdXRvIiwic2tpcC1jZXJ0LXZlcmlmeSI6dHJ1ZSwic25pIjoiIiwidGxzIjoidGxzIiwidHlwZSI6ImF1dG8ifQ==
 trojan://%3AZ%23%253cdIG%27c*%3B*O%7D@172.66.47.83:443/?type=ws&host=Joi
 trojan://03c93f49-d573-4889-a4bb-187047c5a314@104.21.71.83:443/?type=ws&host=M7Yyu.777162.xYZ&path=%2FRij8gsblmlf
 trojan://049b291e-5752-448c-9b9d-92c7ea45611f@104.21.24.172:443/?type=ws&host=xsdcf
@@ -31,8 +35,8 @@ trojan://4f9219f6-ba56-4e5a-a676-0978d8b613e4@188.114.99.91:443/?type=ws&host=No
 trojan://5453ae26-250d-4e79-b4ec-016baf806865@172.67.204.22:443/?type=ws&path=%2FOYzPAeaZdXUq2d6J3gc4aj&secu
 trojan://5453ae26-250d-4e79-b4ec-016baf806865@172.67.210.210:443/?type=ws&host=1cc.852224.ggff.
 trojan://559c3b5f-3dd1-47e4-94ad-017cb392a7ba@104.26.8.202:443?type=ws&s
-trojan://6040a753-e35b-4384-8713-96f3c639b621@104.21.21.226:443/?type=ws&path=%2FWxWOWO1YA9bs2HOmaeWimvT3&secu
 trojan://6040a753-e35b-4384-8713-96f3c639b621@172.67.200.238:443/?type=ws&path=%2FWxWOWO1YA9bs2HOmaeWimvT3&secu
+trojan://6040a753-e35b-4384-8713-96f3c639b621@104.21.21.226:443/?type=ws&path=%2FWxWOWO1YA9bs2HOmaeWimvT3&secu
 trojan://669d0ac7b5b64ebbb1abb75d5d540a5c@104.16.159.6:443/?type=ws&host=ba
 trojan://6757b7d6-fa32-4708-b5d1-30e3cf928b51@172.67.201.36:443/?type=ws&host=ggGGGGgggGGgGggy.FReevPN2026.DpDNS.O
 trojan://67db0c34-ae7a-4369-a6b5-554c99d8e5c9@104.21.86.106:443/?type=ws&path=%2FNuDL4mL
@@ -58,8 +62,8 @@ trojan://MiTiVPN@104.19.230.21:443/?type=ws&host=Nl.App-Cloud.i
 trojan://NISHIKUITAN111@104.21.84.200:443/?type=ws&host=zb.ylks.xyz&path=%2F&secu
 trojan://NISHIKUITAN222@141.101.120.152:443/?type=ws&host=i
 trojan://NISHIKUITAN222@173.245.59.61:443/?type=ws&host=i
-trojan://NISHIKUITAN222@188.114.98.152:443/?type=ws&host=i
 trojan://Ng35283528@104.16.83.176:443/?type=ws&host=c2.validbv3528.eu.o
+trojan://NISHIKUITAN222@188.114.98.152:443/?type=ws&host=i
 trojan://WOeXShhJpL@104.16.148.178:443/?type=ws&host=07jzus.zdzdzd.xyz&path=%2Fjuzigo
 trojan://WOeXShhJpL@104.17.49.240:443/?type=ws&host=09jzus.zdzdzd.xyz&path=%2Fjuzigo
 trojan://WOeXShhJpL@104.17.8.124:443/?type=ws&host=10jzus.zdzdzd.xyz&path=%2Fjuzigo
@@ -94,7 +98,3 @@ trojan://bce0c7cb-08d1-46a7-b77b-7bff8b46252f@104.21.91.180:443/?type=ws&host=xx
 trojan://bf7e1009-1574-44f7-86df-6cbecd338477@172.66.47.106:443/?type=ws&host=pa
 trojan://blue2024@104.16.10.12:443/?type=ws&host=td.p
 trojan://blue2024@104.16.104.65:443/?type=ws&host=ta.p
-trojan://blue2024@104.16.105.39:443/?type=ws&host=ta.p
-trojan://blue2024@104.16.107.194:443/?type=ws&host=ta.p
-trojan://blue2024@104.16.146.105:443/?type=ws&host=ha.lii2010.us.kg&path=%2F%3Fed&secu
-trojan://blue2024@104.16.209.98:443/?type=ws&host=td.p
