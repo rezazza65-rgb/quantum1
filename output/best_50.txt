@@ -2,11 +2,11 @@ ss://102e5f34-1913-4dd3-a1f2-f831d891a490@104.16.186.41:443?path=%2Fsi
 ss://102e5f34-1913-4dd3-a1f2-f831d891a490@104.16.190.41:443?path=%2F&amp;secu
 ss://10a6b923-e349-4594-92bb-d81a6245aaec@104.26.0.7:443?path=%2Fdow
 ss://10a6b923-e349-4594-92bb-d81a6245aaec@104.26.14.85:443?path=%2Fdow
-ss://10a6b923-e349-4594-92bb-d81a6245aaec@188.114.97.4:443?path=%2Fdow
-ss://10a6b923-e349-4594-92bb-d81a6245aaec@172.67.74.10:443?path=%2Fdow
-ss://14b59caf-a196-4ec2-8c70-c7b388062f5b@104.16.72.101:443?path=%2F
-ss://14b59caf-a196-4ec2-8c70-c7b388062f5b@162.159.38.119:443?path=%2F
 ss://10a6b923-e349-4594-92bb-d81a6245aaec@104.27.66.214:443?path=%2Fdow
+ss://10a6b923-e349-4594-92bb-d81a6245aaec@172.67.74.10:443?path=%2Fdow
+ss://10a6b923-e349-4594-92bb-d81a6245aaec@188.114.97.4:443?path=%2Fdow
+ss://14b59caf-a196-4ec2-8c70-c7b388062f5b@162.159.38.119:443?path=%2F
+ss://14b59caf-a196-4ec2-8c70-c7b388062f5b@104.16.72.101:443?path=%2F
 ss://495c7195-85b8-498a-bf20-2ea9ce9175b5@162.159.135.234:443?path=%2F&amp;secu
 ss://495c7195-85b8-498a-bf20-2ea9ce9175b5@188.114.97.6:443?path=%2F%3FTeleg
 ss://4d10c997-4781-4cd9-82c3-15453523e12c@162.159.137.54:443?path=%2Fsg-melbi&amp;secu
@@ -27,7 +27,7 @@ ss://0691b704-7742-4248-8787-e72b98ec8c0c@104.17.19.159:2083?path=%2F&amp;secu
 ss://2b8738de-1af5-4267-b101-c05707769ed4@172.67.130.187:2083?e
 ss://3bf09d7c-0d5e-4544-952f-76fced605c0d@198.41.223.199:2087?secu
 ss://77777777-8a3e-6666-b6d1-a9c5f0e8b3a2@104.16.150.246:2087?path=%2F&secu
-ss://77777777-8a3e-6666-b6d1-a9c5f0e8b3a2@172.64.145.166:2087?ed=2048&amp;eh=Sec-WebSocket-P
+ss://77777777-8a3e-6666-b6d1-a9c5f0e8b3a2@172.64.145.166:2087?ed=2048&eh=Sec-WebSocket-P
 ss://2fad05d3-9fab-45a0-addc-3fc229673c5e@104.16.174.81:8443?mode=auto&amp;path=%2Fdawdawdqw
 ss://2fad05d3-9fab-45a0-addc-3fc229673c5e@172.67.158.89:8443?mode=auto&amp;path=%2Fdawdawdqw
 ss://2fad05d3-9fab-45a0-addc-3fc229673c5e@188.114.97.2:8443?mode=auto&amp;path=%2Fdawdawdqw
@@ -43,8 +43,8 @@ ss://73fa8e4d-ac5a-4a02-920f-578f1400adb8@104.17.223.228:80?path=%2FI
 ss://89d784c8-0764-477d-9082-cfff0570338e@188.114.98.6:2095?path=%2F&amp;secu
 ss://1b766abe-05da-46fa-973c-0d06d9605736@172.66.40.99:8880?path=%2FTeleg
 ss://23187ddc-16a5-432d-bf4e-dd42a7ae39f7@104.16.98.215:8880?secu
+ss://495c7195-85b8-498a-bf20-2ea9ce9175b5@172.64.150.43:443?path=%2F&amp;secu
 ss://09e23657-9bf9-452d-a529-f58fa5246c3d@199.232.78.159:443?path=%2F&amp;secu
-ss://02d87d00-c769-48d8-91cb-bd05e2f62790@151.101.25.242:80?mode=auto&amp;path=%2F&amp;secu
+ss://3ee10440-225e-4cbc-83ed-3c80b90bcb07@188.114.98.0:2053?path=%2Fmovies%2F12345&amp;secu
 ss://0617eade-fb92-422f-9b59-c9a4b65b2906@199.232.239.239:443?path=%2F%3Fed%3D2056&amp;secu
-ss://424c2031-1add-4063-8fc0-d57dc8358b21@151.101.0.155:80?path=%2Fde%3Fed%3D1048&amp;secu
-ss://04c808e2-0b59-47b0-a54b-32fc7ef1c902@www.zsu.gov.ua:443?s
+ss://02d87d00-c769-48d8-91cb-bd05e2f62790@151.101.25.242:80?mode=auto&amp;path=%2F&amp;secu
