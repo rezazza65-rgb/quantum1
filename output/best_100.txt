@@ -4,7 +4,8 @@ vless://41b90a88-64b3-4337-9c60-c901df3e5b44@188.114.97.6:443?type=ws&e
 vless://5b9503aa-119b-4288-aa4f-0bbee2b4d5af@188.114.97.6:443/?type=ws&e
 vless://5b9503aa-119b-4288-aa4f-0bbee2b4d5af@188.114.97.6:443?type=ws&e
 vless://89b3cbba-e6ac-485a-9481-976a0415eab9@104.17.148.22:443?type=ws&e
-vless://dbb3c682-8564-4c02-aec9-23ecf7981820@172.66.132.196:443?type=ws&e
+vless://e6c7ed63-89db-4ae1-a3f8-7a722921b3b2@chatgpt.com:443?type=ws&e
+vless://e6df2095-a73c-4043-8693-8d5a03686870@188.114.97.6:443?type=ws&secu
 vless://e7a9fe3b-c10f-4a67-8f7b-e22c9c246d8d@104.18.32.47:443?type=ws&e
 vless://ec8463ea-07b7-475b-b9f0-eeb98927f427@172.64.152.23:443?type=ws&e
 vless://3f0f36f5-f091-45c5-88c9-4bcc545b922c@104.17.147.22:2096?type=ws&e
@@ -35,6 +36,7 @@ vless://838f5273-5d2d-4630-a0f5-9cc8e4aef4d6@104.17.147.22:8443?type=ws&e
 vless://8bf2d75b-2bfc-4aef-a73b-5ea3c6b5783e@104.17.148.22:8443?type=ws&e
 vless://a5b22acc-bbec-4f8d-9bb8-e6bb2d973730@chatgpt.com:8443?type=ws&e
 vless://b5e42648-f958-4d88-afab-2cf4e9205f2d@172.64.152.23:8443?type=ws&e
+vless://dbb3c682-8564-4c02-aec9-23ecf7981820@172.66.132.196:443?type=ws&e
 vless://3058e698-61fd-4d12-95bc-f1fe4c071713@104.17.147.22:443?type=ws&e
 vless://396c904b-4b62-4334-b793-ee25fc0c61cc@162.159.152.4:443?type=ws&e
 vless://4d91916f-a7fd-419b-8b90-640bb8d1b9f4@188.114.97.1:443?type=ws&e
@@ -64,6 +66,7 @@ vless://5e2a0dff-3392-476d-bbaa-c7b35380495e@188.114.97.1:2053?type=ws&e
 vless://764c0782-0e09-4204-9418-afddd544fcb2@104.21.69.44:2087?type=ws&e
 vless://90c7ad5e-cd15-4314-b39b-aeabd397d592@104.18.13.229:2087?type=ws&e
 vless://a2a396c3-f40e-4dee-bdbb-b1201f12dc1c@www.gov.se:2053?type=ws&e
+vless://a634a066-a73c-4dc6-93d6-d235eba56a75@172.64.155.209:2052?type=ws&e
 vless://a8a09765-7681-47ba-9ea0-e0ae79d51088@172.67.161.104:2096?type=ws&e
 vless://a8cd1696-ac65-495d-8529-6688d0789ce2@172.64.152.23:2082?type=ws&e
 vless://bb7bbd46-6570-483a-8932-df3d893d4e0c@104.21.16.1:2087?type=ws&e
@@ -73,6 +76,7 @@ vless://d603cba7-4ec4-4744-a1df-1fcbec323066@104.26.12.54:2083?type=ws&e
 vless://d93eed7f-64ae-4321-bbd2-dbc8fa45ce07@104.21.64.1:2087?type=ws&e
 vless://ddb00f36-d544-4e35-afbf-64297aa68d03@188.114.96.1:2096?type=ws&e
 vless://e531609c-63f6-4b14-a422-eb346c4b29be@162.159.152.4:2052?type=ws&host=vp
+vless://e5cc16a6-ea42-46b2-82ae-ad2157e1641b@172.64.150.28:2082?type=ws&host=hhlfy.twiladaph
 vless://e8faaf2b-78e0-5a1d-8125-014acf0900c5@104.17.147.22:2052?type=ws&e
 vless://eda7584e-196f-4190-8be9-844940e7540a@188.114.97.2:2087?type=ws&e
 vless://f3913cee-7c77-4816-868e-8a8cd4f8747f@104.21.112.1:2096?type=ws&e
@@ -82,7 +86,6 @@ vless://fed7b870-8d40-4337-b26b-9aca5ac4846f@172.65.90.53:2053?type=ws&e
 vless://5e2a0dff-3392-476d-bbaa-c7b35380495e@188.114.96.1:8443?type=ws&e
 vless://6ad08747-42b9-4618-8f11-ac47de0da0f8@188.114.97.1:8443?type=ws&e
 vless://88d05a33-ff36-415d-9d2c-7e1e8468e7e8@188.114.96.3:8443?type=ws&e
-vless://89b3cbba-e6ac-485a-9481-976a0415eab9@172.66.132.196:8443?type=ws&e
 vless://b3314ace-2947-47fd-aff8-11565cf77d5f@104.21.16.1:8443?type=ws&e
 vless://e999db7a-1b17-4da6-bc37-c9fa24af2e93@172.66.40.99:8443?type=ws&e
 vless://4b7a099c-ae77-483d-b1c4-66855c98f73d@188.114.98.0:8880?type=ws&path=/?ed=2560&e
@@ -95,6 +98,3 @@ vless://d8235de7-84c7-4454-b333-4d854c393929@www.visa.com.sg:8880?type=ws&host=f
 vless://da5ff974-c135-4b57-a0ff-53dd2502e71e@104.21.23.72:8880?&type=ws&heade
 vless://dec6b197-3211-46f0-bca8-71dfca535709@172.67.179.98:8880?&type=ws&heade
 vless://ed189537-41de-4abe-9f8b-bb75d457722d@172.67.152.71:8880?type=ws&host=lucky-cake-4f58.318-5ee.wo
-vless://f09f4baa-7688-4514-8062-c3ea8e319624@188.114.97.6:8880?type=ws&host=da
-vless://f66a18d0-5c72-4c72-997a-cd2ea43a06b3@104.17.147.22:8880?type=ws&e
-vless://f66a18d0-5c72-4c72-997a-cd2ea43a06b3@104.17.148.22:8880?type=ws&e
