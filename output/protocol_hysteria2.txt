@@ -1,5 +1,4 @@
-hysteria2://6aab8efdf13945829ae3699c342be406@31.76.80.69:443?i
 hysteria2://BPvdjudCGodsF67hRP3xgBYvcKp48coTsh6ANydLhQs=@78.17.187.184:443?i
 hysteria2://BPvdjudCGodsF67hRP3xgBYvcKp48coTsh6ANydLhQs=@78.17.187.184:443/?i
 hysteria2://6aab8efdf13945829ae3699c342be406@31.76.80.69:443?secu
-hysteria2://7e68e32f-8015-4f37-9082-70e8b0b58043@13.212.245.120:443?i
+hysteria2://6aab8efdf13945829ae3699c342be406@31.76.80.69:443?i
