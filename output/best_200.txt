@@ -82,7 +82,6 @@ vless://4b7a099c-ae77-483d-b1c4-66855c98f73d@188.114.98.0:8880?type=ws&path=/?ed
 vless://83744063-3ddc-4ed9-b6e5-d207ce6ed48e@172.67.179.98:8880?type=ws&host=still-pi
 vless://8ddedcc7-6c4e-4df3-a190-ac40926f6694@104.18.32.47:8880?type=ws&host=late-boat-fbd7.152-de6.wo
 vless://c6c5ad2f-b4d5-450f-862f-341cebb7f9b5@172.67.152.71:8880?&type=ws&heade
-vless://d503ca85-91c2-426d-98ce-7a6f44666be1@www.gov.ua:8880?&type=ws&heade
 vless://d6c595c9-bff4-4510-893a-dfa3c87fa0cd@104.21.56.202:8880?type=ws&host=lucky-cell-d20c.78-107.wo
 vless://d8235de7-84c7-4454-b333-4d854c393929@www.visa.com.sg:8880?type=ws&host=f
 vless://da5ff974-c135-4b57-a0ff-53dd2502e71e@104.21.23.72:8880?&type=ws&heade
@@ -100,8 +99,8 @@ vless://00d7256f-6ef2-42ee-8319-d4a49536b918@104.24.186.186:443?type=ws&e
 vless://01842c9c-d03c-4765-a950-5da4b096ee74@104.17.214.22:443?type=ws&e
 vless://02be5968-d5c1-41f9-9515-3ea043b7aac3@108.162.195.39:443?type=ws&e
 vless://02be5968-d5c1-41f9-9515-3ea043b7aac3@162.159.44.88:443?type=ws&e
-vless://02be5968-d5c1-41f9-9515-3ea043b7aac3@172.64.33.167:443?type=ws&e
 vless://02be5968-d5c1-41f9-9515-3ea043b7aac3@172.64.33.115:443?type=ws&e
+vless://02be5968-d5c1-41f9-9515-3ea043b7aac3@172.64.33.167:443?type=ws&e
 vless://02be5968-d5c1-41f9-9515-3ea043b7aac3@173.245.58.66:443?type=ws&e
 vless://02e46039-200d-4ae4-ac90-b0d619f72034@108.162.193.91:443?type=ws&e
 vless://02e46039-200d-4ae4-ac90-b0d619f72034@172.64.33.91:443?type=ws&e
@@ -129,8 +128,8 @@ vless://06e4425e-a8cb-4b63-929f-2105604ab0a9@172.64.152.251:443?type=ws&e
 vless://06e4425e-a8cb-4b63-929f-2105604ab0a9@172.64.35.148:443?type=ws&e
 vless://06e4425e-a8cb-4b63-929f-2105604ab0a9@172.64.35.169:443?type=ws&e
 vless://06e4425e-a8cb-4b63-929f-2105604ab0a9@172.64.35.192:443?type=ws&e
-vless://06e4425e-a8cb-4b63-929f-2105604ab0a9@172.67.106.26:443?type=ws&e
 vless://06e4425e-a8cb-4b63-929f-2105604ab0a9@172.64.35.83:443?type=ws&e
+vless://06e4425e-a8cb-4b63-929f-2105604ab0a9@172.67.106.26:443?type=ws&e
 vless://06e4425e-a8cb-4b63-929f-2105604ab0a9@172.67.110.232:443?type=ws&e
 vless://06e4425e-a8cb-4b63-929f-2105604ab0a9@172.67.69.129:443?type=ws&e
 vless://072f4db4-d89d-420d-9d9e-045ed8d5c9cc@104.21.42.250:443?type=ws&e
@@ -140,8 +139,8 @@ vless://0789a06d-a61a-470d-b182-33926b1aa21f@172.66.44.135:443?type=ws&e
 vless://0792bb58-36ac-451e-a629-e363e53da93b@104.21.18.38:443?type=ws&e
 vless://0799a47d-d446-4a20-8e75-441fa899fbb1@104.16.72.70:443?type=ws&e
 vless://07a3df8f-2a2c-42f8-ad92-65889d90f3bf@104.21.25.95:443?type=ws&e
-vless://0954c6d7-f4a7-44ff-9a78-1939f9ba43d4@108.162.194.137:443?type=ws&e
 vless://0954c6d7-f4a7-44ff-9a78-1939f9ba43d4@104.26.12.54:443?type=ws&e
+vless://0954c6d7-f4a7-44ff-9a78-1939f9ba43d4@108.162.194.137:443?type=ws&e
 vless://0970324b-8c61-4ae7-8c3f-385a6f1e17e4@104.19.50.29:443?type=ws&e
 vless://0a23af3f-3f9b-4333-ae89-796f7fe2f9ce@104.21.38.48:443?type=ws&e
 vless://0a23af3f-3f9b-4333-ae89-796f7fe2f9ce@104.21.83.113:443?type=ws&e
@@ -164,8 +163,8 @@ vless://102e5f34-1913-4dd3-a1f2-f831d891a490@104.16.187.41:443?type=ws&e
 vless://102e5f34-1913-4dd3-a1f2-f831d891a490@104.16.189.41:443?type=ws&e
 vless://103104c5-a3f5-4c48-8d8f-a72a56959799@104.17.1.5:443?type=ws&e
 vless://103104c5-a3f5-4c48-8d8f-a72a56959799@104.17.15.166:443?type=ws&e
-vless://103104c5-a3f5-4c48-8d8f-a72a56959799@104.17.252.217:443?type=ws&e
 vless://103104c5-a3f5-4c48-8d8f-a72a56959799@104.17.92.98:443?type=ws&e
+vless://103104c5-a3f5-4c48-8d8f-a72a56959799@104.17.252.217:443?type=ws&e
 vless://103104c5-a3f5-4c48-8d8f-a72a56959799@104.18.181.3:443?type=ws&e
 vless://105c7a94-ddd4-4025-bf6f-5be4fc657354@172.66.47.74:443?type=ws&e
 vless://112858f5-760f-4886-95c1-c87b3b6b298e@104.16.77.1:443?type=ws&e
@@ -198,3 +197,4 @@ vless://1c22bf94-702b-49ac-8f5e-24259beed2d8@104.21.30.70:443?type=ws&host=tw.lo
 vless://1d399c5a-1c32-4fff-a4d0-d78fd3328a4c@104.19.56.61:443?type=ws&e
 vless://1d399c5a-1c32-4fff-a4d0-d78fd3328a4c@162.159.152.10:443?type=ws&e
 vless://1d399c5a-1c32-4fff-a4d0-d78fd3328a4c@162.159.152.118:443?type=ws&e
+vless://1d399c5a-1c32-4fff-a4d0-d78fd3328a4c@162.159.152.188:443?type=ws&e

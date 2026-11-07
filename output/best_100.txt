@@ -82,7 +82,6 @@ vless://4b7a099c-ae77-483d-b1c4-66855c98f73d@188.114.98.0:8880?type=ws&path=/?ed
 vless://83744063-3ddc-4ed9-b6e5-d207ce6ed48e@172.67.179.98:8880?type=ws&host=still-pi
 vless://8ddedcc7-6c4e-4df3-a190-ac40926f6694@104.18.32.47:8880?type=ws&host=late-boat-fbd7.152-de6.wo
 vless://c6c5ad2f-b4d5-450f-862f-341cebb7f9b5@172.67.152.71:8880?&type=ws&heade
-vless://d503ca85-91c2-426d-98ce-7a6f44666be1@www.gov.ua:8880?&type=ws&heade
 vless://d6c595c9-bff4-4510-893a-dfa3c87fa0cd@104.21.56.202:8880?type=ws&host=lucky-cell-d20c.78-107.wo
 vless://d8235de7-84c7-4454-b333-4d854c393929@www.visa.com.sg:8880?type=ws&host=f
 vless://da5ff974-c135-4b57-a0ff-53dd2502e71e@104.21.23.72:8880?&type=ws&heade
@@ -98,3 +97,4 @@ vless://004ba5d4-d448-4960-a762-e5190ab415f2@104.26.7.18:443?type=ws&e
 vless://0062f09d-9579-4722-9bd3-d5438970d54a@104.21.23.95:443?type=ws&e
 vless://00d7256f-6ef2-42ee-8319-d4a49536b918@104.24.186.186:443?type=ws&e
 vless://01842c9c-d03c-4765-a950-5da4b096ee74@104.17.214.22:443?type=ws&e
+vless://02be5968-d5c1-41f9-9515-3ea043b7aac3@108.162.195.39:443?type=ws&e
