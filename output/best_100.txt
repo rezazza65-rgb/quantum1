@@ -2,6 +2,7 @@ vless://41b90a88-64b3-4337-9c60-c901df3e5b44@188.114.97.6:443?type=ws&e
 vless://5b9503aa-119b-4288-aa4f-0bbee2b4d5af@188.114.97.6:443?type=ws&e
 vless://89b3cbba-e6ac-485a-9481-976a0415eab9@104.17.148.22:443?type=ws&e
 vless://dbb3c682-8564-4c02-aec9-23ecf7981820@172.66.132.196:443?type=ws&e
+vless://e6c7ed63-89db-4ae1-a3f8-7a722921b3b2@chatgpt.com:443?type=ws&e
 vless://e7a9fe3b-c10f-4a67-8f7b-e22c9c246d8d@104.18.32.47:443?type=ws&e
 vless://ec8463ea-07b7-475b-b9f0-eeb98927f427@172.64.152.23:443?type=ws&e
 vless://3f0f36f5-f091-45c5-88c9-4bcc545b922c@104.17.147.22:2096?type=ws&e
@@ -68,8 +69,8 @@ vless://ddb00f36-d544-4e35-afbf-64297aa68d03@188.114.96.1:2096?type=ws&e
 vless://e531609c-63f6-4b14-a422-eb346c4b29be@162.159.152.4:2052?type=ws&host=vp
 vless://e8faaf2b-78e0-5a1d-8125-014acf0900c5@104.17.147.22:2052?type=ws&e
 vless://eda7584e-196f-4190-8be9-844940e7540a@188.114.97.2:2087?type=ws&e
-vless://f3913cee-7c77-4816-868e-8a8cd4f8747f@104.21.112.1:2096?type=ws&e
 vless://f3913cee-7c77-4816-868e-8a8cd4f8747f@104.21.16.1:2096?type=ws&e
+vless://f3913cee-7c77-4816-868e-8a8cd4f8747f@104.21.112.1:2096?type=ws&e
 vless://f74afb44-b97a-4d51-bed9-5e637ede58c8@104.17.148.22:2052?type=ws&e
 vless://fed7b870-8d40-4337-b26b-9aca5ac4846f@172.65.90.53:2053?type=ws&e
 vless://5e2a0dff-3392-476d-bbaa-c7b35380495e@188.114.96.1:8443?type=ws&e
@@ -81,6 +82,7 @@ vless://4b7a099c-ae77-483d-b1c4-66855c98f73d@188.114.98.0:8880?type=ws&path=/?ed
 vless://83744063-3ddc-4ed9-b6e5-d207ce6ed48e@172.67.179.98:8880?type=ws&host=still-pi
 vless://8ddedcc7-6c4e-4df3-a190-ac40926f6694@104.18.32.47:8880?type=ws&host=late-boat-fbd7.152-de6.wo
 vless://c6c5ad2f-b4d5-450f-862f-341cebb7f9b5@172.67.152.71:8880?&type=ws&heade
+vless://d503ca85-91c2-426d-98ce-7a6f44666be1@www.gov.ua:8880?&type=ws&heade
 vless://d6c595c9-bff4-4510-893a-dfa3c87fa0cd@104.21.56.202:8880?type=ws&host=lucky-cell-d20c.78-107.wo
 vless://d8235de7-84c7-4454-b333-4d854c393929@www.visa.com.sg:8880?type=ws&host=f
 vless://da5ff974-c135-4b57-a0ff-53dd2502e71e@104.21.23.72:8880?&type=ws&heade
@@ -91,10 +93,8 @@ vless://f66a18d0-5c72-4c72-997a-cd2ea43a06b3@104.17.147.22:8880?type=ws&e
 vless://f66a18d0-5c72-4c72-997a-cd2ea43a06b3@104.17.148.22:8880?type=ws&e
 vless://f7ebef03-3c34-4769-bfe4-66e3c92ed665@172.67.152.71:8880?&type=ws&heade
 vless://00026cc2-d2a5-41b2-86a0-2c5fb2e5018d@104.17.242.183:443?type=ws&e
-vless://004ba5d4-d448-4960-a762-e5190ab415f2@104.26.6.18:443?type=ws&e
 vless://004ba5d4-d448-4960-a762-e5190ab415f2@104.26.7.18:443?type=ws&e
+vless://004ba5d4-d448-4960-a762-e5190ab415f2@104.26.6.18:443?type=ws&e
 vless://0062f09d-9579-4722-9bd3-d5438970d54a@104.21.23.95:443?type=ws&e
 vless://00d7256f-6ef2-42ee-8319-d4a49536b918@104.24.186.186:443?type=ws&e
 vless://01842c9c-d03c-4765-a950-5da4b096ee74@104.17.214.22:443?type=ws&e
-vless://02be5968-d5c1-41f9-9515-3ea043b7aac3@108.162.195.39:443?type=ws&e
-vless://02be5968-d5c1-41f9-9515-3ea043b7aac3@162.159.44.88:443?type=ws&e
